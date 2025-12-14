@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, use } from "react";
 import { useUser, UserButton } from "@clerk/nextjs";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, Loader2, AlertCircle, Lightbulb, X, ArrowLeft, Bot, User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -21,13 +21,23 @@ interface ClarificationState {
   session_id: string;
 }
 
-export default function ChatPage() {
+// ✅ FIX: searchParams is a Promise, not an object
+interface ChatPageProps {
+  searchParams: Promise<{
+    dataSourceId?: string;
+    sessionId?: string;
+  }>;
+}
+
+// ✅ CHANGED: Accept searchParams as prop
+export default function ChatPage({ searchParams }: ChatPageProps) {
   const { user } = useUser();
   const router = useRouter();
-  const searchParams = useSearchParams();
   
-  const dataSourceId = searchParams.get("dataSourceId");
-  const sessionId = searchParams.get("sessionId");
+  // ✅ FIX: Unwrap the Promise using React.use()
+  const params = use(searchParams);
+  const dataSourceId = params.dataSourceId;
+  const sessionId = params.sessionId;
   
   const [session, setSession] = useState<any>(null);
   const [messages, setMessages] = useState<Message[]>([]);
