@@ -58,10 +58,16 @@ export async function POST(req: Request) {
         (email) => email.id === primary_email_address_id
       );
       const email = emailObj?.email_address;
+
+      // ✅ FIX: Handle undefined email
+      if (!email) {
+        throw new Error("Primary email not found for user creation");
+      }
+
       await prisma.user.create({
         data: {
           id,
-          email,
+          email, // Now guaranteed to be string
         },
       });
     } else if (event.type === "user.updated") {
@@ -74,12 +80,18 @@ export async function POST(req: Request) {
         (email) => email.id === primary_email_address_id
       );
       const email = emailObj?.email_address;
+
+      // ✅ FIX: Handle undefined email
+      if (!email) {
+        throw new Error("Primary email not found for user update");
+      }
+
       await prisma.user.update({
         where: {
           id,
         },
         data: {
-          email,
+          email, // Now guaranteed to be string
         },
       });
     } else if (event.type === "user.deleted") {
