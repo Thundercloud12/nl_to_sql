@@ -62,7 +62,7 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
         setLoading(true);
         
         // Re-initialize chat to get conversation history
-        const response = await fetch("http://localhost:8000/initialize_chat", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/initialize_chat`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -132,7 +132,7 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
         payload.session_id = session.id;
       }
 
-      const response = await fetch("http://localhost:8000" + endpoint, {
+      const response = await fetch(process.env.NEXT_PUBLIC_BACKEND_URL + endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -189,7 +189,7 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
     setMessages((prev) => [...prev, { role: "user", content: currentInput }]);
 
     try {
-      const response = await fetch("http://localhost:8000/clarify", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/clarify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -253,7 +253,7 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
 
       console.log(`[CHAT] Saving session with ${formattedMessages.length} messages`);
 
-      const response = await fetch("http://localhost:8000/save_session", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/save_session`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

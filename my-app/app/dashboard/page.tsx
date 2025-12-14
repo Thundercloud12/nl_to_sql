@@ -45,7 +45,7 @@ export default function DashboardPage() {
   const handleStartChat = async (dataSourceId: string) => {
     try {
       // Initialize chat session with backend
-      const backendResponse = await fetch("http://localhost:8000/initialize_chat", {
+      const backendResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/initialize_chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -72,7 +72,7 @@ export default function DashboardPage() {
 
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:8000/datasource/${id}?user_id=${user?.id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/datasource/${id}?user_id=${user?.id}`, {
         method: "DELETE",
       });
 
