@@ -5727,5 +5727,175 @@
         "T1"
       ]
     }
+  },
+  {
+    "timestamp": "2025-12-14T19:56:36.804486",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 9.394,
+    "duration_ms": 9394.3,
+    "prompt_length_chars": 2757,
+    "response_length_chars": 1774,
+    "tokens": {
+      "input_tokens": 757,
+      "output_tokens": 0,
+      "total_tokens": 757
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: do any features in this data haver correlation?\nAssistant:  corr(",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-14T19:58:40.283766",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.522,
+    "duration_ms": 4522.3,
+    "prompt_length_chars": 2848,
+    "response_length_chars": 649,
+    "tokens": {
+      "input_tokens": 744,
+      "output_tokens": 0,
+      "total_tokens": 744
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nInsight: Okay, let's look at what we've found regarding correlations in",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-14T19:59:12.233526",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.866,
+    "duration_ms": 1866.1,
+    "prompt_length_chars": 4401,
+    "response_length_chars": 92,
+    "tokens": {
+      "input_tokens": 1304,
+      "output_tokens": 0,
+      "total_tokens": 1304
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-14T20:01:11.318549",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 5.351,
+    "duration_ms": 5350.6,
+    "prompt_length_chars": 2990,
+    "response_length_chars": 796,
+    "tokens": {
+      "input_tokens": 783,
+      "output_tokens": 0,
+      "total_tokens": 783
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: what type of analysis can we do on this data?\nAssistant: Given th",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-14T20:01:44.497815",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.068,
+    "duration_ms": 3068.3,
+    "prompt_length_chars": 4552,
+    "response_length_chars": 134,
+    "tokens": {
+      "input_tokens": 1332,
+      "output_tokens": 0,
+      "total_tokens": 1332
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-14T20:02:16.443519",
+    "function_name": "interpret_and_execute_analysis",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.875,
+    "duration_ms": 1874.7,
+    "prompt_length_chars": 3655,
+    "response_length_chars": 136,
+    "tokens": {
+      "input_tokens": 1083,
+      "output_tokens": 0,
+      "total_tokens": 1083
+    },
+    "metadata": {
+      "result_rows": 4389
+    }
+  },
+  {
+    "timestamp": "2025-12-14T20:04:23.416422",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.875,
+    "duration_ms": 4874.5,
+    "prompt_length_chars": 3086,
+    "response_length_chars": 640,
+    "tokens": {
+      "input_tokens": 810,
+      "output_tokens": 0,
+      "total_tokens": 810
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser:  Analyze sales by country using the 'country' column to identify ",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-14T20:04:55.412865",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.884,
+    "duration_ms": 1884.4,
+    "prompt_length_chars": 4396,
+    "response_length_chars": 122,
+    "tokens": {
+      "input_tokens": 1305,
+      "output_tokens": 0,
+      "total_tokens": 1305
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-14T20:05:27.518037",
+    "function_name": "interpret_and_execute_analysis",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.031,
+    "duration_ms": 2030.9,
+    "prompt_length_chars": 3721,
+    "response_length_chars": 188,
+    "tokens": {
+      "input_tokens": 1163,
+      "output_tokens": 0,
+      "total_tokens": 1163
+    },
+    "metadata": {
+      "result_rows": 5202
+    }
   }
 ]

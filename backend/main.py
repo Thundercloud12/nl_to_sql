@@ -83,29 +83,27 @@ def update_session_history(session_id: str, user_msg: str, assistant_msg: str, s
 
 def build_context_prompt(session_id: str, current_question: str) -> str:
     """Build question with conversation context."""
-    session = SESSIONS.get(session_id)
+    session = get_session(session_id)
     if not session:
         return current_question
     
     history = session.get("conversation_history", [])
-    last_result = session.get("last_result")
     
-    if not history and not last_result:
-        return current_question
+    # ✅ CHANGED: Get last 4 messages (2 exchanges) instead of 6
+    recent_messages = history[-4:]
     
     context_parts = []
-    
-    # Add conversation history (last 3 exchanges = 6 messages)
-    if history:
+    if recent_messages:
         context_parts.append("=== CONVERSATION HISTORY ===")
-        for msg in history[-6:]:
-            role = "User" if msg["role"] == "user" else "Assistant"
-            content = msg["content"][:300] + "..." if len(msg["content"]) > 300 else msg["content"]
-            context_parts.append(f"{role}: {content}")
+        for msg in recent_messages:
+            role = msg.get("role", "unknown")
+            content = msg.get("content", "")
+            # ✅ CHANGED: Truncate to 200 chars instead of 300
+            if len(content) > 200:
+                content = content[:197] + "..."
+            context_parts.append(f"{role.capitalize()}: {content}")
     
-    # Add last result for reference
-    if last_result:
-        context_parts.append(f"\n=== PREVIOUS QUERY RESULT ===\n{last_result[:500]}...")
+    # ✅ REMOVED: Previous query result section entirely
     
     context_parts.append(f"\n=== CURRENT QUESTION ===\n{current_question}")
     
