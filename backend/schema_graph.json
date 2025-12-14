@@ -1,0 +1,20 @@
+{
+    "tables": {
+        "T1": {
+            "reason": "The table represents individual line items from invoices, detailing sales transactions. 'customerid' and 'invoiceno' are likely keys for joining with other potential tables related to customers or invoices.",
+            "versions": [],
+            "join_keys": [
+                "customerid",
+                "invoiceno"
+            ],
+            "entity_group": "sales_transaction",
+            "merge_possible": false,
+            "similarity_score": 1
+        }
+    },
+    "clusters": {
+        "OnlineRetail": [
+            "T1"
+        ]
+    }
+}

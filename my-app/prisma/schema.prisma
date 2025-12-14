@@ -1,0 +1,83 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  dataSources   DataSource[]
+  conversations Conversation[]
+  sessions      Session[]
+
+  @@index([email])
+}
+
+model DataSource {
+  id              String    @id @default(cuid())
+  userId          String
+  cloudinaryUrl   String
+  rawMetadata     Json      // Stores raw metadata from backend
+  schemaGraph     Json      // Stores final schema graph from backend
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversations   Conversation[]
+  sessions        Session[]  // ✅ NEW
+
+  // Constraints
+  @@unique([userId, cloudinaryUrl])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Conversation {
+  id              String    @id @default(cuid())
+  userId          String
+  dataSourceId    String
+  messages        Json      // Stores array format: [{"role": "user"/"assistant", "content": "..."}]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dataSource      DataSource @relation(fields: [dataSourceId], references: [id], onDelete: Cascade)
+
+  // Constraints
+  @@index([userId])
+  @@index([dataSourceId])
+  @@index([createdAt])
+}
+
+model Session {
+  id                  String    @id @default(cuid())
+  userId              String
+  dataSourceId        String    // ✅ NEW: Link to DataSource
+  conversationHistory Json      // Stores [{"role": "user"/"assistant", "content": "..."}]
+  lastResult          Json?     // Last SQL result (nullable)
+  lastPlan            Json?     // Last plan (nullable)
+  clarificationState  Json?     // Clarification state (nullable)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  // Relations
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dataSource          DataSource @relation(fields: [dataSourceId], references: [id], onDelete: Cascade)  // ✅ NEW
+
+  // Constraints
+  @@index([userId])
+  @@index([dataSourceId])  // ✅ NEW
+  @@index([createdAt])
+}

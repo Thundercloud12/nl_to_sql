@@ -1,0 +1,5731 @@
+[
+  {
+    "timestamp": "2025-11-29T21:55:49.715800",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 12.518,
+    "duration_ms": 12518.4,
+    "prompt_length_chars": 4989,
+    "response_length_chars": 3585,
+    "tokens": {
+      "input_tokens": 1506,
+      "output_tokens": 1042,
+      "total_tokens": 4030
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "Identify operational bottlenecks from order and delivery patterns.",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-11-29T21:56:09.171401",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 19.453,
+    "duration_ms": 19453.3,
+    "prompt_length_chars": 5010,
+    "response_length_chars": 1324,
+    "tokens": {
+      "input_tokens": 1511,
+      "output_tokens": 359,
+      "total_tokens": 5667
+    },
+    "metadata": {
+      "iteration": 1,
+      "user_question": "Identify operational bottlenecks from order and delivery patterns.",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-11-29T21:57:04.364928",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 8.845,
+    "duration_ms": 8845.0,
+    "prompt_length_chars": 4980,
+    "response_length_chars": 400,
+    "tokens": {
+      "input_tokens": 1506,
+      "output_tokens": 142,
+      "total_tokens": 3086
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "Is there any seasonality in customer purchasing behavior?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-11-29T21:57:09.279679",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 4.912,
+    "duration_ms": 4911.9,
+    "prompt_length_chars": 5001,
+    "response_length_chars": 986,
+    "tokens": {
+      "input_tokens": 1511,
+      "output_tokens": 327,
+      "total_tokens": 2408
+    },
+    "metadata": {
+      "iteration": 1,
+      "user_question": "Is there any seasonality in customer purchasing behavior?",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-11-29T21:58:40.928716",
+    "function_name": "generate_code",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 3.571,
+    "duration_ms": 3571.0,
+    "prompt_length_chars": 15757,
+    "response_length_chars": 239,
+    "tokens": {
+      "input_tokens": 6069,
+      "output_tokens": 78,
+      "total_tokens": 6432
+    },
+    "metadata": {
+      "error_context_provided": false
+    }
+  },
+  {
+    "timestamp": "2025-11-29T22:00:19.439086",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 9.492,
+    "duration_ms": 9491.7,
+    "prompt_length_chars": 4980,
+    "response_length_chars": 400,
+    "tokens": {
+      "input_tokens": 1506,
+      "output_tokens": 142,
+      "total_tokens": 3086
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "Is there any seasonality in customer purchasing behavior?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-11-29T22:00:24.251149",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 4.809,
+    "duration_ms": 4808.6,
+    "prompt_length_chars": 5001,
+    "response_length_chars": 986,
+    "tokens": {
+      "input_tokens": 1511,
+      "output_tokens": 327,
+      "total_tokens": 2408
+    },
+    "metadata": {
+      "iteration": 1,
+      "user_question": "Is there any seasonality in customer purchasing behavior?",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-11-29T22:02:02.845497",
+    "function_name": "generate_code",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 5.42,
+    "duration_ms": 5420.4,
+    "prompt_length_chars": 15757,
+    "response_length_chars": 277,
+    "tokens": {
+      "input_tokens": 6069,
+      "output_tokens": 93,
+      "total_tokens": 6827
+    },
+    "metadata": {
+      "error_context_provided": false
+    }
+  },
+  {
+    "timestamp": "2025-12-01T17:06:43.067498",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 3.78,
+    "duration_ms": 3780.0,
+    "prompt_length_chars": 4947,
+    "response_length_chars": 625,
+    "tokens": {
+      "input_tokens": 1503,
+      "output_tokens": 179,
+      "total_tokens": 1973
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "what is this data about?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-01T17:08:55.873619",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 4.576,
+    "duration_ms": 4575.6,
+    "prompt_length_chars": 4962,
+    "response_length_chars": 734,
+    "tokens": {
+      "input_tokens": 1506,
+      "output_tokens": 243,
+      "total_tokens": 2245
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "where do we get the highest sales from?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-01T17:10:31.733359",
+    "function_name": "generate_code",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 4.413,
+    "duration_ms": 4413.0,
+    "prompt_length_chars": 16191,
+    "response_length_chars": 586,
+    "tokens": {
+      "input_tokens": 6216,
+      "output_tokens": 224,
+      "total_tokens": 6799
+    },
+    "metadata": {
+      "error_context_provided": false
+    }
+  },
+  {
+    "timestamp": "2025-12-01T17:10:43.815573",
+    "function_name": "interpret_and_execute_analysis",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 11.221,
+    "duration_ms": 11220.5,
+    "prompt_length_chars": 3486,
+    "response_length_chars": 503,
+    "tokens": {
+      "input_tokens": 1157,
+      "output_tokens": 175,
+      "total_tokens": 3284
+    },
+    "metadata": {
+      "result_rows": 6043
+    }
+  },
+  {
+    "timestamp": "2025-12-01T17:11:35.425516",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 2.395,
+    "duration_ms": 2395.2,
+    "prompt_length_chars": 4956,
+    "response_length_chars": 394,
+    "tokens": {
+      "input_tokens": 1504,
+      "output_tokens": 174,
+      "total_tokens": 1745
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "which tables does this data have?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-01T17:11:54.062096",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 3.189,
+    "duration_ms": 3189.4,
+    "prompt_length_chars": 4959,
+    "response_length_chars": 505,
+    "tokens": {
+      "input_tokens": 1504,
+      "output_tokens": 139,
+      "total_tokens": 1889
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "what do these tables actually have??",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-01T17:12:12.698659",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 4.302,
+    "duration_ms": 4301.9,
+    "prompt_length_chars": 4947,
+    "response_length_chars": 625,
+    "tokens": {
+      "input_tokens": 1503,
+      "output_tokens": 179,
+      "total_tokens": 1973
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "what is this data about?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-01T17:15:35.763509",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 3.635,
+    "duration_ms": 3634.8,
+    "prompt_length_chars": 5751,
+    "response_length_chars": 433,
+    "tokens": {
+      "input_tokens": 1721,
+      "output_tokens": 118,
+      "total_tokens": 2124
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "what is tghis data about?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-01T17:15:57.777882",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 4.775,
+    "duration_ms": 4775.3,
+    "prompt_length_chars": 5767,
+    "response_length_chars": 847,
+    "tokens": {
+      "input_tokens": 1721,
+      "output_tokens": 218,
+      "total_tokens": 2557
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "what do these different tables represent?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-01T22:36:47.947536",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 4.933,
+    "duration_ms": 4933.2,
+    "prompt_length_chars": 5944,
+    "response_length_chars": 620,
+    "tokens": {
+      "input_tokens": 1734,
+      "output_tokens": 190,
+      "total_tokens": 2283
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "what is this data about?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-01T22:37:10.272608",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 6.024,
+    "duration_ms": 6023.7,
+    "prompt_length_chars": 5963,
+    "response_length_chars": 760,
+    "tokens": {
+      "input_tokens": 1736,
+      "output_tokens": 267,
+      "total_tokens": 2634
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "which category of product sold the highest?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-01T22:39:33.018919",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 4.48,
+    "duration_ms": 4479.8,
+    "prompt_length_chars": 5966,
+    "response_length_chars": 713,
+    "tokens": {
+      "input_tokens": 1736,
+      "output_tokens": 257,
+      "total_tokens": 2384
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "which category experienced the highhest sales?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-01T22:39:59.134173",
+    "function_name": "generate_code",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 26.084,
+    "duration_ms": 26083.8,
+    "prompt_length_chars": 4003,
+    "response_length_chars": 219,
+    "tokens": {
+      "input_tokens": 1457,
+      "output_tokens": 82,
+      "total_tokens": 6325
+    },
+    "metadata": {
+      "error_context_provided": false
+    }
+  },
+  {
+    "timestamp": "2025-12-01T22:40:40.299280",
+    "function_name": "generate_code",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 41.144,
+    "duration_ms": 41144.5,
+    "prompt_length_chars": 4855,
+    "response_length_chars": 281,
+    "tokens": {
+      "input_tokens": 1710,
+      "output_tokens": 105,
+      "total_tokens": 10357
+    },
+    "metadata": {
+      "error_context_provided": true
+    }
+  },
+  {
+    "timestamp": "2025-12-01T22:44:36.769024",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 5.351,
+    "duration_ms": 5350.9,
+    "prompt_length_chars": 5948,
+    "response_length_chars": 294,
+    "tokens": {
+      "input_tokens": 1734,
+      "output_tokens": 101,
+      "total_tokens": 2458
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "which categories do we have?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-01T22:44:53.134342",
+    "function_name": "generate_code",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 16.34,
+    "duration_ms": 16339.5,
+    "prompt_length_chars": 2538,
+    "response_length_chars": 53,
+    "tokens": {
+      "input_tokens": 896,
+      "output_tokens": 12,
+      "total_tokens": 3780
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T2"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-01T22:45:11.181254",
+    "function_name": "generate_code",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 18.034,
+    "duration_ms": 18033.6,
+    "prompt_length_chars": 3224,
+    "response_length_chars": 38,
+    "tokens": {
+      "input_tokens": 1062,
+      "output_tokens": 8,
+      "total_tokens": 4373
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T2"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-01T22:58:58.545330",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 2.503,
+    "duration_ms": 2502.5,
+    "prompt_length_chars": 2942,
+    "response_length_chars": 471,
+    "tokens": {
+      "input_tokens": 801,
+      "output_tokens": 129,
+      "total_tokens": 1127
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "what is this data about?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-01T22:59:26.534540",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 16.512,
+    "duration_ms": 16512.2,
+    "prompt_length_chars": 2959,
+    "response_length_chars": 470,
+    "tokens": {
+      "input_tokens": 804,
+      "output_tokens": 140,
+      "total_tokens": 3987
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "how many features are there in this data?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-01T22:59:53.875515",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 27.337,
+    "duration_ms": 27336.7,
+    "prompt_length_chars": 2980,
+    "response_length_chars": 453,
+    "tokens": {
+      "input_tokens": 809,
+      "output_tokens": 152,
+      "total_tokens": 6424
+    },
+    "metadata": {
+      "iteration": 1,
+      "user_question": "how many features are there in this data?",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-01T23:00:32.277525",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 3.314,
+    "duration_ms": 3314.0,
+    "prompt_length_chars": 2963,
+    "response_length_chars": 475,
+    "tokens": {
+      "input_tokens": 803,
+      "output_tokens": 131,
+      "total_tokens": 1179
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "which product category has the highest sales?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-01T23:16:09.246138",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 14.025,
+    "duration_ms": 14025.5,
+    "prompt_length_chars": 3115,
+    "response_length_chars": 528,
+    "tokens": {
+      "input_tokens": 840,
+      "output_tokens": 178,
+      "total_tokens": 3529
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "what columns do we have in this data?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-01T23:16:12.316561",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 3.066,
+    "duration_ms": 3066.3,
+    "prompt_length_chars": 3136,
+    "response_length_chars": 469,
+    "tokens": {
+      "input_tokens": 845,
+      "output_tokens": 166,
+      "total_tokens": 1291
+    },
+    "metadata": {
+      "iteration": 1,
+      "user_question": "what columns do we have in this data?",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-01T23:19:48.280588",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 15.36,
+    "duration_ms": 15359.8,
+    "prompt_length_chars": 3116,
+    "response_length_chars": 419,
+    "tokens": {
+      "input_tokens": 843,
+      "output_tokens": 135,
+      "total_tokens": 3990
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "which colu,ns are preent in this data?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-01T23:20:39.173975",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 2.719,
+    "duration_ms": 2718.5,
+    "prompt_length_chars": 3127,
+    "response_length_chars": 383,
+    "tokens": {
+      "input_tokens": 844,
+      "output_tokens": 122,
+      "total_tokens": 1119
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "okay in T1 what are the name of all the features?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-01T23:20:41.938921",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 2.761,
+    "duration_ms": 2761.4,
+    "prompt_length_chars": 3148,
+    "response_length_chars": 251,
+    "tokens": {
+      "input_tokens": 849,
+      "output_tokens": 94,
+      "total_tokens": 1234
+    },
+    "metadata": {
+      "iteration": 1,
+      "user_question": "okay in T1 what are the name of all the features?",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-01T23:20:45.829768",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 3.886,
+    "duration_ms": 3886.5,
+    "prompt_length_chars": 3169,
+    "response_length_chars": 284,
+    "tokens": {
+      "input_tokens": 854,
+      "output_tokens": 100,
+      "total_tokens": 1123
+    },
+    "metadata": {
+      "iteration": 2,
+      "user_question": "okay in T1 what are the name of all the features?",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-01T23:20:59.654781",
+    "function_name": "generate_code",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 13.405,
+    "duration_ms": 13405.1,
+    "prompt_length_chars": 1386,
+    "response_length_chars": 114,
+    "tokens": {
+      "input_tokens": 389,
+      "output_tokens": 41,
+      "total_tokens": 3042
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-01T23:24:08.138488",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 2.191,
+    "duration_ms": 2190.9,
+    "prompt_length_chars": 3122,
+    "response_length_chars": 251,
+    "tokens": {
+      "input_tokens": 844,
+      "output_tokens": 91,
+      "total_tokens": 1063
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "What are the nae of tjhe columns in T1 table",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-01T23:24:10.325074",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 2.182,
+    "duration_ms": 2182.2,
+    "prompt_length_chars": 3143,
+    "response_length_chars": 251,
+    "tokens": {
+      "input_tokens": 849,
+      "output_tokens": 94,
+      "total_tokens": 1079
+    },
+    "metadata": {
+      "iteration": 1,
+      "user_question": "What are the nae of tjhe columns in T1 table",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-01T23:24:12.476926",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 2.147,
+    "duration_ms": 2146.9,
+    "prompt_length_chars": 3164,
+    "response_length_chars": 251,
+    "tokens": {
+      "input_tokens": 854,
+      "output_tokens": 94,
+      "total_tokens": 1119
+    },
+    "metadata": {
+      "iteration": 2,
+      "user_question": "What are the nae of tjhe columns in T1 table",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-01T23:24:14.422003",
+    "function_name": "generate_code",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 1.546,
+    "duration_ms": 1545.7,
+    "prompt_length_chars": 1353,
+    "response_length_chars": 113,
+    "tokens": {
+      "input_tokens": 383,
+      "output_tokens": 40,
+      "total_tokens": 483
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-01T23:24:20.462582",
+    "function_name": "interpret_and_execute_analysis",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 5.962,
+    "duration_ms": 5961.6,
+    "prompt_length_chars": 4350,
+    "response_length_chars": 217,
+    "tokens": {
+      "input_tokens": 1742,
+      "output_tokens": 67,
+      "total_tokens": 2793
+    },
+    "metadata": {
+      "result_rows": 99441
+    }
+  },
+  {
+    "timestamp": "2025-12-01T23:24:56.303238",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 3.599,
+    "duration_ms": 3599.4,
+    "prompt_length_chars": 3130,
+    "response_length_chars": 678,
+    "tokens": {
+      "input_tokens": 842,
+      "output_tokens": 187,
+      "total_tokens": 1371
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "what are some example questions i can ask this data?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-01T23:30:56.345545",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 3.484,
+    "duration_ms": 3484.4,
+    "prompt_length_chars": 6351,
+    "response_length_chars": 544,
+    "tokens": {
+      "input_tokens": 1805,
+      "output_tokens": 134,
+      "total_tokens": 2331
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "what is this data about?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-01T23:32:25.536794",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 9.686,
+    "duration_ms": 9685.5,
+    "prompt_length_chars": 6404,
+    "response_length_chars": 887,
+    "tokens": {
+      "input_tokens": 1813,
+      "output_tokens": 317,
+      "total_tokens": 3508
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "which region gives the highest income but has the lowest number of customers?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-01T23:32:30.684416",
+    "function_name": "generate_code",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 4.453,
+    "duration_ms": 4452.8,
+    "prompt_length_chars": 2397,
+    "response_length_chars": 395,
+    "tokens": {
+      "input_tokens": 726,
+      "output_tokens": 149,
+      "total_tokens": 1569
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1",
+        "T7",
+        "T8",
+        "T4"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-09T10:08:54.762089",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 4.662,
+    "duration_ms": 4662.3,
+    "prompt_length_chars": 6350,
+    "response_length_chars": 566,
+    "tokens": {
+      "input_tokens": 1805,
+      "output_tokens": 138,
+      "total_tokens": 2227
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "what is the data about?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-09T10:09:26.506246",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 4.975,
+    "duration_ms": 4975.5,
+    "prompt_length_chars": 6398,
+    "response_length_chars": 1806,
+    "tokens": {
+      "input_tokens": 1814,
+      "output_tokens": 428,
+      "total_tokens": 2587
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "what type of analysis can i perform on this data? Give me some examples",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-09T10:10:26.209128",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 17.591,
+    "duration_ms": 17591.1,
+    "prompt_length_chars": 6459,
+    "response_length_chars": 1546,
+    "tokens": {
+      "input_tokens": 1825,
+      "output_tokens": 470,
+      "total_tokens": 5614
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "Give me a customer satifaction analysis, tell me which product satisfies the customer the most and w",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-09T10:10:51.810265",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 25.596,
+    "duration_ms": 25596.4,
+    "prompt_length_chars": 6480,
+    "response_length_chars": 1386,
+    "tokens": {
+      "input_tokens": 1830,
+      "output_tokens": 434,
+      "total_tokens": 6201
+    },
+    "metadata": {
+      "iteration": 1,
+      "user_question": "Give me a customer satifaction analysis, tell me which product satisfies the customer the most and w",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-09T10:11:02.870229",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 11.054,
+    "duration_ms": 11053.6,
+    "prompt_length_chars": 6501,
+    "response_length_chars": 1812,
+    "tokens": {
+      "input_tokens": 1835,
+      "output_tokens": 541,
+      "total_tokens": 3713
+    },
+    "metadata": {
+      "iteration": 2,
+      "user_question": "Give me a customer satifaction analysis, tell me which product satisfies the customer the most and w",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-09T10:11:13.111780",
+    "function_name": "generate_code",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 9.75,
+    "duration_ms": 9749.6,
+    "prompt_length_chars": 3435,
+    "response_length_chars": 406,
+    "tokens": {
+      "input_tokens": 967,
+      "output_tokens": 158,
+      "total_tokens": 2974
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T9",
+        "T6",
+        "T5",
+        "T3"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-09T10:11:17.309354",
+    "function_name": "interpret_and_execute_analysis",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 4.091,
+    "duration_ms": 4091.4,
+    "prompt_length_chars": 3866,
+    "response_length_chars": 405,
+    "tokens": {
+      "input_tokens": 1412,
+      "output_tokens": 122,
+      "total_tokens": 1977
+    },
+    "metadata": {
+      "result_rows": 32171
+    }
+  },
+  {
+    "timestamp": "2025-12-09T10:12:36.980939",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 6.737,
+    "duration_ms": 6736.9,
+    "prompt_length_chars": 6380,
+    "response_length_chars": 783,
+    "tokens": {
+      "input_tokens": 1810,
+      "output_tokens": 308,
+      "total_tokens": 2952
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "which goegraphical region has the happiest consumers?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-09T10:12:46.709098",
+    "function_name": "generate_code",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 9.326,
+    "duration_ms": 9325.5,
+    "prompt_length_chars": 2340,
+    "response_length_chars": 330,
+    "tokens": {
+      "input_tokens": 732,
+      "output_tokens": 128,
+      "total_tokens": 1089
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T9",
+        "T8",
+        "T1",
+        "T7"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-09T10:13:31.768489",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 9.682,
+    "duration_ms": 9681.8,
+    "prompt_length_chars": 6376,
+    "response_length_chars": 2715,
+    "tokens": {
+      "input_tokens": 1809,
+      "output_tokens": 902,
+      "total_tokens": 4008
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "what do consumers in Sao Paulo purchase the most?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-09T10:13:41.496783",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 9.724,
+    "duration_ms": 9723.9,
+    "prompt_length_chars": 6397,
+    "response_length_chars": 1129,
+    "tokens": {
+      "input_tokens": 1814,
+      "output_tokens": 401,
+      "total_tokens": 3600
+    },
+    "metadata": {
+      "iteration": 1,
+      "user_question": "what do consumers in Sao Paulo purchase the most?",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-09T10:13:58.804569",
+    "function_name": "generate_code",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 16.885,
+    "duration_ms": 16884.9,
+    "prompt_length_chars": 3872,
+    "response_length_chars": 507,
+    "tokens": {
+      "input_tokens": 1200,
+      "output_tokens": 195,
+      "total_tokens": 5225
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1",
+        "T7",
+        "T8",
+        "T6",
+        "T5",
+        "T3"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-09T10:16:39.583158",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 16.745,
+    "duration_ms": 16744.6,
+    "prompt_length_chars": 6402,
+    "response_length_chars": 1818,
+    "tokens": {
+      "input_tokens": 1811,
+      "output_tokens": 671,
+      "total_tokens": 4553
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "which products in Sao Paulo has achieved the highest consumer satisfaction?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-09T10:16:54.533172",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 14.944,
+    "duration_ms": 14944.3,
+    "prompt_length_chars": 6423,
+    "response_length_chars": 3352,
+    "tokens": {
+      "input_tokens": 1816,
+      "output_tokens": 1028,
+      "total_tokens": 5159
+    },
+    "metadata": {
+      "iteration": 1,
+      "user_question": "which products in Sao Paulo has achieved the highest consumer satisfaction?",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-09T10:17:08.871318",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 14.332,
+    "duration_ms": 14332.0,
+    "prompt_length_chars": 6444,
+    "response_length_chars": 1585,
+    "tokens": {
+      "input_tokens": 1821,
+      "output_tokens": 548,
+      "total_tokens": 5049
+    },
+    "metadata": {
+      "iteration": 2,
+      "user_question": "which products in Sao Paulo has achieved the highest consumer satisfaction?",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-09T10:19:01.313141",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 3.374,
+    "duration_ms": 3373.6,
+    "prompt_length_chars": 6360,
+    "response_length_chars": 282,
+    "tokens": {
+      "input_tokens": 1807,
+      "output_tokens": 97,
+      "total_tokens": 2160
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "Which are the states in our data?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-09T10:19:02.952071",
+    "function_name": "generate_code",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 1.34,
+    "duration_ms": 1340.1,
+    "prompt_length_chars": 1406,
+    "response_length_chars": 41,
+    "tokens": {
+      "input_tokens": 393,
+      "output_tokens": 8,
+      "total_tokens": 433
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T7"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-10T18:19:51.403081",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 2.46,
+    "duration_ms": 2459.9,
+    "prompt_length_chars": 6339,
+    "response_length_chars": 345,
+    "tokens": {
+      "input_tokens": 1803,
+      "output_tokens": 105,
+      "total_tokens": 1997
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "Who are you?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-10T18:21:02.875078",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 16.73,
+    "duration_ms": 16730.3,
+    "prompt_length_chars": 6586,
+    "response_length_chars": 1686,
+    "tokens": {
+      "input_tokens": 1853,
+      "output_tokens": 608,
+      "total_tokens": 3445
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: Who are you?\nAssistant: I am a query planner designed to generate",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-10T18:21:12.195889",
+    "function_name": "generate_code",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 8.338,
+    "duration_ms": 8337.6,
+    "prompt_length_chars": 3550,
+    "response_length_chars": 520,
+    "tokens": {
+      "input_tokens": 1136,
+      "output_tokens": 206,
+      "total_tokens": 1611
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1",
+        "T5",
+        "T6",
+        "T7",
+        "T8",
+        "T9"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-10T18:21:17.314472",
+    "function_name": "interpret_and_execute_analysis",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 4.143,
+    "duration_ms": 4142.6,
+    "prompt_length_chars": 3843,
+    "response_length_chars": 355,
+    "tokens": {
+      "input_tokens": 1426,
+      "output_tokens": 109,
+      "total_tokens": 2025
+    },
+    "metadata": {
+      "result_rows": 9544
+    }
+  },
+  {
+    "timestamp": "2025-12-10T18:26:05.998939",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 6.065,
+    "duration_ms": 6065.1,
+    "prompt_length_chars": 7493,
+    "response_length_chars": 694,
+    "tokens": {
+      "input_tokens": 2044,
+      "output_tokens": 248,
+      "total_tokens": 3003
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: Who are you?\nAssistant: I am a query planner designed to generate",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-10T18:26:10.300815",
+    "function_name": "generate_code",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 3.913,
+    "duration_ms": 3913.5,
+    "prompt_length_chars": 2095,
+    "response_length_chars": 394,
+    "tokens": {
+      "input_tokens": 632,
+      "output_tokens": 161,
+      "total_tokens": 1239
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1",
+        "T6",
+        "T8"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-10T18:27:15.737713",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 8.211,
+    "duration_ms": 8210.8,
+    "prompt_length_chars": 7882,
+    "response_length_chars": 1232,
+    "tokens": {
+      "input_tokens": 2262,
+      "output_tokens": 373,
+      "total_tokens": 3518
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: Who are you?\nAssistant: I am a query planner designed to generate",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-10T18:27:35.093222",
+    "function_name": "generate_code",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 18.361,
+    "duration_ms": 18361.4,
+    "prompt_length_chars": 2679,
+    "response_length_chars": 1535,
+    "tokens": {
+      "input_tokens": 776,
+      "output_tokens": 494,
+      "total_tokens": 4341
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1",
+        "T8",
+        "T4"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-10T18:27:51.374499",
+    "function_name": "generate_code",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 16.248,
+    "duration_ms": 16248.3,
+    "prompt_length_chars": 5137,
+    "response_length_chars": 1568,
+    "tokens": {
+      "input_tokens": 1514,
+      "output_tokens": 504,
+      "total_tokens": 3703
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1",
+        "T8",
+        "T4"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-10T18:27:58.850313",
+    "function_name": "interpret_and_execute_analysis",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 6.829,
+    "duration_ms": 6828.8,
+    "prompt_length_chars": 3954,
+    "response_length_chars": 284,
+    "tokens": {
+      "input_tokens": 1421,
+      "output_tokens": 94,
+      "total_tokens": 2023
+    },
+    "metadata": {
+      "result_rows": 99440
+    }
+  },
+  {
+    "timestamp": "2025-12-10T18:41:36.457875",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 2.549,
+    "duration_ms": 2549.1,
+    "prompt_length_chars": 6339,
+    "response_length_chars": 345,
+    "tokens": {
+      "input_tokens": 1803,
+      "output_tokens": 105,
+      "total_tokens": 1997
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "Who are you?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-10T20:02:01.997369",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 3.201,
+    "duration_ms": 3200.9,
+    "prompt_length_chars": 6340,
+    "response_length_chars": 435,
+    "tokens": {
+      "input_tokens": 1804,
+      "output_tokens": 119,
+      "total_tokens": 2098
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "WHat are you?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-10T20:03:16.277724",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 9.436,
+    "duration_ms": 9435.7,
+    "prompt_length_chars": 6706,
+    "response_length_chars": 1020,
+    "tokens": {
+      "input_tokens": 1874,
+      "output_tokens": 342,
+      "total_tokens": 2798
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: WHat are you?\nAssistant: I am a query planner designed to generat",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-10T20:03:23.002281",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 6.714,
+    "duration_ms": 6713.6,
+    "prompt_length_chars": 6727,
+    "response_length_chars": 1206,
+    "tokens": {
+      "input_tokens": 1879,
+      "output_tokens": 364,
+      "total_tokens": 2994
+    },
+    "metadata": {
+      "iteration": 1,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: WHat are you?\nAssistant: I am a query planner designed to generat",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-10T20:03:29.863198",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 6.851,
+    "duration_ms": 6850.5,
+    "prompt_length_chars": 6748,
+    "response_length_chars": 710,
+    "tokens": {
+      "input_tokens": 1884,
+      "output_tokens": 226,
+      "total_tokens": 2751
+    },
+    "metadata": {
+      "iteration": 2,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: WHat are you?\nAssistant: I am a query planner designed to generat",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-10T21:34:10.603880",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 5.989,
+    "duration_ms": 5989.0,
+    "prompt_length_chars": 6427,
+    "response_length_chars": 605,
+    "tokens": {
+      "input_tokens": 1817,
+      "output_tokens": 206,
+      "total_tokens": 2463
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "DOes this data have any geographical bias like some users being concentrated in a particular region?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-10T21:34:33.386424",
+    "function_name": "generate_code",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 2.332,
+    "duration_ms": 2331.9,
+    "prompt_length_chars": 1846,
+    "response_length_chars": 269,
+    "tokens": {
+      "input_tokens": 542,
+      "output_tokens": 94,
+      "total_tokens": 752
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1",
+        "T7"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-10T22:43:38.965764",
+    "function_name": "planner_node",
+    "model_name": "gemini-2.5-flash",
+    "duration_seconds": 4.378,
+    "duration_ms": 4378.3,
+    "prompt_length_chars": 6427,
+    "response_length_chars": 605,
+    "tokens": {
+      "input_tokens": 1817,
+      "output_tokens": 206,
+      "total_tokens": 2463
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "DOes this data have any geographical bias like some users being concentrated in a particular region?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-10T23:12:30.861563",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.683,
+    "duration_ms": 6682.7,
+    "prompt_length_chars": 6394,
+    "response_length_chars": 709,
+    "tokens": {
+      "input_tokens": 1814,
+      "output_tokens": 0,
+      "total_tokens": 1814
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "Create RFM scores for each customer and identify the \u201cVIP\u201d segment.",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-10T23:13:06.134342",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.892,
+    "duration_ms": 4891.6,
+    "prompt_length_chars": 2000,
+    "response_length_chars": 408,
+    "tokens": {
+      "input_tokens": 580,
+      "output_tokens": 0,
+      "total_tokens": 580
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1",
+        "T8"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-10T23:13:38.304203",
+    "function_name": "interpret_and_execute_analysis",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.929,
+    "duration_ms": 1928.7,
+    "prompt_length_chars": 4658,
+    "response_length_chars": 142,
+    "tokens": {
+      "input_tokens": 1991,
+      "output_tokens": 0,
+      "total_tokens": 1991
+    },
+    "metadata": {
+      "result_rows": 99441
+    }
+  },
+  {
+    "timestamp": "2025-12-10T23:17:28.188410",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 10.257,
+    "duration_ms": 10256.8,
+    "prompt_length_chars": 6371,
+    "response_length_chars": 1342,
+    "tokens": {
+      "input_tokens": 1807,
+      "output_tokens": 0,
+      "total_tokens": 1807
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "Does this data show geographical based bias?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-10T23:18:03.210617",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.422,
+    "duration_ms": 4422.3,
+    "prompt_length_chars": 2943,
+    "response_length_chars": 456,
+    "tokens": {
+      "input_tokens": 900,
+      "output_tokens": 0,
+      "total_tokens": 900
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1",
+        "T2",
+        "T7",
+        "T8",
+        "T6"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-10T23:23:03.888338",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 7.464,
+    "duration_ms": 7464.3,
+    "prompt_length_chars": 7333,
+    "response_length_chars": 934,
+    "tokens": {
+      "input_tokens": 2130,
+      "output_tokens": 0,
+      "total_tokens": 2130
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: Does this data show geographical based bias?\nAssistant: geolocati",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-10T23:23:38.502036",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.601,
+    "duration_ms": 4600.8,
+    "prompt_length_chars": 7354,
+    "response_length_chars": 495,
+    "tokens": {
+      "input_tokens": 2135,
+      "output_tokens": 0,
+      "total_tokens": 2135
+    },
+    "metadata": {
+      "iteration": 1,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: Does this data show geographical based bias?\nAssistant: geolocati",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-10T23:24:11.376613",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.382,
+    "duration_ms": 2381.7,
+    "prompt_length_chars": 2165,
+    "response_length_chars": 130,
+    "tokens": {
+      "input_tokens": 653,
+      "output_tokens": 0,
+      "total_tokens": 653
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T8",
+        "T9",
+        "T6"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-10T23:24:43.634764",
+    "function_name": "interpret_and_execute_analysis",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.993,
+    "duration_ms": 1992.6,
+    "prompt_length_chars": 3295,
+    "response_length_chars": 142,
+    "tokens": {
+      "input_tokens": 1316,
+      "output_tokens": 0,
+      "total_tokens": 1316
+    },
+    "metadata": {
+      "result_rows": 112372
+    }
+  },
+  {
+    "timestamp": "2025-12-11T08:40:10.567268",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 8.306,
+    "duration_ms": 8305.6,
+    "prompt_length_chars": 6377,
+    "response_length_chars": 972,
+    "tokens": {
+      "input_tokens": 1809,
+      "output_tokens": 0,
+      "total_tokens": 1809
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "What is the average order value by customer state?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T08:40:47.126086",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.479,
+    "duration_ms": 6478.7,
+    "prompt_length_chars": 6398,
+    "response_length_chars": 731,
+    "tokens": {
+      "input_tokens": 1814,
+      "output_tokens": 0,
+      "total_tokens": 1814
+    },
+    "metadata": {
+      "iteration": 1,
+      "user_question": "What is the average order value by customer state?",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-11T08:41:21.328061",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.673,
+    "duration_ms": 3673.4,
+    "prompt_length_chars": 2489,
+    "response_length_chars": 251,
+    "tokens": {
+      "input_tokens": 768,
+      "output_tokens": 0,
+      "total_tokens": 768
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T8",
+        "T6",
+        "T1",
+        "T7"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T08:43:43.415372",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 8.248,
+    "duration_ms": 8247.5,
+    "prompt_length_chars": 6377,
+    "response_length_chars": 955,
+    "tokens": {
+      "input_tokens": 1809,
+      "output_tokens": 0,
+      "total_tokens": 1809
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "What is the average order value by customer state?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T08:44:19.915165",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.427,
+    "duration_ms": 6426.8,
+    "prompt_length_chars": 6398,
+    "response_length_chars": 731,
+    "tokens": {
+      "input_tokens": 1814,
+      "output_tokens": 0,
+      "total_tokens": 1814
+    },
+    "metadata": {
+      "iteration": 1,
+      "user_question": "What is the average order value by customer state?",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-11T08:44:59.854294",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 9.697,
+    "duration_ms": 9697.2,
+    "prompt_length_chars": 2284,
+    "response_length_chars": 213,
+    "tokens": {
+      "input_tokens": 693,
+      "output_tokens": 0,
+      "total_tokens": 693
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1",
+        "T8",
+        "T6"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T08:45:33.335731",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.457,
+    "duration_ms": 3457.2,
+    "prompt_length_chars": 3155,
+    "response_length_chars": 210,
+    "tokens": {
+      "input_tokens": 957,
+      "output_tokens": 0,
+      "total_tokens": 957
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1",
+        "T8",
+        "T6"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T08:47:53.124229",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 9.284,
+    "duration_ms": 9284.4,
+    "prompt_length_chars": 6387,
+    "response_length_chars": 748,
+    "tokens": {
+      "input_tokens": 1810,
+      "output_tokens": 0,
+      "total_tokens": 1810
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "What is the average delivery time from purchase to delivery?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T08:48:29.170046",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.039,
+    "duration_ms": 6039.1,
+    "prompt_length_chars": 6408,
+    "response_length_chars": 648,
+    "tokens": {
+      "input_tokens": 1815,
+      "output_tokens": 0,
+      "total_tokens": 1815
+    },
+    "metadata": {
+      "iteration": 1,
+      "user_question": "What is the average delivery time from purchase to delivery?",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-11T08:49:05.932312",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.75,
+    "duration_ms": 6750.1,
+    "prompt_length_chars": 6429,
+    "response_length_chars": 648,
+    "tokens": {
+      "input_tokens": 1820,
+      "output_tokens": 0,
+      "total_tokens": 1820
+    },
+    "metadata": {
+      "iteration": 2,
+      "user_question": "What is the average delivery time from purchase to delivery?",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-11T08:49:37.882459",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.72,
+    "duration_ms": 1719.9,
+    "prompt_length_chars": 1876,
+    "response_length_chars": 85,
+    "tokens": {
+      "input_tokens": 561,
+      "output_tokens": 0,
+      "total_tokens": 561
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T8",
+        "T6"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T08:50:10.035935",
+    "function_name": "interpret_and_execute_analysis",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.057,
+    "duration_ms": 2056.8,
+    "prompt_length_chars": 3295,
+    "response_length_chars": 136,
+    "tokens": {
+      "input_tokens": 1318,
+      "output_tokens": 0,
+      "total_tokens": 1318
+    },
+    "metadata": {
+      "result_rows": 112650
+    }
+  },
+  {
+    "timestamp": "2025-12-11T09:05:10.292028",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 12.779,
+    "duration_ms": 12779.4,
+    "prompt_length_chars": 6387,
+    "response_length_chars": 648,
+    "tokens": {
+      "input_tokens": 1810,
+      "output_tokens": 0,
+      "total_tokens": 1810
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "What is the average delivery time from purchase to delivery?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T09:05:46.249225",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 5.911,
+    "duration_ms": 5911.2,
+    "prompt_length_chars": 6408,
+    "response_length_chars": 648,
+    "tokens": {
+      "input_tokens": 1815,
+      "output_tokens": 0,
+      "total_tokens": 1815
+    },
+    "metadata": {
+      "iteration": 1,
+      "user_question": "What is the average delivery time from purchase to delivery?",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-11T09:06:21.987783",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 5.732,
+    "duration_ms": 5732.1,
+    "prompt_length_chars": 6429,
+    "response_length_chars": 648,
+    "tokens": {
+      "input_tokens": 1820,
+      "output_tokens": 0,
+      "total_tokens": 1820
+    },
+    "metadata": {
+      "iteration": 2,
+      "user_question": "What is the average delivery time from purchase to delivery?",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-11T09:07:04.585454",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 12.363,
+    "duration_ms": 12362.8,
+    "prompt_length_chars": 2020,
+    "response_length_chars": 215,
+    "tokens": {
+      "input_tokens": 582,
+      "output_tokens": 0,
+      "total_tokens": 582
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T8",
+        "T6"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T09:07:37.455140",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.85,
+    "duration_ms": 2849.7,
+    "prompt_length_chars": 3134,
+    "response_length_chars": 221,
+    "tokens": {
+      "input_tokens": 873,
+      "output_tokens": 0,
+      "total_tokens": 873
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T8",
+        "T6"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T09:11:10.138547",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 9.11,
+    "duration_ms": 9110.3,
+    "prompt_length_chars": 6361,
+    "response_length_chars": 716,
+    "tokens": {
+      "input_tokens": 1806,
+      "output_tokens": 0,
+      "total_tokens": 1806
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "What is the average delivery time?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T09:11:46.192010",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.04,
+    "duration_ms": 6039.9,
+    "prompt_length_chars": 6382,
+    "response_length_chars": 674,
+    "tokens": {
+      "input_tokens": 1811,
+      "output_tokens": 0,
+      "total_tokens": 1811
+    },
+    "metadata": {
+      "iteration": 1,
+      "user_question": "What is the average delivery time?",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-11T09:12:21.409178",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 5.197,
+    "duration_ms": 5196.8,
+    "prompt_length_chars": 6403,
+    "response_length_chars": 570,
+    "tokens": {
+      "input_tokens": 1816,
+      "output_tokens": 0,
+      "total_tokens": 1816
+    },
+    "metadata": {
+      "iteration": 2,
+      "user_question": "What is the average delivery time?",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-11T09:12:54.997126",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.368,
+    "duration_ms": 3367.6,
+    "prompt_length_chars": 2059,
+    "response_length_chars": 190,
+    "tokens": {
+      "input_tokens": 596,
+      "output_tokens": 0,
+      "total_tokens": 596
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T8",
+        "T6"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T09:13:27.975612",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.95,
+    "duration_ms": 2950.0,
+    "prompt_length_chars": 4154,
+    "response_length_chars": 245,
+    "tokens": {
+      "input_tokens": 1282,
+      "output_tokens": 0,
+      "total_tokens": 1282
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T8",
+        "T6"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T09:14:01.046119",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.041,
+    "duration_ms": 3040.6,
+    "prompt_length_chars": 3243,
+    "response_length_chars": 234,
+    "tokens": {
+      "input_tokens": 926,
+      "output_tokens": 0,
+      "total_tokens": 926
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T8",
+        "T6"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T09:14:35.656578",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.589,
+    "duration_ms": 4588.7,
+    "prompt_length_chars": 3341,
+    "response_length_chars": 245,
+    "tokens": {
+      "input_tokens": 945,
+      "output_tokens": 0,
+      "total_tokens": 945
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T8",
+        "T6"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T09:15:10.985219",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 5.309,
+    "duration_ms": 5308.7,
+    "prompt_length_chars": 3439,
+    "response_length_chars": 245,
+    "tokens": {
+      "input_tokens": 964,
+      "output_tokens": 0,
+      "total_tokens": 964
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T8",
+        "T6"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T09:46:33.106593",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 7.841,
+    "duration_ms": 7840.7,
+    "prompt_length_chars": 6697,
+    "response_length_chars": 1072,
+    "tokens": {
+      "input_tokens": 1874,
+      "output_tokens": 0,
+      "total_tokens": 1874
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "What is the average delivery time?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T09:47:08.642071",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 5.48,
+    "duration_ms": 5479.9,
+    "prompt_length_chars": 6718,
+    "response_length_chars": 639,
+    "tokens": {
+      "input_tokens": 1879,
+      "output_tokens": 0,
+      "total_tokens": 1879
+    },
+    "metadata": {
+      "iteration": 1,
+      "user_question": "What is the average delivery time?",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-11T09:47:44.382921",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 5.734,
+    "duration_ms": 5734.1,
+    "prompt_length_chars": 6739,
+    "response_length_chars": 651,
+    "tokens": {
+      "input_tokens": 1884,
+      "output_tokens": 0,
+      "total_tokens": 1884
+    },
+    "metadata": {
+      "iteration": 2,
+      "user_question": "What is the average delivery time?",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-11T09:50:27.721803",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.486,
+    "duration_ms": 6485.8,
+    "prompt_length_chars": 6927,
+    "response_length_chars": 802,
+    "tokens": {
+      "input_tokens": 1920,
+      "output_tokens": 0,
+      "total_tokens": 1920
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "What is the average delivery time? What is the definition of 'delivery time' in this context? Is it ",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T09:51:03.871016",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.136,
+    "duration_ms": 6135.7,
+    "prompt_length_chars": 6948,
+    "response_length_chars": 636,
+    "tokens": {
+      "input_tokens": 1925,
+      "output_tokens": 0,
+      "total_tokens": 1925
+    },
+    "metadata": {
+      "iteration": 1,
+      "user_question": "What is the average delivery time? What is the definition of 'delivery time' in this context? Is it ",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-11T09:51:39.405772",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 5.521,
+    "duration_ms": 5521.1,
+    "prompt_length_chars": 6969,
+    "response_length_chars": 636,
+    "tokens": {
+      "input_tokens": 1930,
+      "output_tokens": 0,
+      "total_tokens": 1930
+    },
+    "metadata": {
+      "iteration": 2,
+      "user_question": "What is the average delivery time? What is the definition of 'delivery time' in this context? Is it ",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-11T09:52:11.557057",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.87,
+    "duration_ms": 1869.7,
+    "prompt_length_chars": 2084,
+    "response_length_chars": 140,
+    "tokens": {
+      "input_tokens": 601,
+      "output_tokens": 0,
+      "total_tokens": 601
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T8",
+        "T6"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T09:52:43.782687",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.214,
+    "duration_ms": 2213.9,
+    "prompt_length_chars": 4185,
+    "response_length_chars": 178,
+    "tokens": {
+      "input_tokens": 1264,
+      "output_tokens": 0,
+      "total_tokens": 1264
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T8",
+        "T6"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T09:57:10.069034",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 8.523,
+    "duration_ms": 8523.1,
+    "prompt_length_chars": 7321,
+    "response_length_chars": 1124,
+    "tokens": {
+      "input_tokens": 2049,
+      "output_tokens": 0,
+      "total_tokens": 2049
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: What is the average delivery time? (clarified: It is the time bet",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T09:57:48.367693",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 8.291,
+    "duration_ms": 8291.1,
+    "prompt_length_chars": 7342,
+    "response_length_chars": 1082,
+    "tokens": {
+      "input_tokens": 2054,
+      "output_tokens": 0,
+      "total_tokens": 2054
+    },
+    "metadata": {
+      "iteration": 1,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: What is the average delivery time? (clarified: It is the time bet",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-11T09:58:25.539070",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 7.157,
+    "duration_ms": 7156.6,
+    "prompt_length_chars": 7363,
+    "response_length_chars": 898,
+    "tokens": {
+      "input_tokens": 2059,
+      "output_tokens": 0,
+      "total_tokens": 2059
+    },
+    "metadata": {
+      "iteration": 2,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: What is the average delivery time? (clarified: It is the time bet",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-11T09:58:59.434585",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.655,
+    "duration_ms": 3654.9,
+    "prompt_length_chars": 2509,
+    "response_length_chars": 358,
+    "tokens": {
+      "input_tokens": 736,
+      "output_tokens": 0,
+      "total_tokens": 736
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T8",
+        "T6",
+        "T5"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T09:59:33.024186",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.58,
+    "duration_ms": 3579.6,
+    "prompt_length_chars": 4853,
+    "response_length_chars": 276,
+    "tokens": {
+      "input_tokens": 1500,
+      "output_tokens": 0,
+      "total_tokens": 1500
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T8",
+        "T6",
+        "T5"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T10:00:06.510553",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.467,
+    "duration_ms": 3467.4,
+    "prompt_length_chars": 3424,
+    "response_length_chars": 265,
+    "tokens": {
+      "input_tokens": 1020,
+      "output_tokens": 0,
+      "total_tokens": 1020
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T8",
+        "T6",
+        "T5"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T10:00:39.893496",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.372,
+    "duration_ms": 3372.0,
+    "prompt_length_chars": 3522,
+    "response_length_chars": 265,
+    "tokens": {
+      "input_tokens": 1039,
+      "output_tokens": 0,
+      "total_tokens": 1039
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T8",
+        "T6",
+        "T5"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T10:01:13.276278",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.374,
+    "duration_ms": 3374.1,
+    "prompt_length_chars": 3620,
+    "response_length_chars": 276,
+    "tokens": {
+      "input_tokens": 1058,
+      "output_tokens": 0,
+      "total_tokens": 1058
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T8",
+        "T6",
+        "T5"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:04:04.615529",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.185,
+    "duration_ms": 3185.0,
+    "prompt_length_chars": 2868,
+    "response_length_chars": 379,
+    "tokens": {
+      "input_tokens": 780,
+      "output_tokens": 0,
+      "total_tokens": 780
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "WHat is this data about",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:05:21.417931",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.598,
+    "duration_ms": 4598.1,
+    "prompt_length_chars": 3130,
+    "response_length_chars": 824,
+    "tokens": {
+      "input_tokens": 831,
+      "output_tokens": 0,
+      "total_tokens": 831
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: WHat is this data about\nAssistant: This data represents order inf",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:06:44.886737",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 5.118,
+    "duration_ms": 5118.3,
+    "prompt_length_chars": 3524,
+    "response_length_chars": 811,
+    "tokens": {
+      "input_tokens": 910,
+      "output_tokens": 0,
+      "total_tokens": 910
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: WHat is this data about\nAssistant: This data represents order inf",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:07:17.027942",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.03,
+    "duration_ms": 2029.5,
+    "prompt_length_chars": 2048,
+    "response_length_chars": 178,
+    "tokens": {
+      "input_tokens": 516,
+      "output_tokens": 0,
+      "total_tokens": 516
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:07:49.081409",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.029,
+    "duration_ms": 2029.4,
+    "prompt_length_chars": 2874,
+    "response_length_chars": 189,
+    "tokens": {
+      "input_tokens": 717,
+      "output_tokens": 0,
+      "total_tokens": 717
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:08:21.540852",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.428,
+    "duration_ms": 2428.3,
+    "prompt_length_chars": 2972,
+    "response_length_chars": 189,
+    "tokens": {
+      "input_tokens": 736,
+      "output_tokens": 0,
+      "total_tokens": 736
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:08:53.491219",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.942,
+    "duration_ms": 1941.6,
+    "prompt_length_chars": 2874,
+    "response_length_chars": 178,
+    "tokens": {
+      "input_tokens": 722,
+      "output_tokens": 0,
+      "total_tokens": 722
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:09:25.542800",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.032,
+    "duration_ms": 2032.0,
+    "prompt_length_chars": 2972,
+    "response_length_chars": 189,
+    "tokens": {
+      "input_tokens": 741,
+      "output_tokens": 0,
+      "total_tokens": 741
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:18:23.661656",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.213,
+    "duration_ms": 4212.8,
+    "prompt_length_chars": 2906,
+    "response_length_chars": 683,
+    "tokens": {
+      "input_tokens": 788,
+      "output_tokens": 0,
+      "total_tokens": 788
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "what is this data about and what analysis can i run on this?\n",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:19:24.180762",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.099,
+    "duration_ms": 3099.1,
+    "prompt_length_chars": 3331,
+    "response_length_chars": 268,
+    "tokens": {
+      "input_tokens": 868,
+      "output_tokens": 0,
+      "total_tokens": 868
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: what is this data about and what analysis can i run on this?\n\nAss",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:19:55.728576",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.277,
+    "duration_ms": 1276.8,
+    "prompt_length_chars": 1725,
+    "response_length_chars": 51,
+    "tokens": {
+      "input_tokens": 471,
+      "output_tokens": 0,
+      "total_tokens": 471
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:21:17.028951",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.233,
+    "duration_ms": 3233.2,
+    "prompt_length_chars": 4099,
+    "response_length_chars": 268,
+    "tokens": {
+      "input_tokens": 1450,
+      "output_tokens": 0,
+      "total_tokens": 1450
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: what is this data about and what analysis can i run on this?\n\nAss",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:21:49.284461",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.992,
+    "duration_ms": 1992.2,
+    "prompt_length_chars": 1725,
+    "response_length_chars": 51,
+    "tokens": {
+      "input_tokens": 471,
+      "output_tokens": 0,
+      "total_tokens": 471
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:31:58.071257",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.833,
+    "duration_ms": 4832.8,
+    "prompt_length_chars": 1604,
+    "response_length_chars": 446,
+    "tokens": {
+      "input_tokens": 465,
+      "output_tokens": 0,
+      "total_tokens": 465
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "Which is the topmost selling product and what is its name?\n",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:32:32.169602",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.083,
+    "duration_ms": 4082.7,
+    "prompt_length_chars": 1625,
+    "response_length_chars": 414,
+    "tokens": {
+      "input_tokens": 470,
+      "output_tokens": 0,
+      "total_tokens": 470
+    },
+    "metadata": {
+      "iteration": 1,
+      "user_question": "Which is the topmost selling product and what is its name?\n",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:33:05.553883",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.379,
+    "duration_ms": 3378.9,
+    "prompt_length_chars": 1646,
+    "response_length_chars": 314,
+    "tokens": {
+      "input_tokens": 475,
+      "output_tokens": 0,
+      "total_tokens": 475
+    },
+    "metadata": {
+      "iteration": 2,
+      "user_question": "Which is the topmost selling product and what is its name?\n",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:33:37.955776",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.096,
+    "duration_ms": 2095.6,
+    "prompt_length_chars": 1818,
+    "response_length_chars": 111,
+    "tokens": {
+      "input_tokens": 503,
+      "output_tokens": 0,
+      "total_tokens": 503
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:36:47.461561",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.629,
+    "duration_ms": 3629.4,
+    "prompt_length_chars": 2163,
+    "response_length_chars": 293,
+    "tokens": {
+      "input_tokens": 620,
+      "output_tokens": 0,
+      "total_tokens": 620
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: Which is the topmost selling product and what is its name?\n\nAssis",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:37:18.900152",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.226,
+    "duration_ms": 1226.3,
+    "prompt_length_chars": 1726,
+    "response_length_chars": 52,
+    "tokens": {
+      "input_tokens": 471,
+      "output_tokens": 0,
+      "total_tokens": 471
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:37:50.542032",
+    "function_name": "interpret_and_execute_analysis",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.605,
+    "duration_ms": 1605.5,
+    "prompt_length_chars": 3008,
+    "response_length_chars": 111,
+    "tokens": {
+      "input_tokens": 962,
+      "output_tokens": 0,
+      "total_tokens": 962
+    },
+    "metadata": {
+      "result_rows": 43233
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:40:38.073015",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.216,
+    "duration_ms": 6215.7,
+    "prompt_length_chars": 1788,
+    "response_length_chars": 736,
+    "tokens": {
+      "input_tokens": 510,
+      "output_tokens": 0,
+      "total_tokens": 510
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "Does this data have any type of bias in it that i should focus on?\n\n",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:41:11.865393",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.773,
+    "duration_ms": 3773.0,
+    "prompt_length_chars": 1809,
+    "response_length_chars": 500,
+    "tokens": {
+      "input_tokens": 515,
+      "output_tokens": 0,
+      "total_tokens": 515
+    },
+    "metadata": {
+      "iteration": 1,
+      "user_question": "Does this data have any type of bias in it that i should focus on?\n\n",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:42:13.306714",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 5.701,
+    "duration_ms": 5700.8,
+    "prompt_length_chars": 1946,
+    "response_length_chars": 720,
+    "tokens": {
+      "input_tokens": 544,
+      "output_tokens": 0,
+      "total_tokens": 544
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "Does this data have any type of bias in it that i should focus on?\n\n Could you please specify what k",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:42:48.328352",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 5.004,
+    "duration_ms": 5004.0,
+    "prompt_length_chars": 1967,
+    "response_length_chars": 686,
+    "tokens": {
+      "input_tokens": 549,
+      "output_tokens": 0,
+      "total_tokens": 549
+    },
+    "metadata": {
+      "iteration": 1,
+      "user_question": "Does this data have any type of bias in it that i should focus on?\n\n Could you please specify what k",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:43:23.454026",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 5.109,
+    "duration_ms": 5108.9,
+    "prompt_length_chars": 1988,
+    "response_length_chars": 697,
+    "tokens": {
+      "input_tokens": 554,
+      "output_tokens": 0,
+      "total_tokens": 554
+    },
+    "metadata": {
+      "iteration": 2,
+      "user_question": "Does this data have any type of bias in it that i should focus on?\n\n Could you please specify what k",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:45:17.426560",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.918,
+    "duration_ms": 4918.3,
+    "prompt_length_chars": 2078,
+    "response_length_chars": 441,
+    "tokens": {
+      "input_tokens": 570,
+      "output_tokens": 0,
+      "total_tokens": 570
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "Does this data have any type of bias in it that i should focus on?\n\n Could you please specify what k",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:45:48.967159",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.252,
+    "duration_ms": 1252.4,
+    "prompt_length_chars": 2022,
+    "response_length_chars": 9,
+    "tokens": {
+      "input_tokens": 572,
+      "output_tokens": 0,
+      "total_tokens": 572
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:46:20.097358",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.121,
+    "duration_ms": 1120.7,
+    "prompt_length_chars": 2533,
+    "response_length_chars": 9,
+    "tokens": {
+      "input_tokens": 704,
+      "output_tokens": 0,
+      "total_tokens": 704
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:46:51.739529",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.612,
+    "duration_ms": 1611.9,
+    "prompt_length_chars": 2631,
+    "response_length_chars": 9,
+    "tokens": {
+      "input_tokens": 723,
+      "output_tokens": 0,
+      "total_tokens": 723
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:47:25.020133",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.273,
+    "duration_ms": 3272.8,
+    "prompt_length_chars": 2729,
+    "response_length_chars": 283,
+    "tokens": {
+      "input_tokens": 742,
+      "output_tokens": 0,
+      "total_tokens": 742
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:47:57.788765",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.757,
+    "duration_ms": 2757.1,
+    "prompt_length_chars": 2921,
+    "response_length_chars": 230,
+    "tokens": {
+      "input_tokens": 835,
+      "output_tokens": 0,
+      "total_tokens": 835
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:49:49.406198",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.289,
+    "duration_ms": 3288.7,
+    "prompt_length_chars": 2619,
+    "response_length_chars": 310,
+    "tokens": {
+      "input_tokens": 711,
+      "output_tokens": 0,
+      "total_tokens": 711
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: Does this data have any type of bias in it that i should focus on",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:50:22.073919",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.404,
+    "duration_ms": 2404.3,
+    "prompt_length_chars": 1779,
+    "response_length_chars": 134,
+    "tokens": {
+      "input_tokens": 492,
+      "output_tokens": 0,
+      "total_tokens": 492
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:50:54.637668",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.538,
+    "duration_ms": 2538.1,
+    "prompt_length_chars": 2868,
+    "response_length_chars": 150,
+    "tokens": {
+      "input_tokens": 805,
+      "output_tokens": 0,
+      "total_tokens": 805
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:51:26.689002",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.013,
+    "duration_ms": 2012.7,
+    "prompt_length_chars": 2537,
+    "response_length_chars": 134,
+    "tokens": {
+      "input_tokens": 702,
+      "output_tokens": 0,
+      "total_tokens": 702
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:51:59.029173",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.315,
+    "duration_ms": 2315.1,
+    "prompt_length_chars": 2635,
+    "response_length_chars": 145,
+    "tokens": {
+      "input_tokens": 721,
+      "output_tokens": 0,
+      "total_tokens": 721
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T11:52:31.125150",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.074,
+    "duration_ms": 2073.7,
+    "prompt_length_chars": 2733,
+    "response_length_chars": 145,
+    "tokens": {
+      "input_tokens": 740,
+      "output_tokens": 0,
+      "total_tokens": 740
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T12:41:00.052295",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.31,
+    "duration_ms": 3310.3,
+    "prompt_length_chars": 1776,
+    "response_length_chars": 269,
+    "tokens": {
+      "input_tokens": 503,
+      "output_tokens": 0,
+      "total_tokens": 503
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "Can you segment customers based on their order behaviour",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T12:41:32.914448",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.87,
+    "duration_ms": 1870.0,
+    "prompt_length_chars": 4479,
+    "response_length_chars": 84,
+    "tokens": {
+      "input_tokens": 1486,
+      "output_tokens": 0,
+      "total_tokens": 1486
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T12:45:26.783286",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 10.373,
+    "duration_ms": 10372.7,
+    "prompt_length_chars": 2770,
+    "response_length_chars": 278,
+    "tokens": {
+      "input_tokens": 894,
+      "output_tokens": 0,
+      "total_tokens": 894
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: Can you segment customers based on their order behaviour\nAssistan",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T12:45:59.142681",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.041,
+    "duration_ms": 2041.1,
+    "prompt_length_chars": 4492,
+    "response_length_chars": 132,
+    "tokens": {
+      "input_tokens": 1491,
+      "output_tokens": 0,
+      "total_tokens": 1491
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T12:47:33.044524",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.074,
+    "duration_ms": 6074.4,
+    "prompt_length_chars": 3146,
+    "response_length_chars": 774,
+    "tokens": {
+      "input_tokens": 1111,
+      "output_tokens": 0,
+      "total_tokens": 1111
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: Can you segment customers based on their order behaviour\nAssistan",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T12:48:05.145912",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.766,
+    "duration_ms": 1765.5,
+    "prompt_length_chars": 4968,
+    "response_length_chars": 71,
+    "tokens": {
+      "input_tokens": 1574,
+      "output_tokens": 0,
+      "total_tokens": 1574
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T12:50:06.861570",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.391,
+    "duration_ms": 3391.1,
+    "prompt_length_chars": 3073,
+    "response_length_chars": 269,
+    "tokens": {
+      "input_tokens": 942,
+      "output_tokens": 0,
+      "total_tokens": 942
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: Can you segment customers based on their order behaviour\nAssistan",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T12:50:39.826395",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.643,
+    "duration_ms": 2643.3,
+    "prompt_length_chars": 4479,
+    "response_length_chars": 77,
+    "tokens": {
+      "input_tokens": 1486,
+      "output_tokens": 0,
+      "total_tokens": 1486
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T12:52:45.557528",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.279,
+    "duration_ms": 3279.4,
+    "prompt_length_chars": 3531,
+    "response_length_chars": 294,
+    "tokens": {
+      "input_tokens": 1152,
+      "output_tokens": 0,
+      "total_tokens": 1152
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: Can you show me the name of the consumer that placed the highest ",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T12:53:18.651802",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.01,
+    "duration_ms": 2010.2,
+    "prompt_length_chars": 4512,
+    "response_length_chars": 108,
+    "tokens": {
+      "input_tokens": 1498,
+      "output_tokens": 0,
+      "total_tokens": 1498
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T12:54:37.603164",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 5.086,
+    "duration_ms": 5086.0,
+    "prompt_length_chars": 3526,
+    "response_length_chars": 558,
+    "tokens": {
+      "input_tokens": 1274,
+      "output_tokens": 0,
+      "total_tokens": 1274
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: What type of advanced analysis can i run on this data?\nAssistant:",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T12:55:12.248092",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.613,
+    "duration_ms": 4612.5,
+    "prompt_length_chars": 3547,
+    "response_length_chars": 481,
+    "tokens": {
+      "input_tokens": 1279,
+      "output_tokens": 0,
+      "total_tokens": 1279
+    },
+    "metadata": {
+      "iteration": 1,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: What type of advanced analysis can i run on this data?\nAssistant:",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-11T12:55:46.826230",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.555,
+    "duration_ms": 4554.9,
+    "prompt_length_chars": 3568,
+    "response_length_chars": 481,
+    "tokens": {
+      "input_tokens": 1284,
+      "output_tokens": 0,
+      "total_tokens": 1284
+    },
+    "metadata": {
+      "iteration": 2,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: What type of advanced analysis can i run on this data?\nAssistant:",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-11T12:56:19.374936",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.229,
+    "duration_ms": 2228.7,
+    "prompt_length_chars": 4548,
+    "response_length_chars": 159,
+    "tokens": {
+      "input_tokens": 1507,
+      "output_tokens": 0,
+      "total_tokens": 1507
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T12:57:54.623737",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.17,
+    "duration_ms": 4169.8,
+    "prompt_length_chars": 3515,
+    "response_length_chars": 440,
+    "tokens": {
+      "input_tokens": 1407,
+      "output_tokens": 0,
+      "total_tokens": 1407
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: Okay which group of customers should i target my advertising on?\n",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T12:58:27.597822",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.506,
+    "duration_ms": 2505.6,
+    "prompt_length_chars": 4626,
+    "response_length_chars": 111,
+    "tokens": {
+      "input_tokens": 1522,
+      "output_tokens": 0,
+      "total_tokens": 1522
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T12:59:50.235277",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 5.843,
+    "duration_ms": 5843.5,
+    "prompt_length_chars": 3506,
+    "response_length_chars": 658,
+    "tokens": {
+      "input_tokens": 1593,
+      "output_tokens": 0,
+      "total_tokens": 1593
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: Which customers bought the same product multiple times?\nAssistant",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T13:00:25.563880",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 5.296,
+    "duration_ms": 5296.5,
+    "prompt_length_chars": 3527,
+    "response_length_chars": 621,
+    "tokens": {
+      "input_tokens": 1598,
+      "output_tokens": 0,
+      "total_tokens": 1598
+    },
+    "metadata": {
+      "iteration": 1,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: Which customers bought the same product multiple times?\nAssistant",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-11T13:01:00.075335",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.49,
+    "duration_ms": 4490.5,
+    "prompt_length_chars": 3548,
+    "response_length_chars": 432,
+    "tokens": {
+      "input_tokens": 1603,
+      "output_tokens": 0,
+      "total_tokens": 1603
+    },
+    "metadata": {
+      "iteration": 2,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: Which customers bought the same product multiple times?\nAssistant",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-11T13:02:25.989887",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.31,
+    "duration_ms": 4310.0,
+    "prompt_length_chars": 3664,
+    "response_length_chars": 452,
+    "tokens": {
+      "input_tokens": 1631,
+      "output_tokens": 0,
+      "total_tokens": 1631
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: Which customers bought the same product multiple times?\nAssistant",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T13:04:33.683166",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.784,
+    "duration_ms": 3784.5,
+    "prompt_length_chars": 3793,
+    "response_length_chars": 322,
+    "tokens": {
+      "input_tokens": 1653,
+      "output_tokens": 0,
+      "total_tokens": 1653
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: Which customers bought the same product multiple times?\nAssistant",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T13:05:07.477356",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.534,
+    "duration_ms": 3534.2,
+    "prompt_length_chars": 4661,
+    "response_length_chars": 255,
+    "tokens": {
+      "input_tokens": 1555,
+      "output_tokens": 0,
+      "total_tokens": 1555
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T13:05:40.553958",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.029,
+    "duration_ms": 3028.6,
+    "prompt_length_chars": 5515,
+    "response_length_chars": 262,
+    "tokens": {
+      "input_tokens": 1801,
+      "output_tokens": 0,
+      "total_tokens": 1801
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T13:10:43.909056",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.019,
+    "duration_ms": 4018.5,
+    "prompt_length_chars": 2304,
+    "response_length_chars": 353,
+    "tokens": {
+      "input_tokens": 646,
+      "output_tokens": 0,
+      "total_tokens": 646
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "Which city do you think is the most valuable for us?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T13:11:16.492488",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.16,
+    "duration_ms": 2159.9,
+    "prompt_length_chars": 4555,
+    "response_length_chars": 114,
+    "tokens": {
+      "input_tokens": 1513,
+      "output_tokens": 0,
+      "total_tokens": 1513
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T13:12:32.272207",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.456,
+    "duration_ms": 3455.7,
+    "prompt_length_chars": 2830,
+    "response_length_chars": 309,
+    "tokens": {
+      "input_tokens": 778,
+      "output_tokens": 0,
+      "total_tokens": 778
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: Which city do you think is the most valuable for us?\nAssistant:  ",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T13:13:04.740620",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.955,
+    "duration_ms": 1955.4,
+    "prompt_length_chars": 4511,
+    "response_length_chars": 82,
+    "tokens": {
+      "input_tokens": 1494,
+      "output_tokens": 0,
+      "total_tokens": 1494
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T13:15:17.673226",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 10.365,
+    "duration_ms": 10364.9,
+    "prompt_length_chars": 3435,
+    "response_length_chars": 791,
+    "tokens": {
+      "input_tokens": 966,
+      "output_tokens": 0,
+      "total_tokens": 966
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: Which city do you think is the most valuable for us?\nAssistant:  ",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T13:16:39.102048",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.474,
+    "duration_ms": 3474.4,
+    "prompt_length_chars": 3695,
+    "response_length_chars": 326,
+    "tokens": {
+      "input_tokens": 1022,
+      "output_tokens": 0,
+      "total_tokens": 1022
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: Which city do you think is the most valuable for us?\nAssistant:  ",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T13:17:12.290322",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.855,
+    "duration_ms": 2855.0,
+    "prompt_length_chars": 4610,
+    "response_length_chars": 213,
+    "tokens": {
+      "input_tokens": 1522,
+      "output_tokens": 0,
+      "total_tokens": 1522
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T13:19:04.497229",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.137,
+    "duration_ms": 4136.8,
+    "prompt_length_chars": 4116,
+    "response_length_chars": 404,
+    "tokens": {
+      "input_tokens": 1262,
+      "output_tokens": 0,
+      "total_tokens": 1262
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: Which city do you think is the most valuable for us?\nAssistant:  ",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T13:19:36.750460",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.854,
+    "duration_ms": 1853.7,
+    "prompt_length_chars": 4606,
+    "response_length_chars": 115,
+    "tokens": {
+      "input_tokens": 1520,
+      "output_tokens": 0,
+      "total_tokens": 1520
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T13:24:03.052966",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.78,
+    "duration_ms": 3779.6,
+    "prompt_length_chars": 4148,
+    "response_length_chars": 369,
+    "tokens": {
+      "input_tokens": 1189,
+      "output_tokens": 0,
+      "total_tokens": 1189
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: Is there any correlation between product category and shippingcos",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T13:24:35.818364",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.381,
+    "duration_ms": 2381.2,
+    "prompt_length_chars": 4563,
+    "response_length_chars": 129,
+    "tokens": {
+      "input_tokens": 1521,
+      "output_tokens": 0,
+      "total_tokens": 1521
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-11T13:26:12.686182",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.688,
+    "duration_ms": 3688.0,
+    "prompt_length_chars": 4175,
+    "response_length_chars": 358,
+    "tokens": {
+      "input_tokens": 1179,
+      "output_tokens": 0,
+      "total_tokens": 1179
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser:  (clarified: Okay do not consider recency only consider frequency",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-11T13:26:45.046324",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.027,
+    "duration_ms": 2027.2,
+    "prompt_length_chars": 4560,
+    "response_length_chars": 128,
+    "tokens": {
+      "input_tokens": 1518,
+      "output_tokens": 0,
+      "total_tokens": 1518
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-12T20:37:39.308173",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.779,
+    "duration_ms": 3779.2,
+    "prompt_length_chars": 2125,
+    "response_length_chars": 416,
+    "tokens": {
+      "input_tokens": 605,
+      "output_tokens": 0,
+      "total_tokens": 605
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "hello",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-12T20:38:44.230671",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.176,
+    "duration_ms": 3176.4,
+    "prompt_length_chars": 2365,
+    "response_length_chars": 294,
+    "tokens": {
+      "input_tokens": 654,
+      "output_tokens": 0,
+      "total_tokens": 654
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "hello Could you please specify what information you are looking for? For example, are you interested",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-12T20:39:16.507621",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.119,
+    "duration_ms": 2119.0,
+    "prompt_length_chars": 3418,
+    "response_length_chars": 65,
+    "tokens": {
+      "input_tokens": 1045,
+      "output_tokens": 0,
+      "total_tokens": 1045
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-12T20:39:48.744074",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.193,
+    "duration_ms": 2193.1,
+    "prompt_length_chars": 4058,
+    "response_length_chars": 65,
+    "tokens": {
+      "input_tokens": 1218,
+      "output_tokens": 0,
+      "total_tokens": 1218
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-12T20:40:20.896846",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.122,
+    "duration_ms": 2121.7,
+    "prompt_length_chars": 4156,
+    "response_length_chars": 52,
+    "tokens": {
+      "input_tokens": 1237,
+      "output_tokens": 0,
+      "total_tokens": 1237
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-12T20:40:52.434718",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.508,
+    "duration_ms": 1507.7,
+    "prompt_length_chars": 4085,
+    "response_length_chars": 52,
+    "tokens": {
+      "input_tokens": 1223,
+      "output_tokens": 0,
+      "total_tokens": 1223
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-12T20:41:24.177183",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.708,
+    "duration_ms": 1708.3,
+    "prompt_length_chars": 4183,
+    "response_length_chars": 52,
+    "tokens": {
+      "input_tokens": 1242,
+      "output_tokens": 0,
+      "total_tokens": 1242
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-12T20:55:08.478884",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.476,
+    "duration_ms": 3476.4,
+    "prompt_length_chars": 2156,
+    "response_length_chars": 275,
+    "tokens": {
+      "input_tokens": 612,
+      "output_tokens": 0,
+      "total_tokens": 612
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "how many products do we really have?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-12T20:55:40.428840",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.847,
+    "duration_ms": 1846.8,
+    "prompt_length_chars": 3383,
+    "response_length_chars": 60,
+    "tokens": {
+      "input_tokens": 1033,
+      "output_tokens": 0,
+      "total_tokens": 1033
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-12T20:58:38.782715",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.353,
+    "duration_ms": 4352.5,
+    "prompt_length_chars": 2660,
+    "response_length_chars": 597,
+    "tokens": {
+      "input_tokens": 729,
+      "output_tokens": 0,
+      "total_tokens": 729
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: how many products do we really have?\nAssistant:  count(DISTINCT p",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-12T21:00:49.208066",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.485,
+    "duration_ms": 4484.9,
+    "prompt_length_chars": 3041,
+    "response_length_chars": 521,
+    "tokens": {
+      "input_tokens": 817,
+      "output_tokens": 0,
+      "total_tokens": 817
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: how many products do we really have?\nAssistant:  count(DISTINCT p",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-12T21:06:57.492982",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.706,
+    "duration_ms": 4705.7,
+    "prompt_length_chars": 3279,
+    "response_length_chars": 556,
+    "tokens": {
+      "input_tokens": 867,
+      "output_tokens": 0,
+      "total_tokens": 867
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: how many products do we really have?\nAssistant:  count(DISTINCT p",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-12T21:07:30.495073",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.971,
+    "duration_ms": 2971.1,
+    "prompt_length_chars": 3704,
+    "response_length_chars": 229,
+    "tokens": {
+      "input_tokens": 1136,
+      "output_tokens": 0,
+      "total_tokens": 1136
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-12T21:08:03.541489",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.998,
+    "duration_ms": 2997.5,
+    "prompt_length_chars": 4794,
+    "response_length_chars": 229,
+    "tokens": {
+      "input_tokens": 1442,
+      "output_tokens": 0,
+      "total_tokens": 1442
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-12T21:08:36.617738",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.058,
+    "duration_ms": 3058.1,
+    "prompt_length_chars": 4892,
+    "response_length_chars": 229,
+    "tokens": {
+      "input_tokens": 1461,
+      "output_tokens": 0,
+      "total_tokens": 1461
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-12T21:09:09.897710",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.242,
+    "duration_ms": 3241.8,
+    "prompt_length_chars": 4990,
+    "response_length_chars": 229,
+    "tokens": {
+      "input_tokens": 1480,
+      "output_tokens": 0,
+      "total_tokens": 1480
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-12T21:09:42.972828",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.045,
+    "duration_ms": 3045.1,
+    "prompt_length_chars": 5088,
+    "response_length_chars": 229,
+    "tokens": {
+      "input_tokens": 1499,
+      "output_tokens": 0,
+      "total_tokens": 1499
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-12T21:15:29.299696",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.235,
+    "duration_ms": 4234.8,
+    "prompt_length_chars": 2303,
+    "response_length_chars": 461,
+    "tokens": {
+      "input_tokens": 642,
+      "output_tokens": 0,
+      "total_tokens": 642
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "which customers are at the risk of churing, churning is defined as if the gap between subsequent ord",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-12T21:16:02.242325",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.846,
+    "duration_ms": 2845.7,
+    "prompt_length_chars": 4502,
+    "response_length_chars": 156,
+    "tokens": {
+      "input_tokens": 1378,
+      "output_tokens": 0,
+      "total_tokens": 1378
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-12T21:16:34.738619",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.473,
+    "duration_ms": 2473.4,
+    "prompt_length_chars": 6188,
+    "response_length_chars": 214,
+    "tokens": {
+      "input_tokens": 1797,
+      "output_tokens": 0,
+      "total_tokens": 1797
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-12T21:17:07.304609",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.53,
+    "duration_ms": 2529.5,
+    "prompt_length_chars": 5988,
+    "response_length_chars": 225,
+    "tokens": {
+      "input_tokens": 1765,
+      "output_tokens": 0,
+      "total_tokens": 1765
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-12T21:17:40.177660",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.862,
+    "duration_ms": 2861.7,
+    "prompt_length_chars": 6000,
+    "response_length_chars": 225,
+    "tokens": {
+      "input_tokens": 1769,
+      "output_tokens": 0,
+      "total_tokens": 1769
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-12T21:18:12.336090",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.141,
+    "duration_ms": 2140.6,
+    "prompt_length_chars": 6196,
+    "response_length_chars": 156,
+    "tokens": {
+      "input_tokens": 1807,
+      "output_tokens": 0,
+      "total_tokens": 1807
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-12T21:28:58.003946",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 5.339,
+    "duration_ms": 5338.6,
+    "prompt_length_chars": 2191,
+    "response_length_chars": 725,
+    "tokens": {
+      "input_tokens": 619,
+      "output_tokens": 0,
+      "total_tokens": 619
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "Is there any type of bias present in this data ? based on demographics?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-12T21:30:09.570490",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.224,
+    "duration_ms": 3223.8,
+    "prompt_length_chars": 2609,
+    "response_length_chars": 318,
+    "tokens": {
+      "input_tokens": 705,
+      "output_tokens": 0,
+      "total_tokens": 705
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "Is there any type of bias present in this data ? based on demographics? To assess demographic bias, ",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-12T21:30:41.529166",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.855,
+    "duration_ms": 1855.2,
+    "prompt_length_chars": 4533,
+    "response_length_chars": 70,
+    "tokens": {
+      "input_tokens": 1348,
+      "output_tokens": 0,
+      "total_tokens": 1348
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-12T21:36:18.023948",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.556,
+    "duration_ms": 3555.9,
+    "prompt_length_chars": 3176,
+    "response_length_chars": 420,
+    "tokens": {
+      "input_tokens": 826,
+      "output_tokens": 0,
+      "total_tokens": 826
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: Is there any type of bias present in this data ? based on demogra",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-12T21:36:49.668243",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.613,
+    "duration_ms": 1612.6,
+    "prompt_length_chars": 4635,
+    "response_length_chars": 43,
+    "tokens": {
+      "input_tokens": 1364,
+      "output_tokens": 0,
+      "total_tokens": 1364
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-12T21:40:33.394811",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.933,
+    "duration_ms": 3933.1,
+    "prompt_length_chars": 2294,
+    "response_length_chars": 379,
+    "tokens": {
+      "input_tokens": 639,
+      "output_tokens": 0,
+      "total_tokens": 639
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "which customers are at the risk of churning, churning is when the difference between two purchases b",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-12T21:41:05.673625",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.218,
+    "duration_ms": 2218.2,
+    "prompt_length_chars": 4503,
+    "response_length_chars": 87,
+    "tokens": {
+      "input_tokens": 1347,
+      "output_tokens": 0,
+      "total_tokens": 1347
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-12T21:41:37.725642",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.038,
+    "duration_ms": 2038.0,
+    "prompt_length_chars": 8605,
+    "response_length_chars": 115,
+    "tokens": {
+      "input_tokens": 2628,
+      "output_tokens": 0,
+      "total_tokens": 2628
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-13T10:06:22.916011",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.999,
+    "duration_ms": 4999.4,
+    "prompt_length_chars": 2156,
+    "response_length_chars": 583,
+    "tokens": {
+      "input_tokens": 613,
+      "output_tokens": 0,
+      "total_tokens": 613
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "what analysis can i do on this data?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T10:06:56.289671",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.147,
+    "duration_ms": 3147.3,
+    "prompt_length_chars": 4719,
+    "response_length_chars": 349,
+    "tokens": {
+      "input_tokens": 1412,
+      "output_tokens": 0,
+      "total_tokens": 1412
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-13T10:09:16.803802",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.893,
+    "duration_ms": 2893.4,
+    "prompt_length_chars": 3132,
+    "response_length_chars": 275,
+    "tokens": {
+      "input_tokens": 850,
+      "output_tokens": 0,
+      "total_tokens": 850
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: what analysis can i do on this data?\nAssistant:        category  ",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T10:09:48.344089",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.512,
+    "duration_ms": 1512.4,
+    "prompt_length_chars": 4407,
+    "response_length_chars": 60,
+    "tokens": {
+      "input_tokens": 1310,
+      "output_tokens": 0,
+      "total_tokens": 1310
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-13T10:14:12.135292",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.676,
+    "duration_ms": 3675.7,
+    "prompt_length_chars": 2125,
+    "response_length_chars": 416,
+    "tokens": {
+      "input_tokens": 605,
+      "output_tokens": 0,
+      "total_tokens": 605
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "hello",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T10:15:12.803393",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.034,
+    "duration_ms": 4033.5,
+    "prompt_length_chars": 2333,
+    "response_length_chars": 574,
+    "tokens": {
+      "input_tokens": 646,
+      "output_tokens": 0,
+      "total_tokens": 646
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "hello Could you please specify what information you are looking for? For example, are you interested",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T10:22:46.841643",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.209,
+    "duration_ms": 3208.6,
+    "prompt_length_chars": 2162,
+    "response_length_chars": 288,
+    "tokens": {
+      "input_tokens": 614,
+      "output_tokens": 0,
+      "total_tokens": 614
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "which user is the most valued user for us?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T10:23:18.471667",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.555,
+    "duration_ms": 1554.7,
+    "prompt_length_chars": 4412,
+    "response_length_chars": 70,
+    "tokens": {
+      "input_tokens": 1312,
+      "output_tokens": 0,
+      "total_tokens": 1312
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-13T10:33:06.086946",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.739,
+    "duration_ms": 3738.9,
+    "prompt_length_chars": 2182,
+    "response_length_chars": 308,
+    "tokens": {
+      "input_tokens": 617,
+      "output_tokens": 0,
+      "total_tokens": 617
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "By region which is the most profitable to us in terms of sales",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T10:33:37.838722",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.584,
+    "duration_ms": 1584.0,
+    "prompt_length_chars": 4416,
+    "response_length_chars": 78,
+    "tokens": {
+      "input_tokens": 1312,
+      "output_tokens": 0,
+      "total_tokens": 1312
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-13T10:48:32.223942",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.142,
+    "duration_ms": 3142.0,
+    "prompt_length_chars": 2879,
+    "response_length_chars": 247,
+    "tokens": {
+      "input_tokens": 800,
+      "output_tokens": 0,
+      "total_tokens": 800
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: By region which is the most profitable to us in terms of sales\nAs",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T10:49:04.143772",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.711,
+    "duration_ms": 1710.8,
+    "prompt_length_chars": 4363,
+    "response_length_chars": 17,
+    "tokens": {
+      "input_tokens": 1290,
+      "output_tokens": 0,
+      "total_tokens": 1290
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-13T10:53:48.006944",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 5.874,
+    "duration_ms": 5873.6,
+    "prompt_length_chars": 2929,
+    "response_length_chars": 831,
+    "tokens": {
+      "input_tokens": 811,
+      "output_tokens": 0,
+      "total_tokens": 811
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: By region which is the most profitable to us in terms of sales\nAs",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T10:54:19.958231",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.798,
+    "duration_ms": 1798.2,
+    "prompt_length_chars": 4947,
+    "response_length_chars": 71,
+    "tokens": {
+      "input_tokens": 1422,
+      "output_tokens": 0,
+      "total_tokens": 1422
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-13T10:57:37.907419",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.724,
+    "duration_ms": 2723.6,
+    "prompt_length_chars": 2275,
+    "response_length_chars": 249,
+    "tokens": {
+      "input_tokens": 651,
+      "output_tokens": 0,
+      "total_tokens": 651
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "what are the columns in this data?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T10:58:49.010393",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 5.936,
+    "duration_ms": 5936.2,
+    "prompt_length_chars": 2401,
+    "response_length_chars": 975,
+    "tokens": {
+      "input_tokens": 682,
+      "output_tokens": 0,
+      "total_tokens": 682
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: what are the columns in this data?\nAssistant: T1\n\n=== CURRENT QUE",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T11:15:44.197945",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.46,
+    "duration_ms": 4460.4,
+    "prompt_length_chars": 2569,
+    "response_length_chars": 509,
+    "tokens": {
+      "input_tokens": 721,
+      "output_tokens": 0,
+      "total_tokens": 721
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "what columns do ii have in this data?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T11:16:53.626713",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 8.591,
+    "duration_ms": 8590.6,
+    "prompt_length_chars": 2946,
+    "response_length_chars": 1663,
+    "tokens": {
+      "input_tokens": 820,
+      "output_tokens": 0,
+      "total_tokens": 820
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: what columns do ii have in this data?\nAssistant: The available co",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T11:18:05.819705",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.566,
+    "duration_ms": 4566.4,
+    "prompt_length_chars": 3335,
+    "response_length_chars": 582,
+    "tokens": {
+      "input_tokens": 908,
+      "output_tokens": 0,
+      "total_tokens": 908
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: what columns do ii have in this data?\nAssistant: The available co",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T11:18:38.384674",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.473,
+    "duration_ms": 2473.0,
+    "prompt_length_chars": 5566,
+    "response_length_chars": 172,
+    "tokens": {
+      "input_tokens": 1763,
+      "output_tokens": 0,
+      "total_tokens": 1763
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-13T11:20:03.614502",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.113,
+    "duration_ms": 4113.4,
+    "prompt_length_chars": 4111,
+    "response_length_chars": 580,
+    "tokens": {
+      "input_tokens": 1084,
+      "output_tokens": 0,
+      "total_tokens": 1084
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: what columns do ii have in this data?\nAssistant: The available co",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T11:20:42.393289",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 8.738,
+    "duration_ms": 8738.1,
+    "prompt_length_chars": 5564,
+    "response_length_chars": 1382,
+    "tokens": {
+      "input_tokens": 1741,
+      "output_tokens": 0,
+      "total_tokens": 1741
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-13T11:22:22.336295",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.775,
+    "duration_ms": 3775.4,
+    "prompt_length_chars": 4381,
+    "response_length_chars": 486,
+    "tokens": {
+      "input_tokens": 1166,
+      "output_tokens": 0,
+      "total_tokens": 1166
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: what analysis can i perform on this data?\nAssistant: You can perf",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T11:22:54.491752",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.112,
+    "duration_ms": 2112.3,
+    "prompt_length_chars": 5478,
+    "response_length_chars": 97,
+    "tokens": {
+      "input_tokens": 1733,
+      "output_tokens": 0,
+      "total_tokens": 1733
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-13T11:23:26.747043",
+    "function_name": "interpret_and_execute_analysis",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.181,
+    "duration_ms": 2181.0,
+    "prompt_length_chars": 3436,
+    "response_length_chars": 137,
+    "tokens": {
+      "input_tokens": 1085,
+      "output_tokens": 0,
+      "total_tokens": 1085
+    },
+    "metadata": {
+      "result_rows": 2548
+    }
+  },
+  {
+    "timestamp": "2025-12-13T11:25:19.081804",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.867,
+    "duration_ms": 3866.9,
+    "prompt_length_chars": 4392,
+    "response_length_chars": 422,
+    "tokens": {
+      "input_tokens": 1198,
+      "output_tokens": 0,
+      "total_tokens": 1198
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: okay so what is the most popilar tracks and artists in this datas",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T11:25:50.928772",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.807,
+    "duration_ms": 1807.2,
+    "prompt_length_chars": 5414,
+    "response_length_chars": 72,
+    "tokens": {
+      "input_tokens": 1736,
+      "output_tokens": 0,
+      "total_tokens": 1736
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-13T12:08:22.178740",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.631,
+    "duration_ms": 3631.3,
+    "prompt_length_chars": 2469,
+    "response_length_chars": 399,
+    "tokens": {
+      "input_tokens": 686,
+      "output_tokens": 0,
+      "total_tokens": 686
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "what are some previouse questions i asked about this data?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T12:09:51.384810",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 7.296,
+    "duration_ms": 7296.4,
+    "prompt_length_chars": 3730,
+    "response_length_chars": 455,
+    "tokens": {
+      "input_tokens": 998,
+      "output_tokens": 0,
+      "total_tokens": 998
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nAssistant: Okay, let's break down these sales figures by region. Overal",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T12:16:16.342978",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.478,
+    "duration_ms": 4477.8,
+    "prompt_length_chars": 3945,
+    "response_length_chars": 557,
+    "tokens": {
+      "input_tokens": 1071,
+      "output_tokens": 0,
+      "total_tokens": 1071
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: By region which is the most profitable to us in terms of sales\nAs",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T12:16:53.754003",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 7.32,
+    "duration_ms": 7320.4,
+    "prompt_length_chars": 4673,
+    "response_length_chars": 88,
+    "tokens": {
+      "input_tokens": 1355,
+      "output_tokens": 0,
+      "total_tokens": 1355
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-13T12:18:31.391746",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.257,
+    "duration_ms": 6257.5,
+    "prompt_length_chars": 4535,
+    "response_length_chars": 813,
+    "tokens": {
+      "input_tokens": 1127,
+      "output_tokens": 0,
+      "total_tokens": 1127
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nAssistant: Okay, let's break down these sales figures by region. Overal",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T12:19:03.748013",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.304,
+    "duration_ms": 2303.7,
+    "prompt_length_chars": 4941,
+    "response_length_chars": 201,
+    "tokens": {
+      "input_tokens": 1432,
+      "output_tokens": 0,
+      "total_tokens": 1432
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-13T12:22:52.700914",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 10.354,
+    "duration_ms": 10353.6,
+    "prompt_length_chars": 3911,
+    "response_length_chars": 483,
+    "tokens": {
+      "input_tokens": 1066,
+      "output_tokens": 0,
+      "total_tokens": 1066
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: By region which is the most profitable to us in terms of sales\nAs",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T12:23:24.268875",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.515,
+    "duration_ms": 1514.8,
+    "prompt_length_chars": 4599,
+    "response_length_chars": 86,
+    "tokens": {
+      "input_tokens": 1357,
+      "output_tokens": 0,
+      "total_tokens": 1357
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-13T12:26:11.140250",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.719,
+    "duration_ms": 3719.1,
+    "prompt_length_chars": 4042,
+    "response_length_chars": 506,
+    "tokens": {
+      "input_tokens": 1064,
+      "output_tokens": 0,
+      "total_tokens": 1064
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: Per artist calculate average popularity of the artist and tell wh",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T12:30:12.994197",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.115,
+    "duration_ms": 4115.3,
+    "prompt_length_chars": 3903,
+    "response_length_chars": 471,
+    "tokens": {
+      "input_tokens": 1063,
+      "output_tokens": 0,
+      "total_tokens": 1063
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nAssistant: customer_location  sum(total_sales)\n           Denver       ",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T12:30:44.749746",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.712,
+    "duration_ms": 1712.1,
+    "prompt_length_chars": 4587,
+    "response_length_chars": 86,
+    "tokens": {
+      "input_tokens": 1356,
+      "output_tokens": 0,
+      "total_tokens": 1356
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-13T19:08:24.089500",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.088,
+    "duration_ms": 4088.3,
+    "prompt_length_chars": 2287,
+    "response_length_chars": 516,
+    "tokens": {
+      "input_tokens": 639,
+      "output_tokens": 0,
+      "total_tokens": 639
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "what is this data about?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T19:10:51.757800",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.89,
+    "duration_ms": 3890.3,
+    "prompt_length_chars": 2669,
+    "response_length_chars": 448,
+    "tokens": {
+      "input_tokens": 717,
+      "output_tokens": 0,
+      "total_tokens": 717
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: what is this data about?\nAssistant: This data appears to be about",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T19:11:24.938390",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.831,
+    "duration_ms": 2830.7,
+    "prompt_length_chars": 4237,
+    "response_length_chars": 119,
+    "tokens": {
+      "input_tokens": 1282,
+      "output_tokens": 0,
+      "total_tokens": 1282
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-13T19:12:59.559555",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.347,
+    "duration_ms": 4346.9,
+    "prompt_length_chars": 3547,
+    "response_length_chars": 424,
+    "tokens": {
+      "input_tokens": 997,
+      "output_tokens": 0,
+      "total_tokens": 997
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: what is this data about?\nAssistant: This data appears to be about",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T19:13:31.919968",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.044,
+    "duration_ms": 2043.6,
+    "prompt_length_chars": 4213,
+    "response_length_chars": 73,
+    "tokens": {
+      "input_tokens": 1275,
+      "output_tokens": 0,
+      "total_tokens": 1275
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-13T19:14:04.792359",
+    "function_name": "interpret_and_execute_analysis",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.806,
+    "duration_ms": 2806.0,
+    "prompt_length_chars": 2934,
+    "response_length_chars": 183,
+    "tokens": {
+      "input_tokens": 1019,
+      "output_tokens": 0,
+      "total_tokens": 1019
+    },
+    "metadata": {
+      "result_rows": 23260
+    }
+  },
+  {
+    "timestamp": "2025-12-13T19:16:19.454360",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 5.152,
+    "duration_ms": 5152.3,
+    "prompt_length_chars": 3989,
+    "response_length_chars": 653,
+    "tokens": {
+      "input_tokens": 1367,
+      "output_tokens": 0,
+      "total_tokens": 1367
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: what is this data about?\nAssistant: This data appears to be about",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T19:16:52.531287",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.758,
+    "duration_ms": 2757.8,
+    "prompt_length_chars": 4446,
+    "response_length_chars": 197,
+    "tokens": {
+      "input_tokens": 1321,
+      "output_tokens": 0,
+      "total_tokens": 1321
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-13T19:17:26.018242",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.446,
+    "duration_ms": 3446.4,
+    "prompt_length_chars": 7696,
+    "response_length_chars": 251,
+    "tokens": {
+      "input_tokens": 2264,
+      "output_tokens": 0,
+      "total_tokens": 2264
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-13T19:17:59.299550",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.244,
+    "duration_ms": 3244.0,
+    "prompt_length_chars": 6946,
+    "response_length_chars": 197,
+    "tokens": {
+      "input_tokens": 1976,
+      "output_tokens": 0,
+      "total_tokens": 1976
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-13T19:18:31.964706",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.633,
+    "duration_ms": 2633.5,
+    "prompt_length_chars": 7142,
+    "response_length_chars": 197,
+    "tokens": {
+      "input_tokens": 2014,
+      "output_tokens": 0,
+      "total_tokens": 2014
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-13T19:19:05.554418",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.552,
+    "duration_ms": 3552.0,
+    "prompt_length_chars": 7338,
+    "response_length_chars": 197,
+    "tokens": {
+      "input_tokens": 2052,
+      "output_tokens": 0,
+      "total_tokens": 2052
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-13T20:39:02.153305",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.444,
+    "duration_ms": 3443.6,
+    "prompt_length_chars": 2165,
+    "response_length_chars": 370,
+    "tokens": {
+      "input_tokens": 596,
+      "output_tokens": 0,
+      "total_tokens": 596
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "which region has the highest sales?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T20:39:33.999646",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.719,
+    "duration_ms": 1719.4,
+    "prompt_length_chars": 4106,
+    "response_length_chars": 88,
+    "tokens": {
+      "input_tokens": 1234,
+      "output_tokens": 0,
+      "total_tokens": 1234
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-13T21:41:02.201511",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 5.924,
+    "duration_ms": 5923.8,
+    "prompt_length_chars": 2224,
+    "response_length_chars": 732,
+    "tokens": {
+      "input_tokens": 609,
+      "output_tokens": 0,
+      "total_tokens": 609
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "Compare sales data year on year and tell me which part of the year results in the maximum sale?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T21:41:39.140677",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.654,
+    "duration_ms": 6653.6,
+    "prompt_length_chars": 4488,
+    "response_length_chars": 227,
+    "tokens": {
+      "input_tokens": 1333,
+      "output_tokens": 0,
+      "total_tokens": 1333
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-13T21:42:48.055921",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.235,
+    "duration_ms": 3234.9,
+    "prompt_length_chars": 2884,
+    "response_length_chars": 348,
+    "tokens": {
+      "input_tokens": 780,
+      "output_tokens": 0,
+      "total_tokens": 780
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: Compare sales data year on year and tell me which part of the yea",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T21:43:20.622233",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.393,
+    "duration_ms": 2393.2,
+    "prompt_length_chars": 4100,
+    "response_length_chars": 62,
+    "tokens": {
+      "input_tokens": 1244,
+      "output_tokens": 0,
+      "total_tokens": 1244
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-13T21:45:05.377604",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.021,
+    "duration_ms": 6021.4,
+    "prompt_length_chars": 3145,
+    "response_length_chars": 809,
+    "tokens": {
+      "input_tokens": 833,
+      "output_tokens": 0,
+      "total_tokens": 833
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: Compare sales data year on year and tell me which part of the yea",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T21:45:38.045126",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.48,
+    "duration_ms": 2480.0,
+    "prompt_length_chars": 4553,
+    "response_length_chars": 169,
+    "tokens": {
+      "input_tokens": 1353,
+      "output_tokens": 0,
+      "total_tokens": 1353
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-13T21:47:01.706860",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.163,
+    "duration_ms": 4162.7,
+    "prompt_length_chars": 3806,
+    "response_length_chars": 558,
+    "tokens": {
+      "input_tokens": 997,
+      "output_tokens": 0,
+      "total_tokens": 997
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: Compare sales data year on year and tell me which part of the yea",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-13T21:47:33.759953",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.765,
+    "duration_ms": 1765.0,
+    "prompt_length_chars": 4302,
+    "response_length_chars": 96,
+    "tokens": {
+      "input_tokens": 1285,
+      "output_tokens": 0,
+      "total_tokens": 1285
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  }
+]
