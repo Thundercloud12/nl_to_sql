@@ -21,11 +21,11 @@ from utils.prisma_handler import PrismaHandler
 from utils.datasource_loader import download_from_cloudinary, load_datasource_files
 
 app = FastAPI()
-
+url=os.getenv("NEXT_JS_API_URL")
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8501", "http://127.0.0.1:8501", "http://localhost:3000"],  # Streamlit default ports
+    allow_origins=["http://localhost:8501", "http://127.0.0.1:8501", "http://localhost:3000", url],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -5897,5 +5897,24 @@
     "metadata": {
       "result_rows": 5202
     }
+  },
+  {
+    "timestamp": "2025-12-14T20:44:43.312755",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.803,
+    "duration_ms": 3802.6,
+    "prompt_length_chars": 2980,
+    "response_length_chars": 396,
+    "tokens": {
+      "input_tokens": 775,
+      "output_tokens": 0,
+      "total_tokens": 775
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nInsight: Okay, let's break down what this customer segmentation analysi",
+      "has_appended_data": false
+    }
   }
 ]
