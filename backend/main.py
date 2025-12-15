@@ -16,7 +16,7 @@ from data_ingestion.data_ingest import load_excel_folder, build_initial_schema_o
 from data_ingestion.graph_builder import process_schema_build
 from llm.plan_generator import build_graph, State
 import asyncio
-from utils.cloudinary_handler import upload_to_cloudinary
+from utils.cloudinary_handler import upload_to_cloudinary,deletefromsupabase
 from utils.prisma_handler import PrismaHandler
 from utils.datasource_loader import download_from_cloudinary, load_datasource_files
 
@@ -760,6 +760,19 @@ async def delete_datasource(data_source_id: str, user_id: str):
             sessions_deleted = cur.rowcount
             print(f"[DELETE] ✓ Deleted {sessions_deleted} Session(s)")
         
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:  # ✅ ADD: RealDictCursor
+            cur.execute(
+                "SELECT \"cloudinaryUrl\" FROM \"DataSource\" WHERE id = %s AND \"userId\" = %s",
+                (data_source_id, user_id)
+            )
+            data_source = cur.fetchone()
+
+        # In the delete route
+        result = deletefromsupabase(data_source)
+        if result["status"] == "error":
+            print(f"[DELETE] {result['message']}")
+        
+
         # Step 5: Delete the DataSource itself
         with conn.cursor() as cur:
             cur.execute(
@@ -785,6 +798,9 @@ async def delete_datasource(data_source_id: str, user_id: str):
                 del SESSIONS[session_id]
                 print(f"[DELETE] ✓ Cleaned up in-memory session: {session_id}")
         
+   
+    
+    
         return {
             "status": "success",
             "message": "DataSource and all associated data deleted successfully",

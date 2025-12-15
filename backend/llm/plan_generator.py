@@ -194,6 +194,8 @@ Rules:
 - For "sql" mode, operations must describe steps convertible to pandas.
 - For complex analysis/comparisons/trends: ALWAYS use "sql".
 - Use EXACT column names from the schema above.
+-if current_question has no nouns, verbs, metrics, doesnt make any meaning or is incomplete:
+     ask for clarification
 - In final_output, provide the actual answer (not placeholders like "T1" or "table").
 """
         

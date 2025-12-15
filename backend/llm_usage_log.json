@@ -5916,5 +5916,296 @@
       "user_question": "=== CONVERSATION HISTORY ===\nInsight: Okay, let's break down what this customer segmentation analysi",
       "has_appended_data": false
     }
+  },
+  {
+    "timestamp": "2025-12-15T08:39:30.646637",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.335,
+    "duration_ms": 4335.4,
+    "prompt_length_chars": 2855,
+    "response_length_chars": 473,
+    "tokens": {
+      "input_tokens": 767,
+      "output_tokens": 0,
+      "total_tokens": 767
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nAssistant: I am doing well, thank you for asking! As a query planner, I",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T09:12:59.794706",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.592,
+    "duration_ms": 3592.3,
+    "prompt_length_chars": 2197,
+    "response_length_chars": 451,
+    "tokens": {
+      "input_tokens": 626,
+      "output_tokens": 0,
+      "total_tokens": 626
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "what is this data about?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T09:14:08.301460",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 8.789,
+    "duration_ms": 8789.3,
+    "prompt_length_chars": 2543,
+    "response_length_chars": 1328,
+    "tokens": {
+      "input_tokens": 694,
+      "output_tokens": 0,
+      "total_tokens": 694
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: what is this data about?\nAssistant: This data is about heart dise",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T09:14:48.546638",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 10.134,
+    "duration_ms": 10133.7,
+    "prompt_length_chars": 5713,
+    "response_length_chars": 1211,
+    "tokens": {
+      "input_tokens": 1832,
+      "output_tokens": 0,
+      "total_tokens": 1832
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-15T09:15:29.097783",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 10.497,
+    "duration_ms": 10497.2,
+    "prompt_length_chars": 9391,
+    "response_length_chars": 1307,
+    "tokens": {
+      "input_tokens": 2991,
+      "output_tokens": 0,
+      "total_tokens": 2991
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-15T09:19:47.249908",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.705,
+    "duration_ms": 6704.6,
+    "prompt_length_chars": 2811,
+    "response_length_chars": 1338,
+    "tokens": {
+      "input_tokens": 790,
+      "output_tokens": 0,
+      "total_tokens": 790
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: what is this data about?\nAssistant: This data is about heart dise",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T09:20:57.903729",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.499,
+    "duration_ms": 4498.5,
+    "prompt_length_chars": 2846,
+    "response_length_chars": 458,
+    "tokens": {
+      "input_tokens": 800,
+      "output_tokens": 0,
+      "total_tokens": 800
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: which column or feature has the highest chance of causing heart d",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T09:22:17.875724",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.5,
+    "duration_ms": 4499.9,
+    "prompt_length_chars": 2903,
+    "response_length_chars": 558,
+    "tokens": {
+      "input_tokens": 804,
+      "output_tokens": 0,
+      "total_tokens": 804
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: what type of analysis can i perform on this data?\nAssistant: You ",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T09:22:49.415116",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.438,
+    "duration_ms": 1438.1,
+    "prompt_length_chars": 4951,
+    "response_length_chars": 42,
+    "tokens": {
+      "input_tokens": 1591,
+      "output_tokens": 0,
+      "total_tokens": 1591
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-15T09:26:25.271668",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.489,
+    "duration_ms": 3489.2,
+    "prompt_length_chars": 2916,
+    "response_length_chars": 394,
+    "tokens": {
+      "input_tokens": 832,
+      "output_tokens": 0,
+      "total_tokens": 832
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: okay tell me all the columns that are present in this data?\nAssis",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T09:26:57.334248",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.946,
+    "duration_ms": 1945.9,
+    "prompt_length_chars": 4787,
+    "response_length_chars": 89,
+    "tokens": {
+      "input_tokens": 1539,
+      "output_tokens": 0,
+      "total_tokens": 1539
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-15T09:32:04.000522",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.03,
+    "duration_ms": 4030.3,
+    "prompt_length_chars": 2858,
+    "response_length_chars": 484,
+    "tokens": {
+      "input_tokens": 800,
+      "output_tokens": 0,
+      "total_tokens": 800
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: how much correlation does cholaterol have with heart disease and ",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T09:32:36.012658",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.895,
+    "duration_ms": 1895.1,
+    "prompt_length_chars": 4877,
+    "response_length_chars": 91,
+    "tokens": {
+      "input_tokens": 1572,
+      "output_tokens": 0,
+      "total_tokens": 1572
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-15T09:34:46.004242",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.002,
+    "duration_ms": 4001.5,
+    "prompt_length_chars": 2757,
+    "response_length_chars": 330,
+    "tokens": {
+      "input_tokens": 770,
+      "output_tokens": 0,
+      "total_tokens": 770
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: what is the correlation between heart disease and cholestorol?\nAs",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T09:35:18.055894",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.932,
+    "duration_ms": 1932.1,
+    "prompt_length_chars": 4723,
+    "response_length_chars": 91,
+    "tokens": {
+      "input_tokens": 1545,
+      "output_tokens": 0,
+      "total_tokens": 1545
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
   }
 ]

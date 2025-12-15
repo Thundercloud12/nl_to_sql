@@ -21,6 +21,7 @@ export default function DashboardPage() {
   const [dataSources, setDataSources] = useState<DataSource[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [startingChatId, setStartingChatId] = useState<string | null>(null); // ✅ ADD: Track which chat is starting
 
   useEffect(() => {
     if (!user) return;
@@ -44,6 +45,8 @@ export default function DashboardPage() {
 
   const handleStartChat = async (dataSourceId: string) => {
     try {
+      setStartingChatId(dataSourceId); // ✅ ADD: Set loading state
+      
       // Initialize chat session with backend
       const backendResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/initialize_chat`, {
         method: "POST",
@@ -64,6 +67,8 @@ export default function DashboardPage() {
       router.push(`/chat?dataSourceId=${dataSourceId}&sessionId=${backendData.session_id}`);
     } catch (err: any) {
       setError(err.message);
+    } finally {
+      setStartingChatId(null); // ✅ ADD: Clear loading state
     }
   };
 
@@ -253,11 +258,16 @@ export default function DashboardPage() {
                   <CardFooter className="flex gap-2">
                     <Button
                       onClick={() => handleStartChat(ds.id)}
+                      disabled={startingChatId === ds.id} // ✅ ADD: Disable while loading
                       className="flex-1 group/btn"
                       size="sm"
                     >
-                      <MessageSquare className="w-4 h-4 mr-2 group-hover/btn:scale-110 transition-transform" />
-                      Start Chat
+                      {startingChatId === ds.id ? ( // ✅ ADD: Show spinner when loading
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      ) : (
+                        <MessageSquare className="w-4 h-4 mr-2 group-hover/btn:scale-110 transition-transform" />
+                      )}
+                      {startingChatId === ds.id ? "Starting..." : "Start Chat"} {/* ✅ ADD: Change text */}
                     </Button>
                     <Button
                       onClick={() => handleDelete(ds.id)}

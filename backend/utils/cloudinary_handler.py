@@ -1,6 +1,7 @@
 import os
 from supabase import create_client, Client
 from dotenv import load_dotenv
+from typing import Dict, Any
 
 load_dotenv()
 
@@ -49,3 +50,36 @@ def upload_to_cloudinary(file_path: str) -> str:
     except Exception as e:
         print(f"[SUPABASE] ✗ Error uploading {file_path}: {str(e)}")
         raise
+
+def deletefromsupabase(data_source) -> Dict[str, str]:
+    """
+    Delete file from Supabase Storage using the cloudinaryUrl from data_source.
+    
+    Args:
+        data_source: Dict containing 'cloudinaryUrl' field, or None
+        
+    Returns:
+        Dict with status and message
+    """
+    try:
+        # ✅ FIX: Check if data_source is a dict and has the URL
+        if not data_source or not isinstance(data_source, dict):
+            return {"status": "error", "message": "Invalid data_source format"}
+            
+        cloudinary_url = data_source.get("cloudinaryUrl")
+        if not cloudinary_url:
+            return {"status": "error", "message": "No cloudinaryUrl found"}
+        
+        # Extract file path from URL (e.g., https://.../nl_sql_query/data__Sheet1.parquet)
+        # ✅ HOW TO GET THE URL: Split on '/nl_sql_query/' and take the last part
+        file_path = cloudinary_url.split("/nl_sql_query/")[-1]
+        
+        # Delete from Supabase
+        supabase.storage.from_(SUPABASE_BUCKET).remove([f"nl_sql_query/{file_path}"])
+        
+        print(f"[DELETE] ✓ Deleted from Supabase: {file_path}")
+        return {"status": "success", "message": f"Deleted {file_path}"}
+    
+    except Exception as e:
+        print(f"[DELETE] ⚠ Supabase deletion failed: {str(e)}")
+        return {"status": "error", "message": str(e)}

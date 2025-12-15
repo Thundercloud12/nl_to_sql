@@ -10,8 +10,9 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface Message {
-  role: "user" | "assistant" | "insight";
+  role: "user" | "assistant";
   content: string;
+  insight?: string; // Add optional insight field
 }
 
 interface ClarificationState {
@@ -46,6 +47,7 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
   const [error, setError] = useState<string | null>(null);
   const [clarification, setClarification] = useState<ClarificationState | null>(null);
   const [clarificationInput, setClarificationInput] = useState("");
+  const [expandedMessages, setExpandedMessages] = useState<Set<number>>(new Set()); // Track expanded messages
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom
@@ -84,14 +86,48 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
           lastPlan: data.last_plan,
         });
 
-        // Load existing conversation history into messages
+        // ✅ CHANGED: Combine assistant + insight messages when loading history
         if (data.conversation_history && data.conversation_history.length > 0) {
-          const loadedMessages: Message[] = data.conversation_history.map((msg: any) => ({
-            role: msg.role as "user" | "assistant" | "insight",
-            content: msg.content,
-          }));
+          const loadedMessages: Message[] = [];
+          let i = 0;
+          
+          while (i < data.conversation_history.length) {
+            const msg = data.conversation_history[i];
+            
+            if (msg.role === "assistant") {
+              // Check if next message is an insight
+              const nextMsg = data.conversation_history[i + 1];
+              if (nextMsg && nextMsg.role === "insight") {
+                // Combine them
+                loadedMessages.push({
+                  role: "assistant",
+                  content: msg.content,
+                  insight: nextMsg.content
+                });
+                i += 2; // Skip the next insight message
+              } else {
+                // Just assistant message
+                loadedMessages.push({
+                  role: "assistant",
+                  content: msg.content
+                });
+                i += 1;
+              }
+            } else if (msg.role === "user") {
+              // User message
+              loadedMessages.push({
+                role: "user",
+                content: msg.content
+              });
+              i += 1;
+            } else {
+              // Skip other roles (like old insight messages that weren't combined)
+              i += 1;
+            }
+          }
+          
           setMessages(loadedMessages);
-          console.log(`[CHAT] Loaded ${loadedMessages.length} previous messages`);
+          console.log(`[CHAT] Loaded ${loadedMessages.length} combined messages`);
         }
       } catch (err: any) {
         setError(err.message);
@@ -160,11 +196,12 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
       } 
       // Handle success
       else if (data.status === "completed") {
-        setMessages((prev) => [...prev, { role: "assistant", content: data.answer || "" }]);
-        
-        if (data.insights) {
-          setMessages((prev) => [...prev, { role: "insight", content: data.insights }]);
-        }
+        // ✅ CHANGED: Combine answer and insight into single message
+        setMessages((prev) => [...prev, { 
+          role: "assistant", 
+          content: data.answer || "", 
+          insight: data.insights || undefined 
+        }]);
       }
     } catch (err: any) {
       setError(err.message);
@@ -213,11 +250,12 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
         });
       } 
       else if (data.status === "completed") {
-        setMessages((prev) => [...prev, { role: "assistant", content: data.answer || "" }]);
-        
-        if (data.insights) {
-          setMessages((prev) => [...prev, { role: "insight", content: data.insights }]);
-        }
+        // ✅ CHANGED: Combine answer and insight into single message
+        setMessages((prev) => [...prev, { 
+          role: "assistant", 
+          content: data.answer || "", 
+          insight: data.insights || undefined 
+        }]);
         
         setClarification(null);
       }
@@ -306,6 +344,19 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
       </div>
     );
   }
+
+  // Toggle expansion for a message
+  const toggleExpansion = (idx: number) => {
+    setExpandedMessages(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(idx)) {
+        newSet.delete(idx);
+      } else {
+        newSet.add(idx);
+      }
+      return newSet;
+    });
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -404,7 +455,7 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
               >
                 {msg.role !== "user" && (
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center flex-shrink-0 mt-1">
-                    {msg.role === "insight" ? (
+                    {msg.role === "assistant" && msg.insight ? (
                       <Lightbulb className="w-4 h-4 text-white" />
                     ) : (
                       <Bot className="w-4 h-4 text-white" />
@@ -416,17 +467,59 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
                   className={`max-w-2xl ${
                     msg.role === "user"
                       ? "bg-primary text-primary-foreground rounded-2xl rounded-br-sm shadow-lg"
-                      : msg.role === "insight"
-                      ? "bg-accent/20 text-foreground rounded-2xl rounded-bl-sm border border-accent/30"
                       : "bg-card border border-border rounded-2xl rounded-bl-sm shadow-sm"
                   } px-5 py-3.5`}
                 >
-                  {msg.role === "insight" && (
+                  {msg.role === "assistant" && msg.insight && (
                     <div className="flex items-center space-x-2 mb-2">
                       <span className="font-semibold text-accent text-sm">AI Insight</span>
                     </div>
                   )}
-                  <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                  
+                  {/* ✅ CHANGED: Conditional rendering based on insight */}
+                  {msg.role === "assistant" ? (
+                    <>
+                      {/* Show insight if available, otherwise show raw answer */}
+                      <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                        {msg.insight || msg.content}
+                      </p>
+                      
+                      {/* Show expansion toggle if insight exists */}
+                      {msg.insight && (
+                        <button
+                          onClick={() => toggleExpansion(idx)}
+                          className="mt-2 text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center space-x-1"
+                        >
+                          <span>{expandedMessages.has(idx) ? "Hide" : "Show"} raw response</span>
+                          <svg 
+                            className={`w-3 h-3 transition-transform ${expandedMessages.has(idx) ? "rotate-180" : ""}`} 
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </button>
+                      )}
+                      
+                      {/* Expandable raw response */}
+                      {msg.insight && expandedMessages.has(idx) && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="mt-3 pt-3 border-t border-border/50"
+                        >
+                          <p className="text-xs text-muted-foreground mb-1">Raw Response:</p>
+                          <p className="text-sm leading-relaxed whitespace-pre-wrap text-muted-foreground">
+                            {msg.content}
+                          </p>
+                        </motion.div>
+                      )}
+                    </>
+                  ) : (
+                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                  )}
                 </div>
 
                 {msg.role === "user" && (
