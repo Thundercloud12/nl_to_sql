@@ -98,23 +98,46 @@ def load_raw_metadata(metadata_path: str = "raw_metadata.json") -> dict:
 
 def retrieve_metadata(requests: List[str]) -> str:
     """
-    Parse metadata requests (e.g., ["columns for T1"]) and retrieve from raw_metadata.json.
-    Return formatted string for prompt.
+    Parse metadata requests and retrieve from raw_metadata.json.
     """
-    metadata = load_raw_metadata()
+    try:
+        metadata = load_raw_metadata()
+    except Exception as e:
+        print(f"[METADATA] Error loading metadata: {e}")
+        return "Metadata unavailable."
+    
     response = ""
     for req in requests:
-        if "columns for" in req:
-            table = req.split("columns for ")[-1].strip()
-            if table in metadata["tables"]:
-                cols = metadata["tables"][table]["columns"]
-                response += f"Columns for {table}: {', '.join(cols)}\n"
-        elif "dtypes for" in req:
-            table = req.split("dtypes for ")[-1].strip()
-            if table in metadata["tables"]:
-                dtypes = metadata["tables"][table]["dtypes"]
-                response += f"Data types for {table}: {', '.join([f'{k}: {v}' for k, v in dtypes.items()])}\n"
-    return response
+        try:
+            if "columns for" in req:
+                table = req.split("columns for ")[-1].strip()
+                if table in metadata.get("tables", {}):
+                    cols = metadata["tables"][table].get("columns", [])
+                    response += f"Columns for {table}: {', '.join(cols)}\n"
+                else:
+                    response += f"Table {table} not found.\n"
+                    
+            elif "dtypes for" in req:
+                table = req.split("dtypes for ")[-1].strip()
+                if table in metadata.get("tables", {}):
+                    # ✅ FIX: Use "canonical_types" instead of "dtypes"
+                    table_info = metadata["tables"][table]
+                    dtypes = table_info.get("canonical_types", {})  # ← Changed from "dtypes"
+                    
+                    if dtypes:
+                        response += f"Data types for {table}:\n"
+                        for col, dtype in dtypes.items():
+                            response += f"  - {col}: {dtype}\n"
+                    else:
+                        response += f"Data types for {table}: Not available\n"
+                else:
+                    response += f"Table {table} not found.\n"
+                    
+        except Exception as e:
+            print(f"[METADATA] Error processing request '{req}': {e}")
+            response += f"Error retrieving metadata for: {req}\n"
+    
+    return response if response else "No metadata found for the requested tables."
 
 
 def input_node(state: State) -> State:

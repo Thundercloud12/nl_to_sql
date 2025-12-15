@@ -6207,5 +6207,771 @@
         "T1"
       ]
     }
+  },
+  {
+    "timestamp": "2025-12-15T10:47:45.781727",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.563,
+    "duration_ms": 6562.6,
+    "prompt_length_chars": 2378,
+    "response_length_chars": 1037,
+    "tokens": {
+      "input_tokens": 663,
+      "output_tokens": 0,
+      "total_tokens": 663
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "what is the correlation of variopus features with the final outcome of heart disease?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T10:48:22.330584",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.508,
+    "duration_ms": 6508.0,
+    "prompt_length_chars": 2378,
+    "response_length_chars": 917,
+    "tokens": {
+      "input_tokens": 663,
+      "output_tokens": 0,
+      "total_tokens": 663
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "what is the correlation of variopus features with the final outcome of heart disease?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T10:48:58.890550",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.528,
+    "duration_ms": 6527.8,
+    "prompt_length_chars": 2378,
+    "response_length_chars": 911,
+    "tokens": {
+      "input_tokens": 663,
+      "output_tokens": 0,
+      "total_tokens": 663
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "what is the correlation of variopus features with the final outcome of heart disease?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T10:49:35.245582",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.321,
+    "duration_ms": 6321.2,
+    "prompt_length_chars": 2378,
+    "response_length_chars": 917,
+    "tokens": {
+      "input_tokens": 663,
+      "output_tokens": 0,
+      "total_tokens": 663
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "what is the correlation of variopus features with the final outcome of heart disease?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T10:50:11.775729",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.493,
+    "duration_ms": 6493.1,
+    "prompt_length_chars": 2378,
+    "response_length_chars": 917,
+    "tokens": {
+      "input_tokens": 663,
+      "output_tokens": 0,
+      "total_tokens": 663
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "what is the correlation of variopus features with the final outcome of heart disease?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T10:50:48.161501",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.343,
+    "duration_ms": 6342.9,
+    "prompt_length_chars": 2378,
+    "response_length_chars": 917,
+    "tokens": {
+      "input_tokens": 663,
+      "output_tokens": 0,
+      "total_tokens": 663
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "what is the correlation of variopus features with the final outcome of heart disease?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T10:51:24.514726",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.313,
+    "duration_ms": 6313.4,
+    "prompt_length_chars": 2378,
+    "response_length_chars": 921,
+    "tokens": {
+      "input_tokens": 663,
+      "output_tokens": 0,
+      "total_tokens": 663
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "what is the correlation of variopus features with the final outcome of heart disease?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T10:52:00.767113",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.208,
+    "duration_ms": 6207.6,
+    "prompt_length_chars": 2378,
+    "response_length_chars": 921,
+    "tokens": {
+      "input_tokens": 663,
+      "output_tokens": 0,
+      "total_tokens": 663
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "what is the correlation of variopus features with the final outcome of heart disease?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T10:52:37.223600",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.409,
+    "duration_ms": 6408.7,
+    "prompt_length_chars": 2378,
+    "response_length_chars": 917,
+    "tokens": {
+      "input_tokens": 663,
+      "output_tokens": 0,
+      "total_tokens": 663
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "what is the correlation of variopus features with the final outcome of heart disease?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T11:05:45.709154",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.022,
+    "duration_ms": 4021.9,
+    "prompt_length_chars": 2305,
+    "response_length_chars": 432,
+    "tokens": {
+      "input_tokens": 651,
+      "output_tokens": 0,
+      "total_tokens": 651
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "how are you?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T11:06:41.621513",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.841,
+    "duration_ms": 6841.4,
+    "prompt_length_chars": 2626,
+    "response_length_chars": 1086,
+    "tokens": {
+      "input_tokens": 718,
+      "output_tokens": 0,
+      "total_tokens": 718
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: how are you?\nAssistant: I am doing well, thank you for asking. As",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T11:07:17.771209",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.115,
+    "duration_ms": 6114.7,
+    "prompt_length_chars": 2626,
+    "response_length_chars": 967,
+    "tokens": {
+      "input_tokens": 718,
+      "output_tokens": 0,
+      "total_tokens": 718
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: how are you?\nAssistant: I am doing well, thank you for asking. As",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T11:07:53.057613",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 5.268,
+    "duration_ms": 5267.9,
+    "prompt_length_chars": 2626,
+    "response_length_chars": 773,
+    "tokens": {
+      "input_tokens": 718,
+      "output_tokens": 0,
+      "total_tokens": 718
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: how are you?\nAssistant: I am doing well, thank you for asking. As",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T11:08:28.185582",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 5.092,
+    "duration_ms": 5092.3,
+    "prompt_length_chars": 2626,
+    "response_length_chars": 773,
+    "tokens": {
+      "input_tokens": 718,
+      "output_tokens": 0,
+      "total_tokens": 718
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: how are you?\nAssistant: I am doing well, thank you for asking. As",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T11:09:04.166971",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 5.968,
+    "duration_ms": 5968.2,
+    "prompt_length_chars": 2626,
+    "response_length_chars": 968,
+    "tokens": {
+      "input_tokens": 718,
+      "output_tokens": 0,
+      "total_tokens": 718
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: how are you?\nAssistant: I am doing well, thank you for asking. As",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T11:09:39.208495",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 5.028,
+    "duration_ms": 5027.6,
+    "prompt_length_chars": 2626,
+    "response_length_chars": 773,
+    "tokens": {
+      "input_tokens": 718,
+      "output_tokens": 0,
+      "total_tokens": 718
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: how are you?\nAssistant: I am doing well, thank you for asking. As",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T11:10:14.215153",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.987,
+    "duration_ms": 4986.9,
+    "prompt_length_chars": 2626,
+    "response_length_chars": 773,
+    "tokens": {
+      "input_tokens": 718,
+      "output_tokens": 0,
+      "total_tokens": 718
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: how are you?\nAssistant: I am doing well, thank you for asking. As",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T11:10:50.377895",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.151,
+    "duration_ms": 6150.7,
+    "prompt_length_chars": 2626,
+    "response_length_chars": 967,
+    "tokens": {
+      "input_tokens": 718,
+      "output_tokens": 0,
+      "total_tokens": 718
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: how are you?\nAssistant: I am doing well, thank you for asking. As",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T11:15:34.223831",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 7.758,
+    "duration_ms": 7757.9,
+    "prompt_length_chars": 2352,
+    "response_length_chars": 962,
+    "tokens": {
+      "input_tokens": 657,
+      "output_tokens": 0,
+      "total_tokens": 657
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "which feature has the highest correlation with the outcome?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T11:16:11.599076",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 7.337,
+    "duration_ms": 7336.6,
+    "prompt_length_chars": 2352,
+    "response_length_chars": 1103,
+    "tokens": {
+      "input_tokens": 657,
+      "output_tokens": 0,
+      "total_tokens": 657
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "which feature has the highest correlation with the outcome?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T11:16:47.747842",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.114,
+    "duration_ms": 6113.6,
+    "prompt_length_chars": 2352,
+    "response_length_chars": 962,
+    "tokens": {
+      "input_tokens": 657,
+      "output_tokens": 0,
+      "total_tokens": 657
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "which feature has the highest correlation with the outcome?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T11:17:23.554367",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 5.774,
+    "duration_ms": 5774.0,
+    "prompt_length_chars": 2352,
+    "response_length_chars": 896,
+    "tokens": {
+      "input_tokens": 657,
+      "output_tokens": 0,
+      "total_tokens": 657
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "which feature has the highest correlation with the outcome?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T11:17:59.824156",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.248,
+    "duration_ms": 6247.6,
+    "prompt_length_chars": 2352,
+    "response_length_chars": 962,
+    "tokens": {
+      "input_tokens": 657,
+      "output_tokens": 0,
+      "total_tokens": 657
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "which feature has the highest correlation with the outcome?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T11:18:37.111945",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 7.254,
+    "duration_ms": 7254.0,
+    "prompt_length_chars": 2352,
+    "response_length_chars": 1097,
+    "tokens": {
+      "input_tokens": 657,
+      "output_tokens": 0,
+      "total_tokens": 657
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "which feature has the highest correlation with the outcome?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T11:19:13.156593",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.005,
+    "duration_ms": 6005.0,
+    "prompt_length_chars": 2352,
+    "response_length_chars": 963,
+    "tokens": {
+      "input_tokens": 657,
+      "output_tokens": 0,
+      "total_tokens": 657
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "which feature has the highest correlation with the outcome?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T11:19:48.929443",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 5.757,
+    "duration_ms": 5756.5,
+    "prompt_length_chars": 2352,
+    "response_length_chars": 896,
+    "tokens": {
+      "input_tokens": 657,
+      "output_tokens": 0,
+      "total_tokens": 657
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "which feature has the highest correlation with the outcome?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T11:22:04.579830",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.3,
+    "duration_ms": 6300.5,
+    "prompt_length_chars": 2351,
+    "response_length_chars": 963,
+    "tokens": {
+      "input_tokens": 658,
+      "output_tokens": 0,
+      "total_tokens": 658
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "which feature has the highes correlation with the outcome?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T11:22:41.238374",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.626,
+    "duration_ms": 6625.6,
+    "prompt_length_chars": 2720,
+    "response_length_chars": 1061,
+    "tokens": {
+      "input_tokens": 804,
+      "output_tokens": 0,
+      "total_tokens": 804
+    },
+    "metadata": {
+      "iteration": 1,
+      "user_question": "which feature has the highes correlation with the outcome?",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-15T11:23:18.220367",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.949,
+    "duration_ms": 6949.2,
+    "prompt_length_chars": 2784,
+    "response_length_chars": 1061,
+    "tokens": {
+      "input_tokens": 818,
+      "output_tokens": 0,
+      "total_tokens": 818
+    },
+    "metadata": {
+      "iteration": 2,
+      "user_question": "which feature has the highes correlation with the outcome?",
+      "has_appended_data": true
+    }
+  },
+  {
+    "timestamp": "2025-12-15T11:23:50.257054",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.96,
+    "duration_ms": 1960.1,
+    "prompt_length_chars": 5699,
+    "response_length_chars": 43,
+    "tokens": {
+      "input_tokens": 1775,
+      "output_tokens": 0,
+      "total_tokens": 1775
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-15T11:25:54.265658",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 5.839,
+    "duration_ms": 5839.2,
+    "prompt_length_chars": 2730,
+    "response_length_chars": 907,
+    "tokens": {
+      "input_tokens": 746,
+      "output_tokens": 0,
+      "total_tokens": 746
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: which feature has the highes correlation with the outcome?\nAssist",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T11:26:26.113918",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.787,
+    "duration_ms": 1786.9,
+    "prompt_length_chars": 5292,
+    "response_length_chars": 43,
+    "tokens": {
+      "input_tokens": 1660,
+      "output_tokens": 0,
+      "total_tokens": 1660
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-15T11:31:33.420205",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.474,
+    "duration_ms": 3474.4,
+    "prompt_length_chars": 2996,
+    "response_length_chars": 368,
+    "tokens": {
+      "input_tokens": 810,
+      "output_tokens": 0,
+      "total_tokens": 810
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: which feature has the highes correlation with the outcome?\nAssist",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T11:32:05.165725",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.683,
+    "duration_ms": 1683.3,
+    "prompt_length_chars": 4761,
+    "response_length_chars": 32,
+    "tokens": {
+      "input_tokens": 1541,
+      "output_tokens": 0,
+      "total_tokens": 1541
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-15T11:33:35.483232",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 9.016,
+    "duration_ms": 9015.9,
+    "prompt_length_chars": 2984,
+    "response_length_chars": 1451,
+    "tokens": {
+      "input_tokens": 815,
+      "output_tokens": 0,
+      "total_tokens": 815
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: OKay so in the outcome category treat absence as outcome 0 and pr",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T11:35:19.216111",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.633,
+    "duration_ms": 3633.3,
+    "prompt_length_chars": 2943,
+    "response_length_chars": 349,
+    "tokens": {
+      "input_tokens": 825,
+      "output_tokens": 0,
+      "total_tokens": 825
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: what is the highest cholasterol in our dataset?\nAssistant:  max(c",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T11:35:50.858705",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.58,
+    "duration_ms": 1580.0,
+    "prompt_length_chars": 4750,
+    "response_length_chars": 70,
+    "tokens": {
+      "input_tokens": 1539,
+      "output_tokens": 0,
+      "total_tokens": 1539
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-15T11:37:33.209376",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 8.085,
+    "duration_ms": 8084.5,
+    "prompt_length_chars": 2956,
+    "response_length_chars": 1146,
+    "tokens": {
+      "input_tokens": 836,
+      "output_tokens": 0,
+      "total_tokens": 836
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: what typer of analyusis can i do on this data?\nAssistant: Given t",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T11:38:10.811678",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 7.545,
+    "duration_ms": 7544.8,
+    "prompt_length_chars": 5531,
+    "response_length_chars": 1079,
+    "tokens": {
+      "input_tokens": 1787,
+      "output_tokens": 0,
+      "total_tokens": 1787
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-15T11:38:42.557937",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.701,
+    "duration_ms": 1700.7,
+    "prompt_length_chars": 8979,
+    "response_length_chars": 43,
+    "tokens": {
+      "input_tokens": 2736,
+      "output_tokens": 0,
+      "total_tokens": 2736
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
   }
 ]
