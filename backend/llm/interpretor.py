@@ -5,6 +5,7 @@ import os
 import duckdb
 import google.generativeai as genai
 from .llm_tracker import log_llm_call
+from typing import Dict,List
 import time
 from dotenv import load_dotenv
 load_dotenv()
@@ -322,19 +323,162 @@ Please analyze the error and generate FIXED SQL.
         "last_error": [error_context[:500]]
     })
 
-
-def interpret_and_execute(plan: dict) -> str:
+def apply_preprocessing(con: duckdb.DuckDBPyConnection, operations: List[Dict]) -> None:
     """
-    Main entry point: load tables into DuckDB, generate SQL, execute, return result.
+    Apply preprocessing operations to DuckDB tables.
+    """
+    print(f"[PREPROCESSING] Applying {len(operations)} operations...")
+    
+    for op in operations:
+        op_type = op.get("type")
+        table = op.get("table")
+        
+        try:
+            if op_type == "encode":
+                column = op.get("column")
+                method = op.get("method", "label")
+                
+                if method == "label":
+                    # Label encoding: Assign integer to each unique value
+                    sql = f"""
+                    CREATE OR REPLACE TABLE {table} AS 
+                    SELECT *, 
+                        DENSE_RANK() OVER (ORDER BY {column}) - 1 AS {column}_encoded
+                    FROM {table}
+                    """
+                    con.execute(sql)
+                    print(f"[PREPROCESSING] ✓ Label encoded {table}.{column}")
+                
+                elif method == "onehot":
+                    # One-hot encoding: Create binary column for each category
+                    unique_vals = con.execute(f"SELECT DISTINCT {column} FROM {table}").fetchall()
+                    for val in unique_vals[:10]:  # Limit to 10 categories
+                        val_str = str(val[0]).replace("'", "''")
+                        col_name = f"{column}_{val_str}".replace(" ", "_")[:63]  # DuckDB name limit
+                        sql = f"""
+                        ALTER TABLE {table} 
+                        ADD COLUMN {col_name} INTEGER DEFAULT 0;
+                        UPDATE {table} SET {col_name} = 1 WHERE {column} = '{val_str}';
+                        """
+                        con.execute(sql)
+                    print(f"[PREPROCESSING] ✓ One-hot encoded {table}.{column}")
+                
+                elif method == "binary":
+                    # Binary encoding: 0/1 for 2 categories
+                    sql = f"""
+                    CREATE OR REPLACE TABLE {table} AS 
+                    SELECT *, 
+                        CASE WHEN {column} = (SELECT MIN({column}) FROM {table}) THEN 0 ELSE 1 END AS {column}_binary
+                    FROM {table}
+                    """
+                    con.execute(sql)
+                    print(f"[PREPROCESSING] ✓ Binary encoded {table}.{column}")
+            
+            elif op_type == "fill_missing":
+                column = op.get("column")
+                method = op.get("method", "mean")
+                
+                if method == "mean":
+                    sql = f"""
+                    UPDATE {table} 
+                    SET {column} = (SELECT AVG({column}) FROM {table} WHERE {column} IS NOT NULL)
+                    WHERE {column} IS NULL
+                    """
+                elif method == "median":
+                    sql = f"""
+                    UPDATE {table} 
+                    SET {column} = (SELECT MEDIAN({column}) FROM {table} WHERE {column} IS NOT NULL)
+                    WHERE {column} IS NULL
+                    """
+                elif method == "mode":
+                    sql = f"""
+                    UPDATE {table} 
+                    SET {column} = (SELECT {column} FROM {table} WHERE {column} IS NOT NULL 
+                                   GROUP BY {column} ORDER BY COUNT(*) DESC LIMIT 1)
+                    WHERE {column} IS NULL
+                    """
+                elif method == "drop":
+                    sql = f"DELETE FROM {table} WHERE {column} IS NULL"
+                
+                con.execute(sql)
+                print(f"[PREPROCESSING] ✓ Filled missing in {table}.{column} using {method}")
+            
+            elif op_type == "normalize":
+                columns = op.get("columns", [])
+                method = op.get("method", "standard")
+                
+                for column in columns:
+                    if method == "standard":
+                        # Z-score normalization
+                        sql = f"""
+                        CREATE OR REPLACE TABLE {table} AS 
+                        SELECT *, 
+                            ({column} - (SELECT AVG({column}) FROM {table})) / 
+                            (SELECT STDDEV({column}) FROM {table}) AS {column}_normalized
+                        FROM {table}
+                        """
+                    elif method == "minmax":
+                        # Min-max normalization
+                        sql = f"""
+                        CREATE OR REPLACE TABLE {table} AS 
+                        SELECT *, 
+                            ({column} - (SELECT MIN({column}) FROM {table})) / 
+                            ((SELECT MAX({column}) FROM {table}) - (SELECT MIN({column}) FROM {table})) 
+                            AS {column}_normalized
+                        FROM {table}
+                        """
+                    
+                    con.execute(sql)
+                    print(f"[PREPROCESSING] ✓ Normalized {table}.{column} using {method}")
+            
+            elif op_type == "drop_duplicates":
+                sql = f"""
+                CREATE OR REPLACE TABLE {table} AS 
+                SELECT DISTINCT * FROM {table}
+                """
+                con.execute(sql)
+                print(f"[PREPROCESSING] ✓ Dropped duplicates from {table}")
+            
+            elif op_type == "cast":
+                column = op.get("column")
+                target_type = op.get("target_type", "VARCHAR")
+                sql = f"""
+                CREATE OR REPLACE TABLE {table} AS 
+                SELECT *, CAST({column} AS {target_type}) AS {column}_casted
+                FROM {table}
+                """
+                con.execute(sql)
+                print(f"[PREPROCESSING] ✓ Casted {table}.{column} to {target_type}")
+        
+        except Exception as e:
+            print(f"[PREPROCESSING] ✗ Error applying {op_type} on {table}: {e}")
+
+
+def interpret_and_execute(plan: dict, existing_connection=None) -> str:
+    """
+    Main entry point: load tables → generate SQL → execute → return result.
+    
+    Args:
+        plan: Execution plan from planner
+        existing_connection: Pre-loaded DuckDB connection (from preprocessing)
     """
     if not plan.get("tables"):
         return "No tables specified in plan."
     
-    con = load_tables(plan["tables"])
+    # ✅ Use existing connection if provided (preprocessing already applied)
+    if existing_connection:
+        print("[INTERPRETER] Using existing DuckDB connection (preprocessed)")
+        con = existing_connection
+    else:
+        print("[INTERPRETER] Loading fresh data")
+        con = load_tables(plan["tables"])
     
+    # Execute with self-healing
     result_df = execute_with_self_healing(plan, con, max_retries=5)
     
-    con.close()
+    # ✅ Only close if we created a new connection
+    if not existing_connection:
+        con.close()
     
     print(f"[DEBUG] Final result:\n{result_df}")
     

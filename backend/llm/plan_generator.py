@@ -54,6 +54,7 @@ def merge_plans(old, new):
     merged["final_output"] = new.get("final_output") or old.get("final_output", "table")
     merged["execution_mode"] = new.get("execution_mode") or old.get("execution_mode", "sql")
     merged["needs_clarification"] = old.get("needs_clarification", False) or new.get("needs_clarification", False)
+    
     old_qs = old.get("clarification_questions", [])
     new_qs = new.get("clarification_questions", [])
     merged["clarification_questions"] = old_qs + [q for q in new_qs if q not in old_qs]
@@ -61,6 +62,16 @@ def merge_plans(old, new):
     old_meta = old.get("metadata_requests", [])
     new_meta = new.get("metadata_requests", [])
     merged["metadata_requests"] = old_meta + new_meta
+
+    # ✅ ADD: Merge preprocessing operations
+    old_prep = old.get("preprocessing_operations", [])
+    new_prep = new.get("preprocessing_operations", [])
+    # Deduplicate based on type+table+column
+    existing_keys = {(op.get("type"), op.get("table"), op.get("column")) for op in old_prep}
+    merged["preprocessing_operations"] = old_prep + [
+        op for op in new_prep 
+        if (op.get("type"), op.get("table"), op.get("column")) not in existing_keys
+    ]
 
     return merged
 
@@ -80,7 +91,87 @@ class State(dict):
     status: str |None
     pending_question: str |None
     appended_data: str | None 
+    preprocessing_operations: List[Dict] | None
+    preprocessing_applied: bool | None  # ✅ NEW: Track if preprocessing done
+    duckdb_connection: Any | None 
 
+def preprocessing_node(state: State) -> State:
+    """
+    Preprocessing node: Loads data and applies preprocessing operations.
+    Does NOT execute SQL - only prepares data.
+    """
+    print("[PREPROCESSING NODE] Applying data transformations...")
+    
+    plan = state.get("planner_output", {})
+    preprocessing_ops = plan.get("preprocessing_operations", [])
+    tables = plan.get("tables", [])
+    
+    if not preprocessing_ops:
+        print("[PREPROCESSING NODE] No operations to apply")
+        state["preprocessing_applied"] = True
+        return state
+    
+    if not tables:
+        print("[PREPROCESSING NODE] No tables specified")
+        state["preprocessing_applied"] = True
+        return state
+    
+    print(f"[PREPROCESSING NODE] Loading {len(tables)} table(s) for preprocessing...")
+    
+    try:
+        # Load tables into DuckDB
+        from .interpretor import load_tables, apply_preprocessing
+        
+        con = load_tables(tables)
+        print(f"[PREPROCESSING NODE] Tables loaded: {tables}")
+        
+        # Apply preprocessing operations
+        print(f"[PREPROCESSING NODE] Applying {len(preprocessing_ops)} operations...")
+        apply_preprocessing(con, preprocessing_ops)
+        
+        # ✅ IMPORTANT: Store the connection in state for SQL executor to use
+        state["duckdb_connection"] = con
+        state["preprocessing_applied"] = True
+        
+        print(f"[PREPROCESSING NODE] ✓ Preprocessing complete")
+        
+    except Exception as e:
+        print(f"[PREPROCESSING NODE] ✗ Error: {e}")
+        state["preprocessing_applied"] = False
+        # Don't fail completely - let SQL executor try anyway
+    
+    return state
+
+def sql_executor_node(state: State) -> State:
+    """Executes SQL query via interpreter."""
+    print("[SQL EXECUTOR NODE] Executing SQL query...")
+    plan = state.get("planner_output", {})
+    print(f"[DEBUG] SQL executor plan: {plan}")
+    
+    from .interpretor import interpret_and_execute
+    
+    # ✅ Pass preprocessed connection if available
+    preprocessed_con = state.get("duckdb_connection")
+    
+    if preprocessed_con:
+        print("[SQL EXECUTOR NODE] Using preprocessed DuckDB connection")
+        result = interpret_and_execute(plan, existing_connection=preprocessed_con)
+    else:
+        print("[SQL EXECUTOR NODE] Loading fresh data (no preprocessing)")
+        result = interpret_and_execute(plan)
+    
+    state["sql_result"] = result
+    print(f"[DEBUG] SQL result: {result[:100] if result else 'None'}...")
+    
+    # ✅ Clean up connection after execution
+    if preprocessed_con:
+        try:
+            preprocessed_con.close()
+            print("[SQL EXECUTOR NODE] Closed DuckDB connection")
+        except:
+            pass
+    
+    return state
 
 def load_schema_graph(graph_path: str = "schema_graph.json") -> dict:
     """Load the schema graph from Parquet-based workflow."""
@@ -147,31 +238,39 @@ def input_node(state: State) -> State:
     return state
 
 def planner_node(state: State) -> State:
-    """LLM Planner Node with iterative metadata retrieval."""
+    """LLM Planner Node with iterative metadata retrieval and preprocessing detection."""
     print("[PLANNER NODE] Running LLM planner...")
     print(f"[DEBUG] State before planner: user_question={state.get('user_question')}, appended_data={state.get('appended_data', '')[:100]}...")
     
     schema_graph = load_schema_graph()
-    raw_metadata = load_raw_metadata()  # ✅ Load raw metadata
+    raw_metadata = load_raw_metadata()
     
     schema_text = json.dumps(schema_graph, indent=2)
     
-    # ✅ Build comprehensive schema with all columns
+    # ✅ Build comprehensive schema with all columns AND sample values
     full_schema_text = "SCHEMA GRAPH:\n" + schema_text + "\n\n"
     full_schema_text += "AVAILABLE TABLES & COLUMNS:\n"
     for table_short, table_info in raw_metadata.get("tables", {}).items():
         original_name = table_info.get("original_name", "Unknown")
         columns = table_info.get("columns", [])
+        canonical_types = table_info.get("canonical_types", {})
+        sample_values = table_info.get("sample_values", {})
+        
         full_schema_text += f"\n{table_short} ({original_name}):\n"
         full_schema_text += f"  Columns: {', '.join(columns)}\n"
-        dtypes = table_info.get("dtypes", {})
-        if dtypes:
-            full_schema_text += f"  Types: {', '.join([f'{k}:{v}' for k, v in dtypes.items()][:10])}\n"
+        
+        if canonical_types:
+            full_schema_text += f"  Types: {', '.join([f'{k}:{v}' for k, v in list(canonical_types.items())[:10]])}\n"
+        
+        # ✅ ADD: Include sample values for preprocessing decisions
+        if sample_values:
+            full_schema_text += f"  Sample values:\n"
+            for col, vals in list(sample_values.items())[:5]:
+                full_schema_text += f"    {col}: {vals[:3]}\n"
     
     user_question = state["user_question"]
     previous_metadata = state.get("metadata_requests", [])
     
-    # Iterative prompting: Start with minimal, append retrieved data
     max_iterations = 3
     iteration = 0
     appended_data = state.get("appended_data", "")
@@ -182,7 +281,7 @@ def planner_node(state: State) -> State:
     while iteration < max_iterations:
         print(f"[DEBUG] Iteration {iteration}: appended_data preview={appended_data[:100]}...")
         prompt = f"""
-You are a query planner. Using the schema graph, available columns, and user question, generate a JSON plan.
+You are a query planner with preprocessing capabilities. Using the schema, columns, types, and sample values, generate a JSON plan.
 
 {full_schema_text}
 
@@ -200,25 +299,32 @@ OUTPUT: Valid JSON only. Example:
   "execution_mode": "sql",
   "needs_clarification": false,
   "clarification_questions": [],
-  "metadata_requests": []
+  "metadata_requests": [],
+  "preprocessing_operations": [
+    {{
+      "type": "encode",
+      "table": "T1",
+      "column": "sex",
+      "method": "label",
+      "reason": "Correlation requires numerical values"
+    }}
+  ]
 }}
+
+PREPROCESSING RULES:
+- Add "preprocessing_operations" array ONLY if query requires it
 
 Rules:
 - "sql" mode for ANY retrieval/filters/joins/aggs/grouping/comparisons/trends/best/worst/data-value usage.
 - "model" mode ONLY when answerable from schema/structure info (tables, columns, dtypes).
-- For BOTH modes: If you need additional info (specific columns/dtypes for tables), add to "metadata_requests".
-  * Example: ["columns for T1", "dtypes for T2"]
-  * On next iteration, you'll receive this data and can use it in final_output
-- For "model" mode schema questions:
-  * FIRST iteration: Request needed metadata
-  * SUBSEQUENT iterations: Use retrieved metadata to populate final_output with detailed answer
+- For BOTH modes: If you need additional info, add to "metadata_requests".
 - Never request full schema (already provided above).
 - Output ONLY valid JSON.
 - For "sql" mode, operations must describe steps convertible to pandas.
 - For complex analysis/comparisons/trends: ALWAYS use "sql".
 - Use EXACT column names from the schema above.
--if current_question has no nouns, verbs, metrics, doesnt make any meaning or is incomplete:
-     ask for clarification
+-if current_question has INCOMPLETE INFORMATION OR DOESNT MAKE MEANING:
+     ASK FOR CLARIFICATION
 - In final_output, provide the actual answer (not placeholders like "T1" or "table").
 """
         
@@ -232,7 +338,7 @@ Rules:
                 )
             )
             
-            time.sleep(30)  # Rate limiting: 20 second delay between API calls
+            time.sleep(30)  # Rate limiting
             start_time = time.time()
             response = model.generate_content(prompt)
             end_time = time.time()
@@ -277,6 +383,13 @@ Rules:
             combined_plan = merge_plans(combined_plan, current_plan)
             print(f"[DEBUG] Merged plan: {combined_plan}")
             
+            # ✅ Log preprocessing operations
+            preprocessing_ops = current_plan.get("preprocessing_operations", [])
+            if preprocessing_ops:
+                print(f"[PLANNER NODE] Detected {len(preprocessing_ops)} preprocessing operations:")
+                for op in preprocessing_ops:
+                    print(f"  - {op.get('type')} on {op.get('table')}.{op.get('column', op.get('columns', 'N/A'))}: {op.get('reason')}")
+            
             requests = current_plan.get("metadata_requests", [])
             if requests:
                 print(f"[DEBUG] Metadata requests found: {requests}")
@@ -289,6 +402,10 @@ Rules:
                 print("[DEBUG] No metadata requests, finalizing plan")
                 state["planner_output"] = combined_plan
                 state["metadata_requests"] = previous_metadata
+                
+                # ✅ Store preprocessing operations in state
+                state["preprocessing_operations"] = combined_plan.get("preprocessing_operations", [])
+                
                 print(f"[DEBUG] Final state from planner: planner_output={combined_plan}")
                 return state
                 
@@ -307,13 +424,15 @@ Rules:
                     "execution_mode": "sql",
                     "needs_clarification": False,
                     "clarification_questions": [],
-                    "metadata_requests": []
+                    "metadata_requests": [],
+                    "preprocessing_operations": []  # ✅ ADD
                 }
             print(f"[DEBUG] Error fallback plan: {state['planner_output']}")
             return state
     
     print("[DEBUG] Max iterations reached")
     state["planner_output"] = combined_plan if combined_plan else {}
+    state["preprocessing_operations"] = combined_plan.get("preprocessing_operations", []) if combined_plan else []
     print(f"[DEBUG] Max iter state: planner_output={state['planner_output']}")
     return state
 
@@ -325,6 +444,7 @@ def user_clarification_node(state: State) -> State:
     state["pending_question"] = questions[0] if questions else None
     print(f"[DEBUG] Pending question: {state['pending_question']}")
     return state
+
 
 def schema_info_node(state: State) -> State:
     """Provides schema details (if needed)."""
@@ -340,10 +460,30 @@ def sql_executor_node(state: State) -> State:
     print("[SQL EXECUTOR NODE] Executing SQL query...")
     plan = state.get("planner_output", {})
     print(f"[DEBUG] SQL executor plan: {plan}")
+    
     from .interpretor import interpret_and_execute
-    result = interpret_and_execute(plan)
+    
+    # ✅ Pass preprocessed connection if available
+    preprocessed_con = state.get("duckdb_connection")
+    
+    if preprocessed_con:
+        print("[SQL EXECUTOR NODE] Using preprocessed DuckDB connection")
+        result = interpret_and_execute(plan, existing_connection=preprocessed_con)
+    else:
+        print("[SQL EXECUTOR NODE] Loading fresh data (no preprocessing)")
+        result = interpret_and_execute(plan)
+    
     state["sql_result"] = result
     print(f"[DEBUG] SQL result: {result[:100] if result else 'None'}...")
+    
+    # ✅ Clean up connection after execution
+    if preprocessed_con:
+        try:
+            preprocessed_con.close()
+            print("[SQL EXECUTOR NODE] Closed DuckDB connection")
+        except:
+            pass
+    
     return state
 
 def output_node(state: State) -> State:
@@ -403,31 +543,39 @@ def output_node(state: State) -> State:
 def planner_router(state: State) -> str:
     """
     Routes based on planner_output flags.
+    Priority: clarification → metadata → preprocessing → execution
     """
     plan = state.get("planner_output", {})
     exec_mode = plan.get("execution_mode")
     print(f"[DEBUG] Router: plan={plan}")
-    print(f"[DEBUG] execution_mode: {exec_mode}")  
+    print(f"[DEBUG] execution_mode: {exec_mode}")
 
-    # ✅ REMOVED: Don't clear metadata_requests based on appended_data
-    # This allows model mode to still request metadata
-
+    # Priority 1: Clarification needed
     if plan.get("needs_clarification"):
         state["status"] = "need_clarification"
         print("[DEBUG] Routing to user_clarification")
         return "user_clarification"
 
-    # ✅ CHANGED: Check metadata_requests FIRST, regardless of execution_mode
+    # Priority 2: Metadata requests (schema info needed)
     if plan.get("metadata_requests"):
-        print("[DEBUG] Routing to schema_info for metadata requests") 
-        return "schema_info"  
+        print("[DEBUG] Routing to schema_info for metadata requests")
+        return "schema_info"
 
+    # Priority 3: Preprocessing needed (only for SQL mode)
     if exec_mode == "sql":
-        print("[DEBUG] Routing to sql_executor")  
+        preprocessing_ops = plan.get("preprocessing_operations", [])
+        
+        # ✅ Check if preprocessing is needed AND not yet applied
+        if preprocessing_ops and not state.get("preprocessing_applied", False):
+            print(f"[DEBUG] Routing to preprocessing ({len(preprocessing_ops)} operations)")
+            return "preprocessing"
+        
+        # Preprocessing done or not needed, go to SQL executor
+        print("[DEBUG] Routing to sql_executor")
         return "sql_executor"
 
-    # ✅ For model mode with no metadata requests, go straight to output
-    print("[DEBUG] Routing to output")  
+    # Priority 4: Model mode (no SQL, no preprocessing)
+    print("[DEBUG] Routing to output")
     return "output"
 
 
@@ -438,6 +586,7 @@ def build_graph():
     workflow.add_node("planner", planner_node)
     workflow.add_node("user_clarification", user_clarification_node)
     workflow.add_node("schema_info", schema_info_node)
+    workflow.add_node("preprocessing", preprocessing_node)  # ✅ NEW
     workflow.add_node("sql_executor", sql_executor_node)
     workflow.add_node("output", output_node)
 
@@ -447,21 +596,20 @@ def build_graph():
 
     workflow.add_conditional_edges(
         source="planner",
-        path=planner_router,  
+        path=planner_router,
         path_map={
             "user_clarification": "user_clarification",
             "schema_info": "schema_info",
+            "preprocessing": "preprocessing",  # ✅ NEW
             "sql_executor": "sql_executor",
             "output": "output",
         }
     )
 
     workflow.add_edge("user_clarification", END)
-
     workflow.add_edge("schema_info", "planner")
-
+    workflow.add_edge("preprocessing", "sql_executor")  # ✅ NEW: Preprocessing → SQL Executor
     workflow.add_edge("sql_executor", "output")
-
     workflow.add_edge("output", END)
 
     return workflow.compile()

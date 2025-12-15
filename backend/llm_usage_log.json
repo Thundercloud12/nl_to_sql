@@ -6973,5 +6973,220 @@
         "T1"
       ]
     }
+  },
+  {
+    "timestamp": "2025-12-15T15:41:52.255825",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 15.379,
+    "duration_ms": 15378.9,
+    "prompt_length_chars": 3111,
+    "response_length_chars": 2155,
+    "tokens": {
+      "input_tokens": 877,
+      "output_tokens": 0,
+      "total_tokens": 877
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: average cholesterol for patients with and without heart disease.\n",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T15:42:31.366717",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 9.039,
+    "duration_ms": 9038.7,
+    "prompt_length_chars": 6540,
+    "response_length_chars": 1157,
+    "tokens": {
+      "input_tokens": 2160,
+      "output_tokens": 0,
+      "total_tokens": 2160
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-15T15:43:13.767655",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 12.347,
+    "duration_ms": 12347.3,
+    "prompt_length_chars": 10162,
+    "response_length_chars": 1690,
+    "tokens": {
+      "input_tokens": 3277,
+      "output_tokens": 0,
+      "total_tokens": 3277
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-15T15:46:44.716550",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 11.364,
+    "duration_ms": 11364.4,
+    "prompt_length_chars": 3114,
+    "response_length_chars": 1572,
+    "tokens": {
+      "input_tokens": 878,
+      "output_tokens": 0,
+      "total_tokens": 878
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: average cholesterol for patients with and without heart disease.\n",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T15:51:09.509824",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 13.516,
+    "duration_ms": 13515.5,
+    "prompt_length_chars": 3115,
+    "response_length_chars": 1820,
+    "tokens": {
+      "input_tokens": 878,
+      "output_tokens": 0,
+      "total_tokens": 878
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: average cholesterol for patients with and without heart disease.\n",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T15:51:52.724509",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 13.128,
+    "duration_ms": 13127.5,
+    "prompt_length_chars": 6205,
+    "response_length_chars": 1648,
+    "tokens": {
+      "input_tokens": 2042,
+      "output_tokens": 0,
+      "total_tokens": 2042
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-15T15:55:09.953697",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.944,
+    "duration_ms": 3944.0,
+    "prompt_length_chars": 3144,
+    "response_length_chars": 422,
+    "tokens": {
+      "input_tokens": 881,
+      "output_tokens": 0,
+      "total_tokens": 881
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: what is the correlation of other factors with heart disease?\nAssi",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T15:55:41.792149",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.777,
+    "duration_ms": 1777.0,
+    "prompt_length_chars": 4815,
+    "response_length_chars": 95,
+    "tokens": {
+      "input_tokens": 1559,
+      "output_tokens": 0,
+      "total_tokens": 1559
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-15T15:56:13.844639",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 2.003,
+    "duration_ms": 2003.1,
+    "prompt_length_chars": 6419,
+    "response_length_chars": 120,
+    "tokens": {
+      "input_tokens": 1944,
+      "output_tokens": 0,
+      "total_tokens": 1944
+    },
+    "metadata": {
+      "error_context_provided": true,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-15T15:58:00.748706",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 5.298,
+    "duration_ms": 5297.6,
+    "prompt_length_chars": 3118,
+    "response_length_chars": 809,
+    "tokens": {
+      "input_tokens": 890,
+      "output_tokens": 0,
+      "total_tokens": 890
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: what is the correlation of all the factors with heart disease\nAss",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-15T15:58:32.390758",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 1.613,
+    "duration_ms": 1613.3,
+    "prompt_length_chars": 5194,
+    "response_length_chars": 24,
+    "tokens": {
+      "input_tokens": 1628,
+      "output_tokens": 0,
+      "total_tokens": 1628
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
   }
 ]
