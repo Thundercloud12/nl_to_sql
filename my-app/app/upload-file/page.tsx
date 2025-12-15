@@ -70,7 +70,7 @@ export default function UploadPage() {
       // Add user_id
       formData.append("user_id", user.id);
 
-      const response = await fetch("http://localhost:8000/upload_and_process", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/upload_and_process`, {
         method: "POST",
         body: formData,
       });
