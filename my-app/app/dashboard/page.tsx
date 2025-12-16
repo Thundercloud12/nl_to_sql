@@ -4,9 +4,21 @@ import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Plus, Database, Calendar, Trash2, MessageSquare, FileSpreadsheet, Loader2 } from "lucide-react";
+import { 
+  Plus, 
+  Database, 
+  Calendar, 
+  Trash2, 
+  MessageSquare, 
+  FileSpreadsheet, 
+  Loader2,
+  ExternalLink,
+  ChevronRight,
+  Activity
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface DataSource {
   id: string;
@@ -21,7 +33,7 @@ export default function DashboardPage() {
   const [dataSources, setDataSources] = useState<DataSource[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [startingChatId, setStartingChatId] = useState<string | null>(null); // ✅ ADD: Track which chat is starting
+  const [startingChatId, setStartingChatId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -33,7 +45,6 @@ export default function DashboardPage() {
       setLoading(true);
       const response = await fetch("/api/datasources/list");
       if (!response.ok) throw new Error("Failed to fetch data sources");
-      
       const data = await response.json();
       setDataSources(data.dataSources || []);
     } catch (err: any) {
@@ -45,9 +56,7 @@ export default function DashboardPage() {
 
   const handleStartChat = async (dataSourceId: string) => {
     try {
-      setStartingChatId(dataSourceId); // ✅ ADD: Set loading state
-      
-      // Initialize chat session with backend
+      setStartingChatId(dataSourceId);
       const backendResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/initialize_chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -57,39 +66,25 @@ export default function DashboardPage() {
         }),
       });
 
-      if (!backendResponse.ok) {
-        throw new Error("Failed to initialize chat");
-      }
-
+      if (!backendResponse.ok) throw new Error("Failed to initialize chat");
       const backendData = await backendResponse.json();
-      
-      // Navigate to chat with session info
       router.push(`/chat?dataSourceId=${dataSourceId}&sessionId=${backendData.session_id}`);
     } catch (err: any) {
       setError(err.message);
     } finally {
-      setStartingChatId(null); // ✅ ADD: Clear loading state
+      setStartingChatId(null);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this data source? This will also delete all associated sessions and conversations.")) return;
+    if (!confirm("Are you sure? This will permanently erase this data source and all AI memory associated with it.")) return;
 
     try {
       setLoading(true);
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/datasource/${id}?user_id=${user?.id}`, {
         method: "DELETE",
       });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.detail || "Failed to delete data source");
-      }
-
-      const data = await response.json();
-      console.log(`Deleted: ${data.deleted_sessions} sessions, ${data.deleted_conversations} conversations`);
-      
-      // Refresh the list
+      if (!response.ok) throw new Error("Failed to delete data source");
       await fetchDataSources();
     } catch (err: any) {
       setError(err.message);
@@ -101,90 +96,64 @@ export default function DashboardPage() {
   const getFileName = (url: string) => {
     const parts = url.split("/");
     const filename = parts[parts.length - 1] || "Unknown File";
-    return filename.length > 30 ? filename.slice(0, 27) + "..." : filename;
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
+    return filename.length > 25 ? filename.slice(0, 22) + "..." : filename;
   };
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="p-8 max-w-md">
-          <CardContent className="text-center">
-            <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
-            <p className="text-lg text-muted-foreground">Loading...</p>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen bg-[#0D0E12] flex items-center justify-center">
+        <Loader2 className="w-10 h-10 animate-spin text-[#00e599]" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-[#0D0E12] text-white pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+      {/* Background Decor */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#00e599]/5 blur-[120px]" />
+      </div>
+
+      <div className="max-w-7xl mx-auto relative z-10">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h1 className="text-4xl font-bold text-foreground mb-2">
-                Your Data Sources
-              </h1>
-              <p className="text-lg text-muted-foreground">
-                Manage your uploaded datasets and start conversations
-              </p>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+          >
+            <div className="flex items-center gap-2 text-[#00e599] font-mono text-xs mb-3 uppercase tracking-widest">
+              <Activity size={14} />
+              <span>System / Data Manager</span>
             </div>
+            <h1 className="text-4xl font-bold tracking-tight text-white">
+              Datasets
+            </h1>
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
             <Button
               onClick={() => router.push("/upload-file")}
-              size="lg"
-              className="group w-full sm:w-auto"
+              className="bg-[#00e599] text-black hover:bg-[#00e599]/90 font-bold rounded-lg px-8 h-12 shadow-[0_0_20px_-5px_#00e599]"
             >
-              <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform" />
-              Upload New
+              <Plus className="w-5 h-5 mr-2" />
+              Upload Source
             </Button>
-          </div>
-        </motion.div>
-
-        {/* Error Display */}
-        {error && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="mb-6"
-          >
-            <Card className="border-error/50 bg-error/10">
-              <CardContent className="pt-6">
-                <p className="text-error font-medium">⚠️ {error}</p>
-              </CardContent>
-            </Card>
           </motion.div>
+        </div>
+
+        {/* Error State */}
+        {error && (
+          <div className="mb-8 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm flex items-center gap-3">
+            <span className="flex-1">⚠️ {error}</span>
+            <button onClick={() => setError(null)} className="hover:text-white underline">Dismiss</button>
+          </div>
         )}
 
-        {/* Loading State */}
+        {/* Loading / Skeletons */}
         {loading && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
-              <Card key={i} className="animate-pulse">
-                <CardHeader>
-                  <div className="h-6 bg-muted rounded w-3/4 mb-2"></div>
-                  <div className="h-4 bg-muted rounded w-1/2"></div>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-4 bg-muted rounded w-full"></div>
-                </CardContent>
-                <CardFooter>
-                  <div className="h-10 bg-muted rounded w-full"></div>
-                </CardFooter>
-              </Card>
+              <div key={i} className="h-64 rounded-2xl bg-white/5 border border-white/5 animate-pulse" />
             ))}
           </div>
         )}
@@ -192,119 +161,116 @@ export default function DashboardPage() {
         {/* Empty State */}
         {!loading && dataSources.length === 0 && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center py-16"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="flex flex-col items-center justify-center py-20 border-2 border-dashed border-white/5 rounded-[2rem] bg-white/[0.02]"
           >
-            <Card className="max-w-md mx-auto p-8 border-dashed border-2">
-              <CardContent className="space-y-4">
-                <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto">
-                  <Database className="w-10 h-10 text-muted-foreground" />
-                </div>
-                <h3 className="text-2xl font-semibold text-foreground">
-                  No Data Sources Yet
-                </h3>
-                <p className="text-muted-foreground">
-                  Upload your first dataset to start asking questions and getting AI-powered insights
-                </p>
-                <Button
-                  onClick={() => router.push("/upload-file")}
-                  size="lg"
-                  className="mt-4"
-                >
-                  <Plus className="w-5 h-5 mr-2" />
-                  Upload Data Source
-                </Button>
-              </CardContent>
-            </Card>
+            <div className="w-20 h-20 bg-zinc-900 rounded-3xl flex items-center justify-center mb-6 text-zinc-600">
+              <Database size={40} />
+            </div>
+            <h3 className="text-xl font-bold mb-2">No active sources found</h3>
+            <p className="text-zinc-500 mb-8 max-w-xs text-center">
+              Connect a CSV or Excel file to begin training your AI agent on your data.
+            </p>
+            <Button variant="outline" onClick={() => router.push("/upload-file")} className="border-white/10 hover:bg-white/5">
+              Get Started
+            </Button>
           </motion.div>
         )}
 
-        {/* Data Sources Grid */}
-        {!loading && dataSources.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {dataSources.map((ds, index) => (
-              <motion.div
-                key={ds.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Card className="h-full hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 group">
-                  <CardHeader>
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="w-14 h-14 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                        <FileSpreadsheet className="w-7 h-7 text-white" />
-                      </div>
+        {/* Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {dataSources.map((ds, index) => (
+            <motion.div
+              key={ds.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
+            >
+              <Card className="bg-zinc-900/40 border-white/5 hover:border-[#00e599]/30 transition-all duration-300 overflow-hidden group">
+                <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#00e599]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                
+                <CardHeader className="pb-4">
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="p-3 bg-zinc-800 rounded-xl text-[#00e599] group-hover:bg-[#00e599] group-hover:text-black transition-colors duration-300">
+                      <FileSpreadsheet size={24} />
                     </div>
-                    <CardTitle className="text-xl line-clamp-2 text-foreground">
-                      {getFileName(ds.cloudinaryUrl)}
-                    </CardTitle>
-                    <CardDescription className="flex items-center text-sm mt-2">
-                      <Calendar className="w-4 h-4 mr-1.5" />
-                      {formatDate(ds.createdAt)}
-                    </CardDescription>
-                  </CardHeader>
+                    <div className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest">
+                      Ready
+                    </div>
+                  </div>
+                  <CardTitle className="text-lg font-bold text-zinc-100 group-hover:text-white transition-colors truncate">
+                    {getFileName(ds.cloudinaryUrl)}
+                  </CardTitle>
+                  <CardDescription className="text-zinc-500 font-mono text-[11px] flex items-center gap-2">
+                    <Calendar size={12} />
+                    {new Date(ds.createdAt).toLocaleDateString()}
+                  </CardDescription>
+                </CardHeader>
+                
+                <CardContent>
+                    <div className="p-3 bg-black/40 rounded-lg border border-white/5 flex items-center justify-between">
+                        <span className="text-[10px] font-mono text-zinc-500 italic">UID: {ds.id.slice(0, 8)}</span>
+                        <ExternalLink size={12} className="text-zinc-700" />
+                    </div>
+                </CardContent>
+
+                <CardFooter className="flex gap-2 pt-2">
+                  <Button
+                    onClick={() => handleStartChat(ds.id)}
+                    disabled={startingChatId === ds.id}
+                    className={cn(
+                        "flex-1 font-bold transition-all",
+                        startingChatId === ds.id 
+                            ? "bg-zinc-800 text-zinc-500" 
+                            : "bg-white text-black hover:bg-[#00e599]"
+                    )}
+                    size="sm"
+                  >
+                    {startingChatId === ds.id ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                    )}
+                    {startingChatId === ds.id ? "Initializing..." : "Query Data"}
+                  </Button>
                   
-                  <CardContent>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">ID:</span>
-                      <code className="text-xs bg-muted px-2 py-1 rounded font-mono">
-                        {ds.id.slice(0, 12)}...
-                      </code>
-                    </div>
-                  </CardContent>
+                  <Button
+                    onClick={() => handleDelete(ds.id)}
+                    variant="ghost"
+                    size="sm"
+                    className="text-zinc-600 hover:text-red-400 hover:bg-red-400/10 transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </CardFooter>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
 
-                  <CardFooter className="flex gap-2">
-                    <Button
-                      onClick={() => handleStartChat(ds.id)}
-                      disabled={startingChatId === ds.id} // ✅ ADD: Disable while loading
-                      className="flex-1 group/btn"
-                      size="sm"
-                    >
-                      {startingChatId === ds.id ? ( // ✅ ADD: Show spinner when loading
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      ) : (
-                        <MessageSquare className="w-4 h-4 mr-2 group-hover/btn:scale-110 transition-transform" />
-                      )}
-                      {startingChatId === ds.id ? "Starting..." : "Start Chat"} {/* ✅ ADD: Change text */}
-                    </Button>
-                    <Button
-                      onClick={() => handleDelete(ds.id)}
-                      variant="outline"
-                      size="sm"
-                      className="text-error hover:bg-error/10 hover:border-error/50 border-border"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </CardFooter>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        )}
-
-        {/* Stats Section */}
+        {/* Stats Section / Footer Info */}
         {!loading && dataSources.length > 0 && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="mt-12"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="mt-16 border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4"
           >
-            <Card className="bg-gradient-to-br from-primary/10 to-accent/10 border-primary/20">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Total Data Sources</p>
-                    <p className="text-3xl font-bold text-foreground">{dataSources.length}</p>
-                  </div>
-                  <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center">
-                    <Database className="w-8 h-8 text-primary" />
-                  </div>
+            <div className="flex items-center gap-8">
+                <div>
+                    <p className="text-xs text-zinc-500 font-mono uppercase mb-1">Active Sources</p>
+                    <p className="text-2xl font-bold">{dataSources.length}</p>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="h-8 w-px bg-white/10" />
+                <div>
+                    <p className="text-xs text-zinc-500 font-mono uppercase mb-1">Storage Status</p>
+                    <p className="text-2xl font-bold text-[#00e599]">Optimized</p>
+                </div>
+            </div>
+            <p className="text-xs text-zinc-600 font-mono">
+                System: AI Inference Engine v2.4.0-stable
+            </p>
           </motion.div>
         )}
       </div>
