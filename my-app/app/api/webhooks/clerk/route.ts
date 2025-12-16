@@ -64,11 +64,11 @@ export async function POST(req: Request) {
         throw new Error("Primary email not found for user creation");
       }
 
-      await prisma.user.create({
-        data: {
-          id,
-          email, // Now guaranteed to be string
-        },
+      // ✅ FIX: Use upsert to avoid duplicate errors
+      await prisma.user.upsert({
+        where: { id },
+        create: { id, email },
+        update: { email },
       });
     } else if (event.type === "user.updated") {
       const {
@@ -86,13 +86,11 @@ export async function POST(req: Request) {
         throw new Error("Primary email not found for user update");
       }
 
-      await prisma.user.update({
-        where: {
-          id,
-        },
-        data: {
-          email, // Now guaranteed to be string
-        },
+      // ✅ FIX: Use upsert for updates too (handles missing user)
+      await prisma.user.upsert({
+        where: { id },
+        create: { id, email },
+        update: { email },
       });
     } else if (event.type === "user.deleted") {
       const { id } = event.data;

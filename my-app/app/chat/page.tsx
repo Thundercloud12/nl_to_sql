@@ -4,15 +4,30 @@ import { useState, useEffect, useRef, use } from "react";
 import { useUser, UserButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Loader2, AlertCircle, Lightbulb, X, ArrowLeft, Bot, User as UserIcon } from "lucide-react";
+import { 
+  Send, 
+  Loader2, 
+  AlertCircle, 
+  Lightbulb, 
+  X, 
+  ArrowLeft, 
+  Bot, 
+  User as UserIcon,
+  ShieldCheck,
+  Zap,
+  ChevronDown,
+  Terminal,
+  Cpu
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface Message {
   role: "user" | "assistant";
   content: string;
-  insight?: string; // Add optional insight field
+  insight?: string;
 }
 
 interface ClarificationState {
@@ -22,7 +37,6 @@ interface ClarificationState {
   session_id: string;
 }
 
-// ✅ FIX: searchParams is a Promise, not an object
 interface ChatPageProps {
   searchParams: Promise<{
     dataSourceId?: string;
@@ -30,12 +44,9 @@ interface ChatPageProps {
   }>;
 }
 
-// ✅ CHANGED: Accept searchParams as prop
 export default function ChatPage({ searchParams }: ChatPageProps) {
   const { user } = useUser();
   const router = useRouter();
-  
-  // ✅ FIX: Unwrap the Promise using React.use()
   const params = use(searchParams);
   const dataSourceId = params.dataSourceId;
   const sessionId = params.sessionId;
@@ -47,23 +58,19 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
   const [error, setError] = useState<string | null>(null);
   const [clarification, setClarification] = useState<ClarificationState | null>(null);
   const [clarificationInput, setClarificationInput] = useState("");
-  const [expandedMessages, setExpandedMessages] = useState<Set<number>>(new Set()); // Track expanded messages
+  const [expandedMessages, setExpandedMessages] = useState<Set<number>>(new Set());
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, loading]);
 
-  // Initialize session on mount and load conversation history
   useEffect(() => {
     if (!user || !dataSourceId || !sessionId) return;
 
     const initSession = async () => {
       try {
         setLoading(true);
-        
-        // Re-initialize chat to get conversation history
         const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/initialize_chat`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -73,601 +80,367 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
           }),
         });
 
-        if (!response.ok) {
-          throw new Error("Failed to load chat session");
-        }
-
+        if (!response.ok) throw new Error("Failed to load session");
         const data = await response.json();
         
         setSession({
           id: data.session_id,
           conversationHistory: data.conversation_history || [],
-          lastResult: data.last_result,
-          lastPlan: data.last_plan,
         });
 
-        // ✅ CHANGED: Combine assistant + insight messages when loading history
-        if (data.conversation_history && data.conversation_history.length > 0) {
+        if (data.conversation_history) {
           const loadedMessages: Message[] = [];
           let i = 0;
-          
           while (i < data.conversation_history.length) {
             const msg = data.conversation_history[i];
-            
             if (msg.role === "assistant") {
-              // Check if next message is an insight
               const nextMsg = data.conversation_history[i + 1];
               if (nextMsg && nextMsg.role === "insight") {
-                // Combine them
-                loadedMessages.push({
-                  role: "assistant",
-                  content: msg.content,
-                  insight: nextMsg.content
-                });
-                i += 2; // Skip the next insight message
+                loadedMessages.push({ role: "assistant", content: msg.content, insight: nextMsg.content });
+                i += 2;
               } else {
-                // Just assistant message
-                loadedMessages.push({
-                  role: "assistant",
-                  content: msg.content
-                });
+                loadedMessages.push({ role: "assistant", content: msg.content });
                 i += 1;
               }
-            } else if (msg.role === "user") {
-              // User message
-              loadedMessages.push({
-                role: "user",
-                content: msg.content
-              });
-              i += 1;
             } else {
-              // Skip other roles (like old insight messages that weren't combined)
+              loadedMessages.push({ role: msg.role, content: msg.content });
               i += 1;
             }
           }
-          
           setMessages(loadedMessages);
-          console.log(`[CHAT] Loaded ${loadedMessages.length} combined messages`);
         }
       } catch (err: any) {
         setError(err.message);
-        console.error("Error loading session:", err);
       } finally {
         setLoading(false);
       }
     };
-
     initSession();
   }, [user, dataSourceId, sessionId]);
 
-  // Send message
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!userInput.trim() || !session || !dataSourceId) return;
+    if (!userInput.trim() || loading || !session) return;
 
     const currentInput = userInput;
     setUserInput("");
     setLoading(true);
-    setError(null);
-
-    // Add user message immediately for better UX
     setMessages((prev) => [...prev, { role: "user", content: currentInput }]);
 
     try {
       const isFirstMessage = messages.length === 0;
       const endpoint = isFirstMessage ? "/query" : "/continue";
 
-      const payload: any = {
-        question: currentInput,
-        user_id: user?.id,
-        data_source_id: dataSourceId,
-      };
-
-      if (!isFirstMessage) {
-        payload.session_id = session.id;
-      }
-
       const response = await fetch(process.env.NEXT_PUBLIC_BACKEND_URL + endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          question: currentInput,
+          user_id: user?.id,
+          data_source_id: dataSourceId,
+          session_id: session.id
+        }),
       });
 
-      if (!response.ok) {
-        throw new Error(`API error: ${response.statusText}`);
-      }
-
       const data = await response.json();
-
-      // Update session ID if new
-      if (data.session_id && isFirstMessage) {
-        setSession((prev: any) => ({ ...prev, id: data.session_id }));
-      }
-
-      // Handle clarification needed
       if (data.status === "need_clarification") {
-        setClarification({
-          status: "need_clarification",
-          question: data.question,
-          all_questions: data.all_questions || [],
-          session_id: data.session_id,
-        });
-      } 
-      // Handle success
-      else if (data.status === "completed") {
-        // ✅ CHANGED: Combine answer and insight into single message
+        setClarification({ ...data });
+      } else {
         setMessages((prev) => [...prev, { 
           role: "assistant", 
           content: data.answer || "", 
-          insight: data.insights || undefined 
+          insight: data.insights 
         }]);
       }
     } catch (err: any) {
-      setError(err.message);
-      // Remove the optimistic user message on error
-      setMessages((prev) => prev.slice(0, -1));
+      setError("Communication failure. Please retry.");
     } finally {
       setLoading(false);
     }
   };
 
-  // Handle clarification response
-  const handleClarification = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!clarificationInput.trim() || !clarification) return;
+  const handleClarificationSubmit = async () => {
+    if (!clarificationInput.trim() || loading) return;
 
-    const currentInput = clarificationInput;
-    setClarificationInput("");
     setLoading(true);
-    setError(null);
-
-    setMessages((prev) => [...prev, { role: "user", content: currentInput }]);
+    setClarification(null); // Clear UI immediately
 
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/clarify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          session_id: clarification.session_id,
-          answer: currentInput,
+          session_id: clarification?.session_id,
+          answer: clarificationInput
         }),
       });
 
-      if (!response.ok) {
-        throw new Error(`API error: ${response.statusText}`);
-      }
-
       const data = await response.json();
-
+      
       if (data.status === "need_clarification") {
-        setClarification({
-          status: "need_clarification",
-          question: data.question,
-          all_questions: data.all_questions || [],
-          session_id: data.session_id,
-        });
-      } 
-      else if (data.status === "completed") {
-        // ✅ CHANGED: Combine answer and insight into single message
-        setMessages((prev) => [...prev, { 
-          role: "assistant", 
-          content: data.answer || "", 
-          insight: data.insights || undefined 
-        }]);
-        
-        setClarification(null);
+        // Another clarification needed
+        setClarification(data);
+      } else {
+        // Success - add to messages
+        setMessages((prev) => [
+          ...prev,
+          { role: "user", content: clarificationInput },
+          { role: "assistant", content: data.answer || "", insight: data.insights }
+        ]);
       }
+      
+      setClarificationInput("");
     } catch (err: any) {
-      setError(err.message);
-      setMessages((prev) => prev.slice(0, -1));
+      setError("Failed to process clarification");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCloseChat = async () => {
-    await saveSession();
-    router.push("/dashboard");
+  const toggleExpansion = (idx: number) => {
+    const newSet = new Set(expandedMessages);
+    newSet.has(idx) ? newSet.delete(idx) : newSet.add(idx);
+    setExpandedMessages(newSet);
   };
 
-  const handleBackButton = () => {
-    // Just navigate back without saving
-    router.push("/dashboard");
-  };
-
-  const saveSession = async () => {
-    if (!session || !dataSourceId || messages.length === 0) {
-      console.log("[CHAT] Nothing to save");
+  const handleBackToDashboard = async () => {
+    if (!session?.id) {
+      router.push("/dashboard");
       return;
     }
 
     try {
-      const formattedMessages = messages.map(msg => ({
-        role: msg.role,
-        content: msg.content
-      }));
-
-      console.log(`[CHAT] Saving session with ${formattedMessages.length} messages`);
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/save_session`, {
+      // Save session before leaving
+      await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/save_session`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           session_id: session.id,
           user_id: user?.id,
           data_source_id: dataSourceId,
-          conversation_history: formattedMessages,
-          last_result: session.lastResult,
-          last_plan: session.lastPlan,
+          conversation_history: messages.map(m => ({
+            role: m.role,
+            content: m.role === "assistant" ? (m.insight || m.content) : m.content
+          })),
+          last_result: session.last_result,
+          last_plan: session.last_plan
         }),
       });
-
-      if (response.ok) {
-        console.log("[CHAT] Session saved successfully");
-      } else {
-        console.error("[CHAT] Failed to save session:", await response.text());
-      }
+      console.log("[CHAT] Session saved successfully");
     } catch (err) {
-      console.error("[CHAT] Error saving session:", err);
+      console.error("[CHAT] Failed to save session:", err);
+    } finally {
+      router.push("/dashboard");
     }
   };
 
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="p-8 max-w-md">
-          <CardContent className="text-center">
-            <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
-            <p className="text-lg text-muted-foreground">Please sign in to continue</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  if (!dataSourceId || !sessionId) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="p-8 text-center max-w-md">
-          <CardContent className="space-y-4">
-            <AlertCircle className="w-12 h-12 text-warning mx-auto" />
-            <h2 className="text-xl font-semibold text-foreground">No Data Source Selected</h2>
-            <p className="text-muted-foreground">Please select a data source from the dashboard</p>
-            <Button onClick={() => router.push("/dashboard")} size="lg">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Go to Dashboard
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  // Toggle expansion for a message
-  const toggleExpansion = (idx: number) => {
-    setExpandedMessages(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(idx)) {
-        newSet.delete(idx);
-      } else {
-        newSet.add(idx);
-      }
-      return newSet;
-    });
-  };
-
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen bg-[#0D0E12] text-white flex flex-col font-sans">
+      {/* Background Effect */}
+      <div className="fixed inset-0 pointer-events-none opacity-20">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:32px_32px]"></div>
+      </div>
+
       {/* Header */}
-      <motion.div
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-40"
-      >
-        <div className="max-w-5xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleBackButton}
-                className="group"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-                Back
-              </Button>
-              <div>
-                <h1 className="text-xl font-semibold text-foreground">Chat Session</h1>
-                <p className="text-xs text-muted-foreground">
-                  Session: {session?.id?.slice(0, 12) || "Loading"}...
-                </p>
+      <header className="sticky top-0 z-50 bg-[#0D0E12]/80 backdrop-blur-xl border-b border-white/5 px-6 py-4">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button 
+              variant="ghost" 
+              onClick={handleBackToDashboard}  // ✅ CHANGE THIS
+              className="text-zinc-500 hover:text-white p-0 h-auto"
+            >
+              <ArrowLeft size={20} />
+            </Button>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="font-bold tracking-tight">AI Data Agent</h1>
+                <div className="px-2 py-0.5 rounded-full bg-[#00e599]/10 text-[#00e599] text-[10px] font-mono border border-[#00e599]/20 flex items-center gap-1">
+                  <div className="w-1 h-1 bg-[#00e599] rounded-full animate-pulse" />
+                  LIVE_SYNC
+                </div>
               </div>
-            </div>
-            <div className="flex items-center space-x-3">
-              <Button
-                onClick={handleCloseChat}
-                variant="outline"
-                size="sm"
-              >
-                Close & Save
-              </Button>
-              <UserButton
-                afterSignOutUrl="/"
-                appearance={{
-                  elements: {
-                    avatarBox: "w-9 h-9",
-                  },
-                }}
-              />
+              <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mt-0.5">
+                Session: {session?.id?.slice(0, 8) || "Initialising"}
+              </p>
             </div>
           </div>
+          <div className="flex items-center gap-3">
+             <div className="hidden md:flex flex-col items-end mr-2">
+                <span className="text-[10px] text-zinc-500 font-mono">ENCRYPTION</span>
+                <span className="text-[10px] text-[#00e599] font-mono flex items-center gap-1">
+                   <ShieldCheck size={10} /> AES-256
+                </span>
+             </div>
+             <UserButton appearance={{ elements: { avatarBox: "w-8 h-8 border border-white/10" } }} />
+          </div>
         </div>
-      </motion.div>
+      </header>
 
-      {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto py-8">
-        <div className="max-w-4xl mx-auto px-4 space-y-6">
-          {loading && messages.length === 0 && (
-            <div className="text-center py-12">
-              <Card className="max-w-md mx-auto p-8">
-                <CardContent className="flex flex-col items-center space-y-4">
-                  <Loader2 className="w-12 h-12 text-primary animate-spin" />
-                  <p className="text-muted-foreground">Loading conversation...</p>
-                </CardContent>
-              </Card>
-            </div>
-          )}
-
-          <AnimatePresence>
-            {!loading && messages.length === 0 && !clarification && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="text-center py-12"
-              >
-                <Card className="max-w-md mx-auto p-8 border-dashed border-2">
-                  <CardContent className="space-y-4">
-                    <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center mx-auto">
-                      <Bot className="w-8 h-8 text-white" />
+      {/* Message Feed */}
+      <main className="flex-1 overflow-y-auto relative z-10 px-4">
+        <div className="max-w-4xl mx-auto py-12 space-y-8">
+          <AnimatePresence mode="popLayout">
+            {messages.length === 0 && !loading && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-20">
+                    <div className="w-16 h-16 bg-zinc-900 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-white/5">
+                        <Terminal className="text-[#00e599]" size={32} />
                     </div>
-                    <h3 className="text-xl font-semibold text-foreground">
-                      Start Your Conversation
-                    </h3>
-                    <p className="text-muted-foreground">
-                      Ask any question about your data in plain English
-                    </p>
-                  </CardContent>
-                </Card>
-              </motion.div>
+                    <h2 className="text-2xl font-bold text-white mb-2">Awaiting Instructions</h2>
+                    <p className="text-zinc-500 max-w-sm mx-auto">Ask a question about the uploaded dataset. The AI will analyze schema and provide insights.</p>
+                </motion.div>
             )}
 
             {messages.map((msg, idx) => (
               <motion.div
                 key={idx}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ delay: idx * 0.05 }}
-                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} items-start gap-3`}
-              >
-                {msg.role !== "user" && (
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center flex-shrink-0 mt-1">
-                    {msg.role === "assistant" && msg.insight ? (
-                      <Lightbulb className="w-4 h-4 text-white" />
-                    ) : (
-                      <Bot className="w-4 h-4 text-white" />
-                    )}
-                  </div>
+                className={cn(
+                  "flex flex-col",
+                  msg.role === "user" ? "items-end" : "items-start"
                 )}
+              >
+                <div className={cn(
+                  "max-w-[85%] group relative",
+                  msg.role === "user" ? "order-1" : "order-2"
+                )}>
+                  {/* User Message */}
+                  {msg.role === "user" ? (
+                    <div className="bg-[#00e599] text-black font-medium px-6 py-3 rounded-2xl rounded-tr-none shadow-[0_10px_30px_-10px_rgba(0,229,153,0.3)]">
+                      {msg.content}
+                    </div>
+                  ) : (
+                    /* Assistant Message */
+                    <div className={cn(
+                        "bg-zinc-900/50 border border-white/10 backdrop-blur-md px-6 py-4 rounded-2xl rounded-tl-none",
+                        msg.insight && "border-[#00e599]/30 shadow-[0_0_40px_-10px_rgba(0,229,153,0.1)]"
+                    )}>
+                      {msg.insight && (
+                        <div className="flex items-center gap-2 text-[#00e599] text-[10px] font-mono font-bold uppercase tracking-widest mb-3">
+                          <Zap size={12} fill="currentColor" />
+                          AI Synthesized Insight
+                        </div>
+                      )}
+                      
+                      <div className="text-sm leading-relaxed text-zinc-100 whitespace-pre-wrap">
+                        {msg.insight || msg.content}
+                      </div>
 
-                <div
-                  className={`max-w-2xl ${
-                    msg.role === "user"
-                      ? "bg-primary text-primary-foreground rounded-2xl rounded-br-sm shadow-lg"
-                      : "bg-card border border-border rounded-2xl rounded-bl-sm shadow-sm"
-                  } px-5 py-3.5`}
-                >
-                  {msg.role === "assistant" && msg.insight && (
-                    <div className="flex items-center space-x-2 mb-2">
-                      <span className="font-semibold text-accent text-sm">AI Insight</span>
+                      {msg.insight && (
+                        <div className="mt-4 pt-4 border-t border-white/5">
+                          <button 
+                            onClick={() => toggleExpansion(idx)}
+                            className="flex items-center gap-2 text-xs text-zinc-500 hover:text-white transition-colors"
+                          >
+                            <Cpu size={12} />
+                            {expandedMessages.has(idx) ? "Hide technical output" : "Show technical output"}
+                            <ChevronDown size={12} className={cn("transition-transform", expandedMessages.has(idx) && "rotate-180")} />
+                          </button>
+                          
+                          <AnimatePresence>
+                            {expandedMessages.has(idx) && (
+                              <motion.div 
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                className="overflow-hidden"
+                              >
+                                <div className="mt-3 p-3 bg-black/50 rounded-lg border border-white/5 text-[12px] font-mono text-zinc-400 leading-relaxed">
+                                  {msg.content}
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+                      )}
                     </div>
                   )}
-                  
-                  {/* ✅ CHANGED: Conditional rendering based on insight */}
-                  {msg.role === "assistant" ? (
-                    <>
-                      {/* Show insight if available, otherwise show raw answer */}
-                      <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                        {msg.insight || msg.content}
-                      </p>
-                      
-                      {/* Show expansion toggle if insight exists */}
-                      {msg.insight && (
-                        <button
-                          onClick={() => toggleExpansion(idx)}
-                          className="mt-2 text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center space-x-1"
-                        >
-                          <span>{expandedMessages.has(idx) ? "Hide" : "Show"} raw response</span>
-                          <svg 
-                            className={`w-3 h-3 transition-transform ${expandedMessages.has(idx) ? "rotate-180" : ""}`} 
-                            fill="none" 
-                            stroke="currentColor" 
-                            viewBox="0 0 24 24"
-                          >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                          </svg>
-                        </button>
-                      )}
-                      
-                      {/* Expandable raw response */}
-                      {msg.insight && expandedMessages.has(idx) && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          className="mt-3 pt-3 border-t border-border/50"
-                        >
-                          <p className="text-xs text-muted-foreground mb-1">Raw Response:</p>
-                          <p className="text-sm leading-relaxed whitespace-pre-wrap text-muted-foreground">
-                            {msg.content}
-                          </p>
-                        </motion.div>
-                      )}
-                    </>
-                  ) : (
-                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
-                  )}
                 </div>
-
-                {msg.role === "user" && (
-                  <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center flex-shrink-0 mt-1">
-                    <UserIcon className="w-4 h-4 text-secondary-foreground" />
-                  </div>
-                )}
               </motion.div>
             ))}
-          </AnimatePresence>
 
-          {/* Clarification UI */}
-          <AnimatePresence>
-            {clarification && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-              >
-                <Card className="border-warning/50 bg-warning/5">
-                  <CardContent className="pt-6">
-                    <div className="flex items-start space-x-3 mb-4">
-                      <AlertCircle className="w-6 h-6 text-warning flex-shrink-0 mt-1" />
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-foreground mb-2">
-                          Clarification Needed
-                        </h3>
-                        <p className="text-muted-foreground mb-4">{clarification.question}</p>
-
-                        {clarification.all_questions.length > 0 && (
-                          <div className="space-y-2 mb-4">
-                            <p className="text-sm font-medium text-foreground">Quick answers:</p>
-                            {clarification.all_questions.map((q, idx) => (
-                              <button
-                                key={idx}
-                                onClick={() => setClarificationInput(q)}
-                                className="block w-full text-left px-4 py-3 bg-background border-2 border-border rounded-lg hover:border-primary hover:bg-muted/50 text-sm text-foreground transition-all duration-200 hover:shadow-md"
-                              >
-                                {q}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-
-                        <form onSubmit={handleClarification} className="flex gap-2">
-                          <Input
-                            value={clarificationInput}
-                            onChange={(e) => setClarificationInput(e.target.value)}
-                            placeholder="Type your answer..."
-                            className="flex-1"
-                          />
-                          <Button
-                            type="submit"
-                            disabled={loading || !clarificationInput.trim()}
-                          >
-                            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                          </Button>
-                        </form>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Typing Indicator */}
-          {loading && !clarification && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex justify-start items-start gap-3"
-            >
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center flex-shrink-0">
-                <Bot className="w-4 h-4 text-white" />
-              </div>
-              <div className="bg-card border border-border rounded-2xl rounded-bl-sm shadow-sm px-5 py-3.5">
-                <div className="flex space-x-2">
-                  <div className="w-2 h-2 bg-muted-foreground/60 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></div>
-                  <div className="w-2 h-2 bg-muted-foreground/60 rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></div>
-                  <div className="w-2 h-2 bg-muted-foreground/60 rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></div>
+            {/* Thinking State */}
+            {loading && !clarification && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-zinc-900 border border-white/5 flex items-center justify-center">
+                  <Loader2 size={14} className="animate-spin text-[#00e599]" />
                 </div>
-              </div>
-            </motion.div>
-          )}
-
-          <div ref={messagesEndRef} />
-        </div>
-      </div>
-
-      {/* Input Area */}
-      {!clarification && (
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="border-t border-border bg-card/50 backdrop-blur-sm sticky bottom-0"
-        >
-          <div className="max-w-4xl mx-auto px-4 py-6">
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mb-4"
-              >
-                <Card className="border-error/50 bg-error/10">
-                  <CardContent className="pt-4 pb-4">
-                    <div className="flex items-center space-x-2">
-                      <AlertCircle className="w-5 h-5 text-error" />
-                      <p className="text-sm text-error flex-1">{error}</p>
-                      <button
-                        onClick={() => setError(null)}
-                        className="text-error hover:text-error/80"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </CardContent>
-                </Card>
+                <div className="flex gap-1">
+                   {[0, 1, 2].map(i => (
+                     <div key={i} className="w-1.5 h-1.5 bg-[#00e599] rounded-full animate-bounce" style={{ animationDelay: `${i*150}ms` }} />
+                   ))}
+                </div>
               </motion.div>
             )}
+          </AnimatePresence>
+        </div>
+      </main>
 
-            <form onSubmit={handleSendMessage} className="flex gap-3">
-              <Input
-                value={userInput}
-                onChange={(e) => setUserInput(e.target.value)}
-                placeholder="Ask a question about your data..."
-                disabled={loading}
-                className="flex-1 h-14 text-base"
-              />
-              <Button
-                type="submit"
-                disabled={loading || !userInput.trim()}
-                size="lg"
-                className="px-8"
-              >
-                {loading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <>
-                    <Send className="w-5 h-5 mr-2" />
-                    Send
-                  </>
-                )}
-              </Button>
+      {/* Footer Input */}
+      <footer className="p-6 bg-gradient-to-t from-[#0D0E12] via-[#0D0E12] to-transparent">
+        <div className="max-w-4xl mx-auto">
+          {clarification ? (
+            <motion.div initial={{ y: 20 }} animate={{ y: 0 }} className="bg-zinc-900 border border-amber-500/30 p-6 rounded-2xl mb-4 shadow-[0_0_30px_-10px_rgba(245,158,11,0.2)]">
+               <h3 className="text-amber-500 text-xs font-bold uppercase tracking-widest mb-2 flex items-center gap-2">
+                 <AlertCircle size={14} /> Clarification Needed
+               </h3>
+               <p className="text-sm mb-6 text-zinc-300">{clarification.question}</p>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
+                  {clarification.all_questions.map((q, i) => (
+                    <button 
+                        key={i} 
+                        onClick={() => { setClarificationInput(q); }}
+                        className="text-left px-4 py-2 text-xs bg-black border border-white/5 hover:border-[#00e599] rounded-lg transition-all"
+                    >
+                      {q}
+                    </button>
+                  ))}
+               </div>
+               <div className="flex gap-2">
+                  <Input 
+                    className="bg-black border-white/10 rounded-xl"
+                    placeholder="Type detail..."
+                    value={clarificationInput}
+                    onChange={(e) => setClarificationInput(e.target.value)}
+                  />
+                  <Button 
+                    onClick={handleClarificationSubmit}  // ✅ CHANGE THIS
+                    disabled={loading || !clarificationInput.trim()}
+                    className="bg-[#00e599] text-black hover:bg-[#00e599]/80"
+                  >
+                    {loading ? <Loader2 className="animate-spin" /> : "Reply"}
+                  </Button>
+               </div>
+            </motion.div>
+          ) : (
+            <form onSubmit={handleSendMessage} className="relative group">
+               <div className="absolute -inset-1 bg-gradient-to-r from-[#00e599] to-cyan-500 rounded-2xl blur opacity-10 group-focus-within:opacity-30 transition-opacity" />
+               <div className="relative flex items-center bg-[#1A1C23] border border-white/10 rounded-2xl p-2 pr-3 focus-within:border-[#00e599]/50 transition-all shadow-2xl">
+                  <div className="pl-4 text-zinc-600"><Terminal size={18} /></div>
+                  <Input 
+                    value={userInput}
+                    onChange={(e) => setUserInput(e.target.value)}
+                    placeholder="Ask about trends, patterns, or specific data points..."
+                    className="bg-transparent border-none focus-visible:ring-0 text-white placeholder:text-zinc-600 h-12"
+                    disabled={loading}
+                  />
+                  <Button 
+                    type="submit" 
+                    disabled={loading || !userInput.trim()}
+                    className="bg-[#00e599] text-black font-bold rounded-xl h-10 px-6 hover:bg-[#00e599]/90 disabled:bg-zinc-800 disabled:text-zinc-600"
+                  >
+                    {loading ? <Loader2 className="animate-spin w-4 h-4" /> : "Analyze"}
+                  </Button>
+               </div>
             </form>
-          </div>
-        </motion.div>
-      )}
+          )}
+          
+          <p className="text-center text-[10px] text-zinc-600 mt-4 uppercase tracking-[0.2em] font-mono">
+            AI can make mistakes. Verify critical data.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
