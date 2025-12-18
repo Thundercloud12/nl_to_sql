@@ -7188,5 +7188,159 @@
         "T1"
       ]
     }
+  },
+  {
+    "timestamp": "2025-12-16T19:30:52.481266",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 4.553,
+    "duration_ms": 4552.8,
+    "prompt_length_chars": 2432,
+    "response_length_chars": 402,
+    "tokens": {
+      "input_tokens": 721,
+      "output_tokens": 0,
+      "total_tokens": 721
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "hey how are you?",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-16T19:32:31.201749",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 5.78,
+    "duration_ms": 5780.3,
+    "prompt_length_chars": 2673,
+    "response_length_chars": 753,
+    "tokens": {
+      "input_tokens": 779,
+      "output_tokens": 0,
+      "total_tokens": 779
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: hey how are you?\nAssistant: I am doing well, thank you for asking",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-16T19:40:04.316521",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 6.307,
+    "duration_ms": 6306.6,
+    "prompt_length_chars": 2439,
+    "response_length_chars": 598,
+    "tokens": {
+      "input_tokens": 730,
+      "output_tokens": 0,
+      "total_tokens": 730
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "vhjgjh gjhgjhg vjhgjhg ",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-16T19:42:04.034533",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 10.481,
+    "duration_ms": 10481.4,
+    "prompt_length_chars": 2705,
+    "response_length_chars": 484,
+    "tokens": {
+      "input_tokens": 782,
+      "output_tokens": 0,
+      "total_tokens": 782
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "vhjgjh gjhgjhg vjhgjhg  Please provide a clear and meaningful question about the heart disease data.",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-16T19:42:41.825696",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 7.649,
+    "duration_ms": 7648.5,
+    "prompt_length_chars": 4877,
+    "response_length_chars": 57,
+    "tokens": {
+      "input_tokens": 1580,
+      "output_tokens": 0,
+      "total_tokens": 1580
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-16T19:45:59.524743",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 11.963,
+    "duration_ms": 11962.6,
+    "prompt_length_chars": 2925,
+    "response_length_chars": 515,
+    "tokens": {
+      "input_tokens": 850,
+      "output_tokens": 0,
+      "total_tokens": 850
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "=== CONVERSATION HISTORY ===\nUser: vhjgjh gjhgjhg vjhgjhg (clarified: what is the average age of pat",
+      "has_appended_data": false
+    }
+  },
+  {
+    "timestamp": "2025-12-16T19:46:46.833301",
+    "function_name": "generate_code",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 17.192,
+    "duration_ms": 17192.2,
+    "prompt_length_chars": 4900,
+    "response_length_chars": 67,
+    "tokens": {
+      "input_tokens": 1593,
+      "output_tokens": 0,
+      "total_tokens": 1593
+    },
+    "metadata": {
+      "error_context_provided": false,
+      "loaded_tables": [
+        "T1"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-12-18T12:55:29.494037",
+    "function_name": "planner_node",
+    "model_name": "gemma-3-27b-it",
+    "duration_seconds": 3.952,
+    "duration_ms": 3951.6,
+    "prompt_length_chars": 2279,
+    "response_length_chars": 391,
+    "tokens": {
+      "input_tokens": 645,
+      "output_tokens": 0,
+      "total_tokens": 645
+    },
+    "metadata": {
+      "iteration": 0,
+      "user_question": "what is this data about?",
+      "has_appended_data": false
+    }
   }
 ]

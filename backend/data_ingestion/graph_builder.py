@@ -120,16 +120,15 @@ def build_metadata_from_parquet(
 
                 for col in col_names:
                     chosen_type = "VARCHAR"
-
+                    print("i AM HERE")
                     # Distinct count for BOOLEAN guard
                     distinct_count = con.execute(f"""
-                        SELECT COUNT(DISTINCT {col})
+                        SELECT COUNT(DISTINCT "{col}")
                         FROM raw
-                        WHERE {col} IS NOT NULL
+                        WHERE "{col}" IS NOT NULL
                     """).fetchone()[0]
 
                     for duck_type, _ in canonical_types:
-
                         # Guard: BOOLEAN only if ≤ 2 distinct non-null values
                         if duck_type == "BOOLEAN" and distinct_count > 2:
                             continue
@@ -144,7 +143,7 @@ def build_metadata_from_parquet(
                                     COUNT(
                                         COALESCE(
                                             {", ".join(
-                                                f"try_strptime({col}, '{fmt}')"
+                                                f"try_strptime(\"{col}\", '{fmt}')"
                                                 for fmt in timestamp_formats
                                             )}
                                         )
@@ -155,7 +154,7 @@ def build_metadata_from_parquet(
                         else:
                             success_ratio = con.execute(f"""
                                 SELECT
-                                    COUNT(try_cast({col} AS {duck_type}))::DOUBLE
+                                    COUNT(try_cast("{col}" AS {duck_type}))::DOUBLE
                                     / NULLIF(COUNT(*), 0)
                                 FROM raw
                             """).fetchone()[0]
@@ -168,14 +167,14 @@ def build_metadata_from_parquet(
                         select_exprs.append(f"""
                             COALESCE(
                                 {", ".join(
-                                    f"try_strptime({col}, '{fmt}')"
+                                    f"try_strptime(\"{col}\", '{fmt}')"
                                     for fmt in timestamp_formats
                                 )}
-                            ) AS {col}
+                            ) AS "{col}"
                         """)
                     else:
                         select_exprs.append(
-                            f"try_cast({col} AS {chosen_type}) AS {col}"
+                            f"try_cast(\"{col}\" AS {chosen_type}) AS \"{col}\""
                         )
 
                     final_types[col] = chosen_type
