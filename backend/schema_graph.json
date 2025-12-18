@@ -1,16 +1,18 @@
 {
     "tables": {
         "T1": {
-            "reason": "The user explanation states there is only a single table. Therefore, there are no versions, merge possibilities, or join keys to consider. The table clearly relates to the 'heart_disease' entity.",
+            "reason": "The table contains student enrollment information with a unique enrollment number, suggesting potential for merging with other student datasets. The enrollment number is a strong candidate for a join key.",
             "versions": [],
-            "join_keys": [],
-            "entity_group": "heart_disease",
-            "merge_possible": false,
-            "similarity_score": 1
+            "join_keys": [
+                "enrolment_number"
+            ],
+            "entity_group": "student",
+            "merge_possible": true,
+            "similarity_score": 0.9
         }
     },
     "clusters": {
-        "HeartDiseaseData": [
+        "StudentEnrollment": [
             "T1"
         ]
     }

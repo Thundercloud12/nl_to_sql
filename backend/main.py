@@ -350,10 +350,10 @@ def clarify(req: dict):
 
     # Success - update history
     # Extract original question (before clarification was appended)
-    original_question = state_data.get("user_question", "").split("===")[0].strip()
+    original_question = state_data.get("user_question", "Unknown question")
     update_session_history(
         session_id, 
-        f"{original_question} (clarified: {answer})",
+        f"Clarification: {answer}",  # ✅ Just log the clarification answer
         final_state.get("final_answer", ""),
         final_state.get("sql_result"),
         final_state.get("planner_output")
