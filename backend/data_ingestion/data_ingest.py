@@ -5,10 +5,50 @@ from typing import Dict, Tuple, Any
 import google.generativeai as genai
 import json
 import numpy as np
+import time
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 
 # Configure Gemini API
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+
+# Global list to track request timestamps for rate limiting
+request_timestamps = []
+
+@retry(
+    retry=lambda exc: isinstance(exc, Exception),  # Retry on any exception (rate limit, etc.)
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=1, min=4, max=60)  # Start at 4s, double up to 60s
+)
+def rate_limited_llm_call(prompt: str, model_name: str = "gemma-3-27b-it"):
+    """
+    Make a rate-limited LLM call with exponential backoff on failures.
+    Limits to ~50 requests per minute.
+    Returns (response_text, response_object)
+    """
+    global request_timestamps
+    
+    # Rate limiting: sliding window of 60 seconds, max 50 requests
+    now = time.time()
+    request_timestamps[:] = [t for t in request_timestamps if now - t < 60]  # Keep last 60s
+    if len(request_timestamps) >= 50:
+        sleep_time = 60 - (now - request_timestamps[0])
+        print(f"[RATE LIMIT] Sleeping {sleep_time:.1f}s to avoid limit")
+        time.sleep(sleep_time)
+    
+    request_timestamps.append(now)
+    
+    model = genai.GenerativeModel(
+        model_name,
+        generation_config=genai.GenerationConfig(
+            temperature=0,
+            top_p=1,
+            top_k=1,
+        )
+    )
+    
+    response = model.generate_content(prompt)
+    return response.text.strip(), response
 
 def convert_csvs_to_excel(path: str) -> None:
     """
@@ -92,9 +132,8 @@ def generate_table_summary(table_name: str, columns: list, samples: list) -> str
         Summary:
     """
     try:
-        model = genai.GenerativeModel("gemma-3-27b-it")
-        response = model.generate_content(prompt)
-        return response.text.strip()
+        response_text, response = rate_limited_llm_call(prompt)
+        return response_text
     except Exception as e:
         return f"Table containing {len(columns)} columns with data like {columns[:3]}."
 

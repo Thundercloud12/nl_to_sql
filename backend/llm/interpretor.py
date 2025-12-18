@@ -7,11 +7,50 @@ import google.generativeai as genai
 from .llm_tracker import log_llm_call
 from typing import Dict,List
 import time
+from tenacity import retry, stop_after_attempt, wait_exponential
 from dotenv import load_dotenv
 load_dotenv()
 
 # Configure Gemini API
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+
+# Global list to track request timestamps for rate limiting
+request_timestamps = []
+
+@retry(
+    retry=lambda exc: isinstance(exc, Exception),  # Retry on any exception (rate limit, etc.)
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=1, min=4, max=60)  # Start at 4s, double up to 60s
+)
+def rate_limited_llm_call(prompt: str, model_name: str = "gemma-3-27b-it"):
+    """
+    Make a rate-limited LLM call with exponential backoff on failures.
+    Limits to ~50 requests per minute.
+    Returns (response_text, response_object)
+    """
+    global request_timestamps
+    
+    # Rate limiting: sliding window of 60 seconds, max 50 requests
+    now = time.time()
+    request_timestamps[:] = [t for t in request_timestamps if now - t < 60]  # Keep last 60s
+    if len(request_timestamps) >= 50:
+        sleep_time = 60 - (now - request_timestamps[0])
+        print(f"[RATE LIMIT] Sleeping {sleep_time:.1f}s to avoid limit")
+        time.sleep(sleep_time)
+    
+    request_timestamps.append(now)
+    
+    model = genai.GenerativeModel(
+        model_name,
+        generation_config=genai.GenerationConfig(
+            temperature=0,
+            top_p=1,
+            top_k=1,
+        )
+    )
+    
+    response = model.generate_content(prompt)
+    return response.text.strip(), response
 
 
 def load_tables(short_names: list) -> duckdb.DuckDBPyConnection:
@@ -194,30 +233,11 @@ FINAL OUTPUT RULE
 Single DuckDB SQL query only.
 """
     
-    model = genai.GenerativeModel(
-        "gemma-3-27b-it",
-        generation_config=genai.GenerationConfig(
-            temperature=0,
-            top_p=1,
-            top_k=1,
-        )
-    )
-    
     # Track timing and tokens
-    time.sleep(30)  # Rate limiting: 20 second delay between API calls
     start_time = time.time()
     try:
-        response = model.generate_content(prompt)
+        raw, response = rate_limited_llm_call(prompt)
         end_time = time.time()
-        print("response:")
-        print(response)
-        
-        # Check if response is valid
-        if not response.candidates or len(response.candidates) == 0:
-            print(f"[ERROR] Empty response from LLM.")
-            raise ValueError("LLM returned empty response.")
-        
-        raw = response.text.strip()
         
     except ValueError as e:
         print(f"[ERROR] ValueError in LLM response: {e}")
@@ -521,15 +541,10 @@ SELECT category, COUNT(*) as count FROM temp_result GROUP BY category ORDER BY c
 """
         
         try:
-            model = genai.GenerativeModel("gemma-3-27b-it")
-            
             # Track timing and tokens for analysis
-            time.sleep(30)  # Rate limiting: 20 second delay between API calls
             start_time = time.time()
-            response = model.generate_content(analysis_prompt)
+            analysis_sql, response = rate_limited_llm_call(analysis_prompt)
             end_time = time.time()
-            
-            analysis_sql = response.text.strip()
             
             # Extract token usage
             input_tokens = None
