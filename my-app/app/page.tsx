@@ -129,7 +129,7 @@ export default function LandingPage() {
               className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#00e599]/10 border border-[#00e599]/20 text-[#00e599] text-xs font-mono font-medium"
             >
               <Zap size={12} />
-              <span>AI-NATIVE ANALYTICS</span>
+              <span>AI-POWERED DATA QUERYING</span>
             </motion.div>
 
             <motion.h1
@@ -138,8 +138,8 @@ export default function LandingPage() {
               transition={{ delay: 0.1 }}
               className="text-5xl md:text-7xl font-bold tracking-tight leading-[1.1]"
             >
-              Talk to your <br />
-              <span className="text-[#00e599]">database.</span>
+              Query your data <br />
+              <span className="text-[#00e599]">in plain English.</span>
             </motion.h1>
 
             <motion.p
@@ -148,7 +148,7 @@ export default function LandingPage() {
               transition={{ delay: 0.2 }}
               className="text-lg text-zinc-400 max-w-xl leading-relaxed"
             >
-              Instant insights without the SQL headaches. Connect your data source and start asking questions in plain English immediately.
+              Upload your Excel or CSV files and ask questions naturally. Get instant SQL queries, insights, and visualizations without writing code.
             </motion.p>
 
             <motion.div
@@ -205,7 +205,7 @@ export default function LandingPage() {
                       <div className="text-[#00e599] text-xs mb-1">USER</div>
                       <div className="text-zinc-100">
                         <TypewriterText 
-                          text="Show me the revenue growth for Q3 compared to last year." 
+                          text="How many records are in the uploaded dataset?" 
                           onComplete={() => setAnimationStep("thinking")}
                         />
                       </div>
@@ -240,11 +240,11 @@ export default function LandingPage() {
                         >
                           <div className="flex justify-between items-baseline mb-4">
                              <div>
-                                <h4 className="text-zinc-400 text-xs uppercase tracking-wider">Total Revenue</h4>
-                                <p className="text-2xl font-bold text-white">$1,240,500 <span className="text-[#00e599] text-sm font-normal ml-2">▲ 24%</span></p>
+                                <h4 className="text-zinc-400 text-xs uppercase tracking-wider">Total Records</h4>
+                                <p className="text-2xl font-bold text-white">1,250 <span className="text-[#00e599] text-sm font-normal ml-2">✓ Validated</span></p>
                              </div>
                              <select className="bg-transparent text-xs text-zinc-500 border border-white/10 rounded px-2 py-1">
-                                <option>Q3 2024</option>
+                                <option>Dataset Summary</option>
                              </select>
                           </div>
                           <BarGraph />
@@ -283,10 +283,10 @@ export default function LandingPage() {
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,#00e59910,transparent_40%)]" />
               <div>
                 <div className="w-12 h-12 rounded-full bg-[#00e599]/10 flex items-center justify-center mb-6">
-                  <Cpu className="text-[#00e599]" />
+                  <Upload className="text-[#00e599]" />
                 </div>
-                <h3 className="text-2xl font-bold mb-2">Serverless Architecture</h3>
-                <p className="text-zinc-400">Our engine scales to zero when you aren't using it. Pay only for the queries you run, not for idle time.</p>
+                <h3 className="text-2xl font-bold mb-2">File Upload & Processing</h3>
+                <p className="text-zinc-400">Upload Excel, CSV, or other files. We automatically process and optimize them for fast querying.</p>
               </div>
               <div className="mt-8 flex gap-2">
                  <div className="h-2 w-full bg-zinc-800 rounded-full overflow-hidden">
@@ -298,8 +298,8 @@ export default function LandingPage() {
             {/* Feature 2 */}
             <div className="col-span-1 md:col-span-2 rounded-2xl bg-zinc-900/50 border border-white/10 p-8 flex items-center justify-between hover:border-[#00e599]/50 transition-colors group">
               <div>
-                 <h3 className="text-xl font-bold mb-2">Real-time Sync</h3>
-                 <p className="text-zinc-400 text-sm">Postgres, MySQL, and Snowflake supported.</p>
+                 <h3 className="text-xl font-bold mb-2">AI-Powered SQL Generation</h3>
+                 <p className="text-zinc-400 text-sm">Ask questions in plain English and get accurate SQL queries instantly.</p>
               </div>
               <div className="w-16 h-16 rounded-full border-2 border-dashed border-zinc-700 animate-spin-slow flex items-center justify-center">
                 <div className="w-2 h-2 bg-[#00e599] rounded-full" />
@@ -309,15 +309,15 @@ export default function LandingPage() {
             {/* Feature 3 */}
             <div className="rounded-2xl bg-zinc-900/50 border border-white/10 p-6 hover:border-[#00e599]/50 transition-colors">
               <ShieldCheck className="text-zinc-400 mb-4" />
-              <h3 className="text-lg font-bold mb-1">SOC2 Certified</h3>
-              <p className="text-zinc-500 text-xs">Enterprise grade security by default.</p>
+              <h3 className="text-lg font-bold mb-1">Secure Data Handling</h3>
+              <p className="text-zinc-500 text-xs">Your uploaded files are processed securely and temporarily.</p>
             </div>
 
             {/* Feature 4 */}
             <div className="rounded-2xl bg-zinc-900/50 border border-white/10 p-6 hover:border-[#00e599]/50 transition-colors">
-              <Terminal className="text-zinc-400 mb-4" />
-              <h3 className="text-lg font-bold mb-1">API First</h3>
-              <p className="text-zinc-500 text-xs">Integrate into your app with 3 lines of code.</p>
+              <BarChart3 className="text-zinc-400 mb-4" />
+              <h3 className="text-lg font-bold mb-1">Instant Insights</h3>
+              <p className="text-zinc-500 text-xs">Get visualizations and summaries alongside your queries.</p>
             </div>
           </div>
         </div>
