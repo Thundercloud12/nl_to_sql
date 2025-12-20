@@ -20,10 +20,12 @@ def _load_existing_logs() -> list:
     return []
 
 def _save_logs(logs: list):
-    """Save logs to file."""
-    with _file_lock:
-        with open(TRACKING_FILE, "w") as f:
-            json.dump(logs, f, indent=2)
+    """Save logs to file - DISABLED: No longer writing to JSON file."""
+    # File writing disabled to reduce I/O overhead
+    # with _file_lock:
+    #     with open(TRACKING_FILE, "w") as f:
+    #         json.dump(logs, f, indent=2)
+    pass
 
 def log_llm_call(
     function_name: str,

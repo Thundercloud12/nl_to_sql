@@ -89,10 +89,11 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
           last_result: data.last_result, 
           last_plan: data.last_plan      
         });
-
+        console.log(data)
         if (data.conversation_history) {
           const loadedMessages: Message[] = [];
-          for (const msg of data.conversation_history) {
+          const messagesData = data.conversation_history.messages || data.conversation_history; // ✅ Handle both row object and direct array
+          for (const msg of messagesData) {
             if (msg.role === "assistant") {
               loadedMessages.push({ role: "assistant", content: msg.content, insight: msg.content });
             } else {
@@ -118,6 +119,12 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
         session_id: session.id,
         user_id: user.id,
         data_source_id: dataSourceId,
+        conversation_history: messages.map(m => ({
+          role: m.role,
+          content: m.role === "assistant"
+            ? (m.insight || m.content)
+            : m.content
+        }))
       });
 
       navigator.sendBeacon(
@@ -225,19 +232,25 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
     }
 
     try {
-      // Save session before leaving (only sends required fields for cleanup)
+      // Save session before leaving
       await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/save_session`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           session_id: session.id,
           user_id: user?.id,
-          data_source_id: dataSourceId
+          data_source_id: dataSourceId,
+          conversation_history: messages.map(m => ({
+            role: m.role,
+            content: m.role === "assistant"
+              ? (m.insight || m.content)
+              : m.content
+          }))
         }),
       });
-      console.log("[CHAT] Session cleanup completed");
+      console.log("[CHAT] Session saved and cleanup completed");
     } catch (err) {
-      console.error("[CHAT] Failed to cleanup session:", err);
+      console.error("[CHAT] Failed to save session:", err);
     } finally {
       router.push("/dashboard");
     }
