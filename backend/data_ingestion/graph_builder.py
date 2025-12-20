@@ -1,15 +1,14 @@
 from __future__ import annotations
 import json
 import os
-import google.generativeai as genai
 from .data_ingest import normalize_col, generate_table_summary,convert_csv_to_parquet
 import pandas as pd
 import numpy as np
 from dotenv import load_dotenv
 import duckdb
 import time
-from tenacity import retry, stop_after_attempt, wait_exponential
 import gc
+from utils.llm_utils import rate_limited_llm_call
 
 
 from pathlib import Path
@@ -22,50 +21,6 @@ import gc
 
 
 MAX_SCHEMA_ROWS = 10_000
-
-load_dotenv()
-api_key = os.getenv("GOOGLE_API_KEY")
-if not api_key:
-    raise ValueError("GOOGLE_API_KEY not set")
-genai.configure(api_key=api_key)
-
-# Global list to track request timestamps for rate limiting
-request_timestamps = []
-
-@retry(
-    retry=lambda exc: isinstance(exc, Exception),  # Retry on any exception (rate limit, etc.)
-    stop=stop_after_attempt(3),
-    wait=wait_exponential(multiplier=1, min=4, max=60)  # Start at 4s, double up to 60s
-)
-def rate_limited_llm_call(prompt: str, model_name: str = "gemma-3-27b-it"):
-    """
-    Make a rate-limited LLM call with exponential backoff on failures.
-    Limits to ~50 requests per minute.
-    Returns (response_text, response_object)
-    """
-    global request_timestamps
-    
-    # Rate limiting: sliding window of 60 seconds, max 50 requests
-    now = time.time()
-    request_timestamps[:] = [t for t in request_timestamps if now - t < 60]  # Keep last 60s
-    if len(request_timestamps) >= 50:
-        sleep_time = 60 - (now - request_timestamps[0])
-        print(f"[RATE LIMIT] Sleeping {sleep_time:.1f}s to avoid limit")
-        time.sleep(sleep_time)
-    
-    request_timestamps.append(now)
-    
-    model = genai.GenerativeModel(
-        model_name,
-        generation_config=genai.GenerationConfig(
-            temperature=0,
-            top_p=1,
-            top_k=1,
-        )
-    )
-    
-    response = model.generate_content(prompt)
-    return response.text.strip(), response
 
 
 

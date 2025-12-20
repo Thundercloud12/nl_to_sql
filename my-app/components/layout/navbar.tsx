@@ -40,7 +40,7 @@ export function Navbar() {
                 <Command size={18} />
             </div>
             <span className="text-lg font-bold tracking-tighter text-white group-hover:text-[#00e599] transition-colors">
-              DataQuery
+              RELIX
             </span>
           </Link>
 

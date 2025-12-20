@@ -18,7 +18,7 @@ export default function SignUpPage() {
                 <path d="M3 7V5C3 4.44772 3.44772 4 4 4H20C20.5523 4 21 4.44772 21 5V7M3 7V19C3 19.5523 3.44772 20 4 20H20C20.5523 20 21 19.5523 21 19V7M3 7H21M12 11V15M9 13H15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </div>
-            DataQuery
+            RELIX
           </div>
           <div className="hidden md:flex gap-6 text-sm font-medium text-zinc-400">
             <span className="hover:text-white cursor-pointer transition-colors">Features</span>
