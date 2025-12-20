@@ -103,7 +103,7 @@ export default function LandingPage() {
                 <div className="w-8 h-8 bg-[#00e599] rounded-lg flex items-center justify-center text-black">
                     <Command size={18} />
                 </div>
-                DataQuery
+                RELIX
             </div>
             <div className="hidden md:flex gap-6 text-sm font-medium text-zinc-400">
                 <span className="hover:text-white cursor-pointer transition-colors">Features</span>
@@ -326,7 +326,7 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="py-12 border-t border-white/10 bg-[#0D0E12]">
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center text-sm text-zinc-500">
-            <p>DataQuery Inc. © 2024</p>
+            <p>RELIX Inc. © 2024</p>
             <div className="flex gap-6">
                 <a href="#" className="hover:text-white transition-colors">Twitter</a>
                 <a href="#" className="hover:text-white transition-colors">GitHub</a>
