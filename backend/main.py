@@ -1,11 +1,10 @@
-# main.py
-# Remove unused imports
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uuid
 from typing import List, Dict, Any
 import os
+import tempfile
 import json
 import logging
 import shutil
@@ -15,10 +14,11 @@ from psycopg2.extras import RealDictCursor
 
 from data_ingestion.graph_builder import process_schema_build
 from llm.plan_generator import build_graph, State
-import asyncio
+
 from utils.cloudinary_handler import upload_to_cloudinary, deletefromsupabase
 from utils.prisma_handler import PrismaHandler
-from utils.datasource_loader import download_from_cloudinary, load_datasource_files
+from utils.datasource_loader import download_from_cloudinary, load_datasource_files, load_chat, ensure_datasource_files
+from utils.database_utilities import get_db_connection, db_connection, db_cursor
 
 app = FastAPI()
 url=os.getenv("NEXT_JS_API_URL")
@@ -34,25 +34,19 @@ app.add_middleware(
 UPLOAD_DIR = "uploaded_files"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# Add constant for max total size
-MAX_TOTAL_SIZE = 100 * 1024 * 1024  # 100 MB
+MAX_TOTAL_SIZE = 100 * 1024 * 1024  
 
-def get_db_connection():
-    return psycopg2.connect(os.getenv("DATABASE_URL"))
-
-SESSIONS = {}  # Deprecated - kept for compatibility only
+SESSIONS = {}  
 
 def load_session_from_db(session_id: str) -> dict | None:
     """Load full session data from database."""
     try:
-        conn = get_db_connection()
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        with db_cursor() as cur:
             cur.execute(
                 "SELECT * FROM \"Session\" WHERE id = %s",
                 (session_id,)
             )
             session_row = cur.fetchone()
-        conn.close()
         return dict(session_row) if session_row else None
     except Exception as e:
         print(f"[SESSION] Error loading from DB: {e}")
@@ -61,8 +55,7 @@ def load_session_from_db(session_id: str) -> dict | None:
 def save_session_to_db(session_id: str, conversation_history: list, last_result: dict = None, last_plan: dict = None):
     """Write session data directly to database."""
     try:
-        conn = get_db_connection()
-        with conn.cursor() as cur:
+        with db_cursor(commit=True) as cur:
             history_json = json.dumps(conversation_history)
             last_result_json = json.dumps(last_result) if last_result else None
             last_plan_json = json.dumps(last_plan) if last_plan else None
@@ -78,8 +71,6 @@ def save_session_to_db(session_id: str, conversation_history: list, last_result:
                 """,
                 (history_json, last_result_json, last_plan_json, session_id)
             )
-        conn.commit()
-        conn.close()
         print(f"[SESSION] ✓ Session {session_id} saved to DB")
     except Exception as e:
         print(f"[SESSION] Error saving to DB: {e}")
@@ -88,15 +79,12 @@ def save_session_to_db(session_id: str, conversation_history: list, last_result:
 def save_state(session_id: str, state: dict):
     """Save clarification state to database."""
     try:
-        conn = get_db_connection()
-        with conn.cursor() as cur:
+        with db_cursor(commit=True) as cur:
             clarification_json = json.dumps(state)
             cur.execute(
                 "UPDATE \"Session\" SET \"clarificationState\" = %s, \"updatedAt\" = NOW() WHERE id = %s",
                 (clarification_json, session_id)
             )
-        conn.commit()
-        conn.close()
     except Exception as e:
         print(f"[SESSION] Error saving clarification state: {e}")
 
@@ -114,8 +102,7 @@ def create_session(user_id: str, data_source_id: str) -> str:
     """Create new session in database."""
     session_id = str(uuid.uuid4())
     try:
-        conn = get_db_connection()
-        with conn.cursor() as cur:
+        with db_cursor(commit=True) as cur:
             cur.execute(
                 """
                 INSERT INTO "Session" (id, "userId", "dataSourceId", "conversationHistory", "updatedAt")
@@ -123,8 +110,6 @@ def create_session(user_id: str, data_source_id: str) -> str:
                 """,
                 (session_id, user_id, data_source_id, json.dumps([]))
             )
-        conn.commit()
-        conn.close()
         print(f"[QUERY] ✓ Created new session: {session_id}")
         return session_id
     except Exception as e:
@@ -137,12 +122,10 @@ def build_context_prompt(session_id: str, current_question: str) -> str:
     if not session:
         return current_question
     
-    # Load conversation history from DB
     history = session.get("conversationHistory", [])
     if isinstance(history, str):
         history = json.loads(history)
-    
-    # Get last 4 messages (2 exchanges) for context
+
     recent_messages = history[-4:]
     
     context_parts = []
@@ -159,7 +142,7 @@ def build_context_prompt(session_id: str, current_question: str) -> str:
     
     return "\n".join(context_parts)
 
-# Set up logging
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -171,8 +154,8 @@ logger = logging.getLogger(__name__)
 def query(req: dict):
     """Start a new conversation - checks for existing session first."""
     question = req.get("question")
-    user_id = req.get("user_id")  # NEW: Add user_id
-    data_source_id = req.get("data_source_id")  # NEW: Add data_source_id
+    user_id = req.get("user_id")  
+    data_source_id = req.get("data_source_id")  
     
     if not question:
         raise HTTPException(status_code=400, detail="question is required")
@@ -181,17 +164,13 @@ def query(req: dict):
     
     print(f"[QUERY] Received question: {question}")
     print(f"[QUERY] User: {user_id}, DataSource: {data_source_id}")
-    
-    # Check for existing session first
-    conn = get_db_connection()
     existing_session = None
-    with conn.cursor(cursor_factory=RealDictCursor) as cur:
+    with db_cursor() as cur:
         cur.execute(
             "SELECT * FROM \"Session\" WHERE \"userId\" = %s AND \"dataSourceId\" = %s ORDER BY \"createdAt\" DESC LIMIT 1",
             (user_id, data_source_id)
         )
         existing_session = cur.fetchone()
-    conn.close()
     
     if existing_session:
         print(f"[QUERY] ✓ Found existing session: {existing_session['id']}")
@@ -200,9 +179,19 @@ def query(req: dict):
         print(f"[QUERY] Creating new session...")
         session_id = create_session(user_id, data_source_id)
 
+    with db_cursor() as cur:
+        cur.execute("SELECT * FROM \"DataSource\" WHERE id = %s", (data_source_id,))
+        data_source = cur.fetchone()
+    
+    if not data_source:
+        raise HTTPException(status_code=404, detail="DataSource not found")
+    
+
+    ensure_datasource_files(data_source)
+
     state = State({
         "user_question": question,
-        "data_source_id": data_source_id,  # ✅ Add data_source_id
+        "data_source_id": data_source_id,  
         "schema_info": None,
         "planner_output": None,
         "sql_result": None,
@@ -233,18 +222,15 @@ def query(req: dict):
             "all_questions": clarification_questions
         }
 
-    # Success - save to database and return response
-    # Load current conversation history from DB
+
     current_session = load_session_from_db(session_id)
     current_history = current_session.get("conversationHistory", []) if current_session else []
     if isinstance(current_history, str):
         current_history = json.loads(current_history)
-    
-    # Append new messages to history
+
     current_history.append({"role": "user", "content": question})
     current_history.append({"role": "assistant", "content": final_state.get("final_answer", "")[:1000]})
     
-    # Save updated session to database
     save_session_to_db(
         session_id,
         current_history,
@@ -269,8 +255,7 @@ def continue_conversation(req: dict):
         return {"error": "session_id is required"}
     if not question:
         return {"error": "question is required"}
-    
-    # Verify session exists - load from DB
+
     session = load_session_from_db(session_id)
     if not session:
         return {"error": "Invalid or expired session_id. Use /query to start a new conversation."}
@@ -281,19 +266,25 @@ def continue_conversation(req: dict):
     
     print(f"[DEBUG] Continuing session: {session_id}")
     print(f"[DEBUG] History length: {len(history)}")
-    
-    # Build question with context
+
     contextualized_question = build_context_prompt(session_id, question)
     print(f"[DEBUG] Contextualized question: {contextualized_question[:200]}...")
-    
-    # Get data_source_id from session
+
     data_source_id = session.get("dataSourceId")
     if not data_source_id:
         return {"error": "data_source_id not found in session"}
-
+    
+    with db_cursor() as cur:
+        cur.execute("SELECT * FROM \"DataSource\" WHERE id = %s", (data_source_id,))
+        data_source = cur.fetchone()
+    
+    if not data_source:
+        return {"error": "DataSource not found"}
+    ensure_datasource_files(data_source)
+    
     state = State({
         "user_question": contextualized_question,
-        "data_source_id": data_source_id,  # ✅ Add data_source_id
+        "data_source_id": data_source_id,  
         "schema_info": None,
         "planner_output": None,
         "sql_result": None,
@@ -310,7 +301,6 @@ def continue_conversation(req: dict):
     final_state = graph.invoke(state)
     print(f"[DEBUG] Final state: {final_state}")
 
-    # Handle clarification
     if final_state.get("status") == "need_clarification":
         save_state(session_id, dict(final_state))
         
@@ -324,17 +314,14 @@ def continue_conversation(req: dict):
             "all_questions": clarification_questions
         }
 
-    # Success - save to database with original question (not contextualized)
     current_session = load_session_from_db(session_id)
     current_history = current_session.get("conversationHistory", []) if current_session else []
     if isinstance(current_history, str):
         current_history = json.loads(current_history)
-    
-    # Append new messages to history
+
     current_history.append({"role": "user", "content": question})
     current_history.append({"role": "assistant", "content": final_state.get("final_answer", "")[:1000]})
-    
-    # Save updated session to database
+
     save_session_to_db(
         session_id,
         current_history,
@@ -358,7 +345,7 @@ def clarify(req: dict):
     if not session_id or not answer:
         return {"error": "session_id and answer are required"}
 
-    # Load clarification state from DB
+
     session = load_session_from_db(session_id)
     if not session:
         return {"error": "Invalid or expired session_id"}
@@ -373,7 +360,7 @@ def clarify(req: dict):
         return {"error": "data_source_id not found in session"}
 
     state = State(state_data)
-    state["data_source_id"] = data_source_id  # ✅ Ensure data_source_id is in state
+    state["data_source_id"] = data_source_id 
 
     # Inject answer into question
     pending_q = state.get('pending_question', '')
@@ -406,25 +393,22 @@ def clarify(req: dict):
             "all_questions": clarification_questions
         }
 
-    # Success - save to database
+
     current_session = load_session_from_db(session_id)
     current_history = current_session.get("conversationHistory", []) if current_session else []
     if isinstance(current_history, str):
         current_history = json.loads(current_history)
-    
-    # Append clarification answer to history
+
     current_history.append({"role": "user", "content": f"Clarification: {answer}"})
     current_history.append({"role": "assistant", "content": final_state.get("final_answer", "")[:1000]})
-    
-    # Save updated session to database
+
     save_session_to_db(
         session_id,
         current_history,
         final_state.get("sql_result"),
         final_state.get("planner_output")
     )
-    
-    # Clear clarification state in DB
+
     save_state(session_id, None)
 
     return {
@@ -438,11 +422,12 @@ def clarify(req: dict):
 async def save_session(req: Request):
     try:
         body = await req.body()
-        req = json.loads(body.decode("utf-8"))
+        req_data = json.loads(body.decode("utf-8"))
 
-        session_id = req.get("session_id")
-        user_id = req.get("user_id")
-        data_source_id = req.get("data_source_id")
+        session_id = req_data.get("session_id")
+        user_id = req_data.get("user_id")
+        data_source_id = req_data.get("data_source_id")
+        conversation_history = req_data.get("conversation_history", [])
         
         if not session_id or not user_id or not data_source_id:
             raise HTTPException(
@@ -450,25 +435,46 @@ async def save_session(req: Request):
                 detail="session_id, user_id, and data_source_id are required"
             )
         
-        print(f"[SAVE_SESSION] Cleaning up files for session {session_id}...")
-        
-        # Verify the session exists (for authorization)
-        conn = get_db_connection()
-        with conn.cursor() as cur:
+        print(f"[SAVE_SESSION] Saving conversation for session {session_id}...")
+
+        history_json = json.dumps(conversation_history)
+
+        with db_cursor(commit=True) as cur:
             cur.execute(
-                "SELECT id FROM \"Session\" WHERE id = %s AND \"userId\" = %s AND \"dataSourceId\" = %s",
-                (session_id, user_id, data_source_id)
+                """
+                SELECT id FROM "Conversation" 
+                WHERE "userId" = %s AND "dataSourceId" = %s
+                ORDER BY "createdAt" DESC LIMIT 1
+                """,
+                (user_id, data_source_id)
             )
-            session_exists = cur.fetchone()
+            existing_conversation = cur.fetchone()
+            
+            if existing_conversation:
+                print(f"[SAVE_SESSION] Updating existing Conversation record...")
+                cur.execute(
+                    """
+                    UPDATE "Conversation" 
+                    SET messages = %s, "updatedAt" = NOW()
+                    WHERE "userId" = %s AND "dataSourceId" = %s
+                    """,
+                    (history_json, user_id, data_source_id)
+                )
+                conversation_rows_affected = cur.rowcount
+            else:
+                # Create new conversation record
+                print(f"[SAVE_SESSION] Creating new Conversation record...")
+                conversation_id = str(uuid.uuid4())
+                cur.execute(
+                    """
+                    INSERT INTO "Conversation" (id, "userId", "dataSourceId", messages, "updatedAt")
+                    VALUES (%s, %s, %s, %s, NOW())
+                    """,
+                    (conversation_id, user_id, data_source_id, history_json)
+                )
+                conversation_rows_affected = cur.rowcount
         
-        if not session_exists:
-            conn.close()
-            raise HTTPException(
-                status_code=404,
-                detail="Session not found"
-            )
-        
-        conn.close()
+        print(f"[SAVE_SESSION] ✓ Conversation saved/updated ({conversation_rows_affected} row(s) affected)")
         
         # Clean up datasource-specific folder only
         print(f"[SAVE_SESSION] Cleaning up files for datasource: {data_source_id}...")
@@ -483,7 +489,7 @@ async def save_session(req: Request):
         
         return {
             "status": "success",
-            "message": "Files cleaned up successfully",
+            "message": "Conversation saved and files cleaned up successfully",
             "session_id": session_id
         }
     
@@ -492,7 +498,7 @@ async def save_session(req: Request):
         raise e
     except Exception as e:
         print(f"[SAVE_SESSION] ✗ Error: {str(e)}", flush=True)
-        logger.error(f"Error cleaning up session: {str(e)}")
+        logger.error(f"Error saving session: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -500,7 +506,7 @@ async def save_session(req: Request):
 @app.post("/upload_and_process")
 async def upload_and_process(
     files: List[UploadFile] = File(...),
-    user_id: str = Form(...)  # Fix: Use Form to extract from multipart data
+    user_id: str = Form(...)  
 ):
     """
     Unified endpoint: Upload files → Generate metadata → Upload to Cloudinary → Save to DB.
@@ -520,7 +526,7 @@ async def upload_and_process(
 
         total_size = 0
         for file in files:
-            file.file.seek(0, 2)      # move to end
+            file.file.seek(0, 2)      
             file_size = file.file.tell()
             file.file.seek(0)         # reset pointer
             total_size += file_size
@@ -535,11 +541,11 @@ async def upload_and_process(
             )
         
         # Use TemporaryDirectory for automatic cleanup
-        import tempfile
+        
         with tempfile.TemporaryDirectory(prefix="nl_sql_upload_") as temp_folder:
             print(f"[UPLOAD] Created temp folder: {temp_folder}")
             
-            # Step 2: Save uploaded files to temp folder
+
             uploaded_files = []
             for file in files:
                 if not file.filename.endswith(('.xlsx', '.xls', '.csv')):
@@ -554,14 +560,13 @@ async def upload_and_process(
                 uploaded_files.append(file_path)
                 print(f"[UPLOAD] ✓ Saved {file.filename} to temp folder")
             
-            # Step 3: Generate schema graph (Parquet + graph)
+  
             print(f"[UPLOAD] Processing schema and converting to Parquet...")
             result = process_schema_build(temp_folder)  # Returns dict
             initial_schema = result["raw_metadata"]
             schema_graph = result["schema_graph"]
             print(f"[UPLOAD] ✓ Generated schema graph")
             
-            # Step 4: Find the Parquet file
             parquet_files = []
             for root, dirs, files_list in os.walk(temp_folder):
                 for fname in files_list:
@@ -635,79 +640,58 @@ async def delete_datasource(data_source_id: str, user_id: str):
         
         print(f"[DELETE] Deleting DataSource: {data_source_id} for user: {user_id}")
         
-        conn = get_db_connection()
-        
-        # Step 1: Verify DataSource exists and belongs to user
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        # Perform all delete operations in a single transaction
+        with db_cursor(commit=True) as cur:
+
             cur.execute(
-                "SELECT id FROM \"DataSource\" WHERE id = %s AND \"userId\" = %s",
+                "SELECT id, \"cloudinaryUrl\" FROM \"DataSource\" WHERE id = %s AND \"userId\" = %s",
                 (data_source_id, user_id)
             )
             data_source = cur.fetchone()
-        
-        if not data_source:
-            conn.close()
-            raise HTTPException(
-                status_code=404,
-                detail="DataSource not found or unauthorized"
-            )
-        
-        # Step 2: Get all session IDs for this data source (to clean up memory)
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            
+            if not data_source:
+                raise HTTPException(
+                    status_code=404,
+                    detail="DataSource not found or unauthorized"
+                )
+            
+            cloudinary_url = data_source['cloudinaryUrl']
+
             cur.execute(
                 "SELECT id FROM \"Session\" WHERE \"dataSourceId\" = %s",
                 (data_source_id,)
             )
             session_rows = cur.fetchall()
-            session_ids = [row['id'] for row in session_rows]
-        
-        # Step 3: Delete associated Conversations
-        with conn.cursor() as cur:
+
             cur.execute(
                 "DELETE FROM \"Conversation\" WHERE \"dataSourceId\" = %s",
                 (data_source_id,)
             )
             conversations_deleted = cur.rowcount
             print(f"[DELETE] ✓ Deleted {conversations_deleted} Conversation(s)")
-        
-        # Step 4: Delete associated Sessions
-        with conn.cursor() as cur:
+
             cur.execute(
                 "DELETE FROM \"Session\" WHERE \"dataSourceId\" = %s",
                 (data_source_id,)
             )
             sessions_deleted = cur.rowcount
             print(f"[DELETE] ✓ Deleted {sessions_deleted} Session(s)")
-        
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:  # ✅ ADD: RealDictCursor
-            cur.execute(
-                "SELECT \"cloudinaryUrl\" FROM \"DataSource\" WHERE id = %s AND \"userId\" = %s",
-                (data_source_id, user_id)
-            )
-            data_source = cur.fetchone()
 
-        # In the delete route
-        result = deletefromsupabase(data_source)
-        if result["status"] == "error":
-            print(f"[DELETE] {result['message']}")
-        
-
-        # Step 5: Delete the DataSource itself
-        with conn.cursor() as cur:
             cur.execute(
                 "DELETE FROM \"DataSource\" WHERE id = %s AND \"userId\" = %s",
                 (data_source_id, user_id)
             )
             datasource_deleted = cur.rowcount
+            
+            if datasource_deleted == 0:
+                raise HTTPException(
+                    status_code=500,
+                    detail="Failed to delete DataSource"
+                )
         
-        conn.commit()
-        conn.close()
-        
-        if datasource_deleted == 0:
-            raise HTTPException(
-                status_code=500,
-                detail="Failed to delete DataSource"
-            )
+        result = deletefromsupabase({"cloudinaryUrl": cloudinary_url})
+        if result["status"] == "error":
+            print(f"[DELETE] {result['message']}")
         
         print(f"[DELETE] ✓ Deleted DataSource: {data_source_id}")
         
@@ -763,49 +747,14 @@ async def initialize_chat(req: dict):
             )
         
         print(f"[INIT] Initializing chat for DataSource: {data_source_id}")
-        
-        # Step 1: Fetch DataSource from DB directly
-        conn = get_db_connection()
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
-            cur.execute(
-                "SELECT * FROM \"DataSource\" WHERE id = %s AND \"userId\" = %s",
-                (data_source_id, user_id)
-            )
-            data_source_row = cur.fetchone()
-        
-        if not data_source_row:
-            raise Exception("DataSource not found or unauthorized")
-        
-        data_source = dict(data_source_row)
-        
-        # Step 2: Check for existing session (latest for this user + data source)
-        existing_session = None
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
-            cur.execute(
-                "SELECT * FROM \"Session\" WHERE \"userId\" = %s AND \"dataSourceId\" = %s ORDER BY \"createdAt\" DESC LIMIT 1",
-                (user_id, data_source_id)
-            )
-            existing_session = cur.fetchone()
-        
-        # Step 3: Download Parquet from Cloudinary to datasource-specific folder
-        print(f"[INIT] Downloading Parquet from Cloudinary...")
-        datasource_dir = os.path.join("uploaded_files", f"datasource_{data_source_id}")
-        os.makedirs(datasource_dir, exist_ok=True)
-        parquet_path = os.path.join(datasource_dir, "data.parquet")
-        await download_from_cloudinary(
-            data_source["cloudinaryUrl"],
-            parquet_path
-        )
-        
-        # Step 4: Write metadata and schema graph JSON files to datasource-specific folder
-        print(f"[INIT] Writing schema files...")
-        file_paths = load_datasource_files(
-            data_source_id,
-            data_source["rawMetadata"],
-            data_source["schemaGraph"]
-        )
-        
-        # Step 5: Handle session (resume existing or create new)
+
+        result = await load_chat(data_source_id, user_id)
+        data_source = result["data_source"]
+        existing_session = result["existing_session"]
+        existing_conversation = result["existing_conversation"]
+        parquet_path = result["parquet_path"]
+        file_paths = result["file_paths"]
+
         conversation_history = []
         last_result = None
         last_plan = None
@@ -824,8 +773,15 @@ async def initialize_chat(req: dict):
             conversation_history = []
             last_result = None
             last_plan = None
+
+        if existing_conversation:
+            messages_field = existing_conversation.get('messages', [])
+            if isinstance(messages_field, str):
+                conversation_history = json.loads(messages_field)
+            else:
+                conversation_history = messages_field
         
-        conn.close()
+        print(f"[INIT] Conversation history loaded: {len(conversation_history)} messages")
         
         return {
             "status": "success",
