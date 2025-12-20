@@ -395,36 +395,7 @@ curl -X POST "http://localhost:8000/query" \
 }
 ```
 
----
 
-## 🐛 Known Issues & Recent Fixes
-
-### Fixed: `needs_clarification` Flag Not Preserved
-**Issue**: Plan merging overwrote `needs_clarification: true` with `false` from subsequent LLM calls  
-**Solution**: Modified `merge_plans()` to use OR logic: if ANY iteration needs clarification, preserve it
-
-### Fixed: Groupby Operations Not Executed
-**Issue**: Plan said `group_by: ['outcome']` but generated code ignored it  
-**Solution**: Added validation in `interpretor.py` to ensure groupby operations are reflected in generated code
-
----
-
-## 🔍 Debugging
-
-The system outputs detailed debug logs:
-
-```
-[INPUT NODE] Received user question.
-[PLANNER NODE] Running LLM planner...
-[DEBUG] Current plan from LLM: {...}
-[SQL EXECUTOR NODE] Executing SQL query...
-[SELF-HEAL] Attempt 1/3
-[OUTPUT NODE] Returning final answer to user.
-```
-
-Check these for understanding what the planner decided to do.
-
----
 
 ## 📝 Project Workflow
 
