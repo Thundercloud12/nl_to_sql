@@ -1,14 +1,27 @@
-# graph_builder.py
+from __future__ import annotations
 import json
 import os
 import google.generativeai as genai
-from .data_ingest import normalize_col, generate_table_summary, convert_csvs_to_excel
+from .data_ingest import normalize_col, generate_table_summary,convert_csv_to_parquet
 import pandas as pd
 import numpy as np
 from dotenv import load_dotenv
 import duckdb
 import time
 from tenacity import retry, stop_after_attempt, wait_exponential
+import gc
+
+
+from pathlib import Path
+import duckdb
+import pandas as pd
+import numpy as np
+import gc
+
+
+
+
+MAX_SCHEMA_ROWS = 10_000
 
 load_dotenv()
 api_key = os.getenv("GOOGLE_API_KEY")
@@ -54,42 +67,52 @@ def rate_limited_llm_call(prompt: str, model_name: str = "gemma-3-27b-it"):
     response = model.generate_content(prompt)
     return response.text.strip(), response
 
+
+
 def convert_excel_to_parquet(data_folder: str = "data/") -> None:
-    """Step 1: Convert Excel to Parquet with normalized columns"""
-    convert_csvs_to_excel(data_folder)  # CSV → Excel first
-    
-    for root, dirs, files in os.walk(data_folder):
+    for root, _, files in os.walk(data_folder):
         for filename in files:
-            if filename.endswith(('.xlsx', '.xls', '.xlsm')):
-                excel_path = os.path.join(root, filename)
-                
-                try:
-                    xls = pd.ExcelFile(excel_path, engine="openpyxl")
-                    for sheet in xls.sheet_names:
-                        df = xls.parse(sheet_name=sheet)
-                        df.columns = [normalize_col(str(c)) for c in df.columns]
-                        df.dropna(axis=1, how="all", inplace=True)
-                        df.dropna(axis=0, how="all", inplace=True)
-                        
-                        if df.empty:
-                            continue
-                        
-                        # Create parquet filename
-                        base_name = f"{os.path.splitext(filename)[0]}__{sheet}"
-                        parquet_filename = f"{base_name}.parquet"
-                        
-                        relative_path = os.path.relpath(root, data_folder)
-                        if relative_path == ".":
-                            parquet_path = os.path.join(data_folder, parquet_filename)
-                        else:
-                            parquet_dir = os.path.join(data_folder, relative_path)
-                            os.makedirs(parquet_dir, exist_ok=True)
-                            parquet_path = os.path.join(parquet_dir, parquet_filename)
-                        
-                        df.to_parquet(parquet_path)
-                        print(f"[CONVERT] ✓ {excel_path}::{sheet} → {parquet_path}")
-                except Exception as e:
-                    print(f"[CONVERT] ✗ Error: {excel_path}: {e}")
+            if not filename.endswith(('.xlsx', '.xls', '.xlsm')):
+                continue
+
+            excel_path = os.path.join(root, filename)
+            print(f"[CONVERT] Processing {excel_path}")
+
+            try:
+                xls = pd.ExcelFile(excel_path, engine="openpyxl")
+
+                for sheet in xls.sheet_names:
+                    print(f"[CONVERT] Sheet: {sheet}")
+
+                    # 🔥 LIMIT ROWS
+                    df = pd.read_excel(
+                        excel_path,
+                        sheet_name=sheet,
+                        nrows=MAX_SCHEMA_ROWS,
+                        engine="openpyxl"
+                    )
+
+                    if df.empty:
+                        del df
+                        continue
+
+                    df.columns = [normalize_col(str(c)) for c in df.columns]
+
+                    # Drop empty cols only (rows are sampled anyway)
+                    df.dropna(axis=1, how="all", inplace=True)
+
+                    parquet_filename = f"{os.path.splitext(filename)[0]}__{sheet}.parquet"
+                    parquet_path = os.path.join(root, parquet_filename)
+
+                    df.to_parquet(parquet_path)
+
+                    # 🚨 CRITICAL
+                    del df
+                    gc.collect()
+
+            except Exception as e:
+                print(f"[CONVERT] ✗ Error {excel_path}: {e}")
+
 
 def json_sanitize(obj):
     if isinstance(obj, dict):
@@ -105,6 +128,9 @@ def json_sanitize(obj):
 
 
 
+
+
+
 def build_metadata_from_parquet(
     data_folder: str,
     threshold: float = 0.70
@@ -115,7 +141,6 @@ def build_metadata_from_parquet(
     and build metadata.
     """
 
-    # Precedence: most informative → least informative
     canonical_types = [
         ("TIMESTAMP", "TIMESTAMP"),
         ("BIGINT", "INTEGER"),
@@ -124,56 +149,54 @@ def build_metadata_from_parquet(
         ("VARCHAR", "STRING"),
     ]
 
-    timestamp_formats = [
+    timestamp_formats = (
         "%m/%d/%Y %H:%M",
         "%m/%d/%Y %H:%M:%S",
         "%d/%m/%Y %H:%M",
         "%Y-%m-%d %H:%M:%S",
         "%Y-%m-%dT%H:%M:%S",
-    ]
+    )
 
-    initial_schema = {"tables": {}}
+    initial_schema: dict = {"tables": {}}
     table_counter = 1
-    con = duckdb.connect()
 
-    for root, _, files in os.walk(data_folder):
-        for filename in files:
-            if not filename.endswith(".parquet"):
-                continue
+    # Single lightweight DuckDB connection (no pandas binding)
+    con = duckdb.connect(database=":memory:")
 
-            parquet_path = os.path.join(root, filename)
+    try:
+        for parquet_path in Path(data_folder).rglob("*.parquet"):
             short_name = f"T{table_counter}"
             table_counter += 1
-
+            parquet_str = parquet_path.as_posix().replace("'", "''")
             try:
-                # Load raw parquet
-                con.execute(
-                    f"CREATE OR REPLACE TABLE raw AS SELECT * FROM read_parquet('{parquet_path}')"
-                )
+                # Load parquet lazily into DuckDB (no pandas yet)
+                con.execute(f"""
+                    CREATE OR REPLACE VIEW raw AS
+                    SELECT * FROM read_parquet('{parquet_str}')
+                """)
+
 
                 cols = con.execute("DESCRIBE raw").fetchall()
-                col_names = [c[0] for c in cols]
+                # FIX: Change tuple to list for pandas compatibility
+                col_names = [c[0] for c in cols]  # Was: tuple(c[0] for c in cols)
                 raw_types = {c[0]: c[1].upper() for c in cols}
 
-                select_exprs = []
-                final_types = {}
+                select_exprs: list[str] = []
+                final_types: dict[str, str] = {}
 
                 for col in col_names:
                     chosen_type = "VARCHAR"
-                    print("i AM HERE")
-                    # Distinct count for BOOLEAN guard
-                    distinct_count = con.execute(f"""
+
+                    distinct_count = con.execute("""
                         SELECT COUNT(DISTINCT "{col}")
                         FROM raw
                         WHERE "{col}" IS NOT NULL
-                    """).fetchone()[0]
+                    """.format(col=col)).fetchone()[0]
 
                     for duck_type, _ in canonical_types:
-                        # Guard: BOOLEAN only if ≤ 2 distinct non-null values
                         if duck_type == "BOOLEAN" and distinct_count > 2:
                             continue
 
-                        # Guard: TIMESTAMP only for string columns
                         if duck_type == "TIMESTAMP" and raw_types[col] not in ("VARCHAR", "TEXT"):
                             continue
 
@@ -183,7 +206,7 @@ def build_metadata_from_parquet(
                                     COUNT(
                                         COALESCE(
                                             {", ".join(
-                                                f"try_strptime(\"{col}\", '{fmt}')"
+                                                f'''try_strptime("{col}", '{fmt}')'''
                                                 for fmt in timestamp_formats
                                             )}
                                         )
@@ -207,79 +230,84 @@ def build_metadata_from_parquet(
                         select_exprs.append(f"""
                             COALESCE(
                                 {", ".join(
-                                    f"try_strptime(\"{col}\", '{fmt}')"
+                                    f'''try_strptime("{col}", '{fmt}')'''
                                     for fmt in timestamp_formats
                                 )}
                             ) AS "{col}"
                         """)
                     else:
                         select_exprs.append(
-                            f"try_cast(\"{col}\" AS {chosen_type}) AS \"{col}\""
+                            f'try_cast("{col}" AS {chosen_type}) AS "{col}"'
                         )
 
                     final_types[col] = chosen_type
 
-                # Create normalized table
+                # Normalize without materializing intermediate pandas frames
                 con.execute(f"""
                     CREATE OR REPLACE TABLE normalized AS
                     SELECT {", ".join(select_exprs)}
                     FROM raw
                 """)
 
-                # Overwrite parquet with cleaned schema
                 con.execute(f"""
-                    COPY normalized TO '{parquet_path}'
+                    COPY normalized TO '{parquet_str}'
                     (FORMAT PARQUET, OVERWRITE_OR_IGNORE TRUE)
                 """)
 
-                # Read cleaned parquet into pandas
-                df = pd.read_parquet(parquet_path)
+
+                # 🔴 Only now load minimal data into pandas
+                df = pd.read_parquet(
+                    parquet_path,
+                    columns=col_names  # Now a list, as required by pandas
+                )
 
                 def json_safe(value):
-                    # Handle timestamps
                     if isinstance(value, (pd.Timestamp, np.datetime64)):
                         return value.isoformat()
-
-                    # Handle NaN / inf / -inf
                     if isinstance(value, float):
                         if np.isnan(value) or np.isinf(value):
                             return None
-
                     return value
 
                 samples = (
                     df.head(3)
-                    .map(json_safe)   # <-- replaces applymap (future-proof)
+                    .map(json_safe)
                     .to_dict(orient="records")
                 )
 
-
-
-
                 summary = generate_table_summary(
-                    filename,
+                    parquet_path.name,
                     list(df.columns),
                     samples
                 )
 
                 initial_schema["tables"][short_name] = json_sanitize({
-                    "original_name": filename.replace(".parquet", ""),
+                    "original_name": parquet_path.stem,
                     "columns": list(df.columns),
                     "canonical_types": final_types,
                     "samples": samples,
                     "summary": summary,
                 })
 
-
                 print(
-                    f"[METADATA] ✓ {short_name}: {filename} "
+                    f"[METADATA] ✓ {short_name}: {parquet_path.name} "
                     f"({len(df.columns)} cols, normalized)"
                 )
 
-            except Exception as e:
-                print(f"[METADATA] ✗ Error processing {parquet_path}: {e}")
+            except Exception as exc:
+                print(f"[METADATA] ✗ Error processing {parquet_path}: {exc}")
 
-    con.close()
+            finally:
+                # Hard cleanup per file (critical on Render)
+                if "df" in locals():
+                    del df
+                con.execute("DROP TABLE IF EXISTS normalized")
+                con.execute("DROP VIEW IF EXISTS raw")
+                gc.collect()
+
+    finally:
+        con.close()
+
     return initial_schema
 
 def extract_tiny_metadata(initial_schema: dict) -> dict:
@@ -351,8 +379,18 @@ def process_schema_build(input_folder: str) -> dict:
     """Main orchestration: Parquet first, then metadata, then relationships - return data directly"""
     print("[PIPELINE] Starting schema build...")
     
-   
-    convert_excel_to_parquet(input_folder)
+    has_csv = any(f.endswith('.csv') for f in os.listdir(input_folder) if os.path.isfile(os.path.join(input_folder, f)))
+    has_excel = any(f.endswith(('.xlsx', '.xls', '.xlsm')) for f in os.listdir(input_folder) if os.path.isfile(os.path.join(input_folder, f)))
+    
+    if has_csv:
+        print("[PIPELINE] CSV files detected, converting to Parquet...")
+        convert_csv_to_parquet(input_folder)
+    elif has_excel:
+        print("[PIPELINE] Excel files detected, converting to Parquet...")
+        convert_excel_to_parquet(input_folder)
+    else:
+        print("[PIPELINE] No supported files found (CSV or Excel)")
+        return {"raw_metadata": {"tables": {}}, "schema_graph": {}}
     
     # Step 2: Build metadata from Parquet
     initial_schema = build_metadata_from_parquet(input_folder)
