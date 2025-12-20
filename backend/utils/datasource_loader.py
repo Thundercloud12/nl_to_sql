@@ -38,11 +38,12 @@ async def download_from_cloudinary(url: str, output_path: str) -> str:
         raise
 
 
-def load_datasource_files(raw_metadata: Dict[str, Any], schema_graph: Dict[str, Any]) -> Dict[str, str]:
+def load_datasource_files(data_source_id: str, raw_metadata: Dict[str, Any], schema_graph: Dict[str, Any]) -> Dict[str, str]:
     """
-    Write raw metadata and schema graph to JSON files at the project root.
+    Write raw metadata and schema graph to JSON files in per-datasource folder.
     
     Args:
+        data_source_id: ID of the datasource (for folder isolation)
         raw_metadata: Raw metadata dict from DataSource
         schema_graph: Schema graph dict from DataSource
     
@@ -50,17 +51,18 @@ def load_datasource_files(raw_metadata: Dict[str, Any], schema_graph: Dict[str, 
         Dict with paths to created files
     """
     try:
-        # Write to project root (current directory)
-        root_dir = "."  # Project root
+        # Write to datasource-specific folder
+        datasource_dir = os.path.join("uploaded_files", f"datasource_{data_source_id}")
+        os.makedirs(datasource_dir, exist_ok=True)
         
         # Write raw metadata
-        metadata_path = os.path.join(root_dir, "raw_metadata.json")
+        metadata_path = os.path.join(datasource_dir, "raw_metadata.json")
         with open(metadata_path, "w") as f:
             json.dump(raw_metadata, f, indent=4)
         print(f"[DATASOURCE] ✓ Wrote raw_metadata.json to {metadata_path}")
         
         # Write schema graph
-        graph_path = os.path.join(root_dir, "schema_graph.json")
+        graph_path = os.path.join(datasource_dir, "schema_graph.json")
         with open(graph_path, "w") as f:
             json.dump(schema_graph, f, indent=4)
         print(f"[DATASOURCE] ✓ Wrote schema_graph.json to {graph_path}")

@@ -53,33 +53,33 @@ def rate_limited_llm_call(prompt: str, model_name: str = "gemma-3-27b-it"):
     return response.text.strip(), response
 
 
-def load_tables(short_names: list) -> duckdb.DuckDBPyConnection:
+def load_tables(short_names: list, data_source_id: str) -> duckdb.DuckDBPyConnection:
     """
-    Load Parquet tables into DuckDB connection.
+    Load Parquet tables into DuckDB connection from datasource-specific folder.
     Tables are loaded from normalized Parquet files created by graph_builder.
+    
+    Args:
+        short_names: List of short table names (e.g., ['T1', 'T2'])
+        data_source_id: DataSource ID for folder isolation
     """
     print("[LOAD_TABLES] Loading tables into DuckDB...")
     con = duckdb.connect()
     
-    if not os.path.exists("raw_metadata.json"):
-        raise FileNotFoundError("raw_metadata.json not found. Please run schema build first.")
+    datasource_dir = os.path.join("uploaded_files", f"datasource_{data_source_id}")
+    metadata_path = os.path.join(datasource_dir, "raw_metadata.json")
     
-    with open("raw_metadata.json", "r") as f:
+    if not os.path.exists(metadata_path):
+        raise FileNotFoundError(f"raw_metadata.json not found at {metadata_path}. Please run schema build first.")
+    
+    with open(metadata_path, "r") as f:
         metadata = json.load(f)
     
     for short in short_names:
         if short in metadata["tables"]:
-            # Find ANY .parquet file in uploaded_files (should be only one per session)
-            parquet_path = None
-            for root, dirs, files in os.walk("uploaded_files/"):
-                for file in files:
-                    if file.endswith(".parquet"):
-                        parquet_path = os.path.join(root, file)
-                        break
-                if parquet_path:
-                    break
+            # Use the specific parquet file in the datasource folder
+            parquet_path = os.path.join(datasource_dir, "data.parquet")
             
-            if parquet_path:
+            if os.path.exists(parquet_path):
                 try:
                     con.execute(f"CREATE TABLE {short} AS SELECT * FROM read_parquet('{parquet_path}')")
                     print(f"[LOAD_TABLES] ✓ Loaded {short} from {parquet_path}")
@@ -87,7 +87,7 @@ def load_tables(short_names: list) -> duckdb.DuckDBPyConnection:
                     print(f"[LOAD_TABLES] ✗ Error loading {short}: {e}")
                     con.execute(f"CREATE TABLE {short} AS SELECT * FROM (SELECT NULL) WHERE 1=0")
             else:
-                print(f"[LOAD_TABLES] ⚠ Parquet file not found for {short}, creating empty table")
+                print(f"[LOAD_TABLES] ⚠ Parquet file not found at {parquet_path}, creating empty table")
                 con.execute(f"CREATE TABLE {short} AS SELECT * FROM (SELECT NULL) WHERE 1=0")
         else:
             print(f"[LOAD_TABLES] ⚠ No mapping found for {short} in metadata")
@@ -117,12 +117,15 @@ def get_actual_schema_from_duckdb(con: duckdb.DuckDBPyConnection, table_names: l
     return actual_schema
 
 
-def generate_code(plan: dict, con: duckdb.DuckDBPyConnection, error_context: str = "") -> str:
+def generate_code(plan: dict, con: duckdb.DuckDBPyConnection, data_source_id: str, error_context: str = "") -> str:
     """
     Generate DuckDB SQL code from plan.
     Uses actual schema from DuckDB to ensure column names match.
     """
-    with open("raw_metadata.json", "r") as f:
+    datasource_dir = os.path.join("uploaded_files", f"datasource_{data_source_id}")
+    metadata_path = os.path.join(datasource_dir, "raw_metadata.json")
+    
+    with open(metadata_path, "r") as f:
         metadata = json.load(f)
     
     # Build error feedback section if we have previous errors
@@ -297,9 +300,15 @@ def execute_generated_code(sql: str, con: duckdb.DuckDBPyConnection) -> tuple:
         return None, error_msg
 
 
-def execute_with_self_healing(plan: dict, con: duckdb.DuckDBPyConnection, max_retries: int = 5) -> pd.DataFrame:
+def execute_with_self_healing(plan: dict, con: duckdb.DuckDBPyConnection, data_source_id: str, max_retries: int = 5) -> pd.DataFrame:
     """
     Execute SQL with self-healing loop.
+    
+    Args:
+        plan: Execution plan
+        con: DuckDB connection
+        data_source_id: DataSource ID for folder isolation
+        max_retries: Max retry attempts
     """
     error_context = ""
     previous_codes = []
@@ -307,7 +316,7 @@ def execute_with_self_healing(plan: dict, con: duckdb.DuckDBPyConnection, max_re
     for attempt in range(max_retries):
         print(f"[SELF-HEAL] Attempt {attempt + 1}/{max_retries}")
         
-        sql = generate_code(plan, con, error_context)
+        sql = generate_code(plan, con, data_source_id, error_context)
         
         if sql in previous_codes:
             print(f"[SELF-HEAL] LLM generated same SQL again, trying with stronger hint...")
@@ -474,12 +483,13 @@ def apply_preprocessing(con: duckdb.DuckDBPyConnection, operations: List[Dict]) 
             print(f"[PREPROCESSING] ✗ Error applying {op_type} on {table}: {e}")
 
 
-def interpret_and_execute(plan: dict, existing_connection=None) -> str:
+def interpret_and_execute(plan: dict, data_source_id: str, existing_connection=None) -> str:
     """
     Main entry point: load tables → generate SQL → execute → return result.
     
     Args:
         plan: Execution plan from planner
+        data_source_id: DataSource ID for folder isolation
         existing_connection: Pre-loaded DuckDB connection (from preprocessing)
     """
     if not plan.get("tables"):
@@ -491,10 +501,10 @@ def interpret_and_execute(plan: dict, existing_connection=None) -> str:
         con = existing_connection
     else:
         print("[INTERPRETER] Loading fresh data")
-        con = load_tables(plan["tables"])
+        con = load_tables(plan["tables"], data_source_id)
     
     # Execute with self-healing
-    result_df = execute_with_self_healing(plan, con, max_retries=5)
+    result_df = execute_with_self_healing(plan, con, data_source_id, max_retries=5)
     
     # ✅ Only close if we created a new connection
     if not existing_connection:
@@ -506,8 +516,11 @@ def interpret_and_execute(plan: dict, existing_connection=None) -> str:
     if isinstance(result_df, pd.DataFrame) and len(result_df) > 1000:
         print(f"[ANALYSIS] Result too large ({len(result_df)} rows), invoking advanced analysis...")
         
-        # Load metadata for schema context
-        with open("raw_metadata.json", "r") as f:
+        # Load metadata for schema context from datasource-specific folder
+        datasource_dir = os.path.join("uploaded_files", f"datasource_{data_source_id}")
+        metadata_path = os.path.join(datasource_dir, "raw_metadata.json")
+        
+        with open(metadata_path, "r") as f:
             metadata = json.load(f)
         
         # Prepare context for LLM

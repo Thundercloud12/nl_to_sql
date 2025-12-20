@@ -120,6 +120,7 @@ class State(dict):
     Shared state passed around between LangGraph nodes.
     """
     user_question: str
+    data_source_id: str  # ✅ Add data_source_id for per-datasource isolation
     schema_info: Dict[str, Any] | None
     planner_output: Dict[str, Any] | None
     sql_result: Any | None
@@ -157,11 +158,15 @@ def preprocessing_node(state: State) -> State:
     
     print(f"[PREPROCESSING NODE] Loading {len(tables)} table(s) for preprocessing...")
     
+    data_source_id = state.get("data_source_id")
+    if not data_source_id:
+        raise ValueError("data_source_id not found in state")
+    
     try:
         # Load tables into DuckDB
         from .interpretor import load_tables, apply_preprocessing
         
-        con = load_tables(tables)
+        con = load_tables(tables, data_source_id)
         print(f"[PREPROCESSING NODE] Tables loaded: {tables}")
         
         # Apply preprocessing operations
@@ -187,6 +192,10 @@ def sql_executor_node(state: State) -> State:
     plan = state.get("planner_output", {})
     print(f"[DEBUG] SQL executor plan: {plan}")
     
+    data_source_id = state.get("data_source_id")
+    if not data_source_id:
+        raise ValueError("data_source_id not found in state")
+    
     from .interpretor import interpret_and_execute
     
     # ✅ Pass preprocessed connection if available
@@ -194,10 +203,10 @@ def sql_executor_node(state: State) -> State:
     
     if preprocessed_con:
         print("[SQL EXECUTOR NODE] Using preprocessed DuckDB connection")
-        result = interpret_and_execute(plan, existing_connection=preprocessed_con)
+        result = interpret_and_execute(plan, data_source_id, existing_connection=preprocessed_con)
     else:
         print("[SQL EXECUTOR NODE] Loading fresh data (no preprocessing)")
-        result = interpret_and_execute(plan)
+        result = interpret_and_execute(plan, data_source_id)
     
     state["sql_result"] = result
     print(f"[DEBUG] SQL result: {result[:100] if result else 'None'}...")
@@ -212,26 +221,28 @@ def sql_executor_node(state: State) -> State:
     
     return state
 
-def load_schema_graph(graph_path: str = "schema_graph.json") -> dict:
-    """Load the schema graph from Parquet-based workflow."""
+def load_schema_graph(data_source_id: str) -> dict:
+    """Load schema graph from datasource-specific folder."""
+    graph_path = os.path.join("uploaded_files", f"datasource_{data_source_id}", "schema_graph.json")
     if not os.path.exists(graph_path):
         raise FileNotFoundError(f"Schema graph not found at {graph_path}. Please run schema build first.")
     with open(graph_path, "r") as f:
         return json.load(f)
 
-def load_raw_metadata(metadata_path: str = "raw_metadata.json") -> dict:
-    """Load raw metadata from Parquet files."""
+def load_raw_metadata(data_source_id: str) -> dict:
+    """Load raw metadata from datasource-specific folder."""
+    metadata_path = os.path.join("uploaded_files", f"datasource_{data_source_id}", "raw_metadata.json")
     if not os.path.exists(metadata_path):
         raise FileNotFoundError(f"Metadata not found at {metadata_path}. Please run schema build first.")
     with open(metadata_path, "r") as f:
         return json.load(f)
 
-def retrieve_metadata(requests: List[str]) -> str:
+def retrieve_metadata(requests: List[str], data_source_id: str) -> str:
     """
-    Parse metadata requests and retrieve from raw_metadata.json.
+    Parse metadata requests and retrieve from datasource-specific raw_metadata.json.
     """
     try:
-        metadata = load_raw_metadata()
+        metadata = load_raw_metadata(data_source_id)
     except Exception as e:
         print(f"[METADATA] Error loading metadata: {e}")
         return "Metadata unavailable."
@@ -281,8 +292,12 @@ def planner_node(state: State) -> State:
     print("[PLANNER NODE] Running LLM planner...")
     print(f"[DEBUG] State before planner: user_question={state.get('user_question')}, appended_data={state.get('appended_data', '')[:100]}...")
     
-    schema_graph = load_schema_graph()
-    raw_metadata = load_raw_metadata()
+    data_source_id = state.get("data_source_id")
+    if not data_source_id:
+        raise ValueError("data_source_id not found in state")
+    
+    schema_graph = load_schema_graph(data_source_id)
+    raw_metadata = load_raw_metadata(data_source_id)
     
     schema_text = json.dumps(schema_graph, indent=2)
     
@@ -420,7 +435,7 @@ Rules:
             requests = current_plan.get("metadata_requests", [])
             if requests:
                 print(f"[DEBUG] Metadata requests found: {requests}")
-                appended_data += "\nRetrieved Metadata:\n" + retrieve_metadata(requests)
+                appended_data += "\nRetrieved Metadata:\n" + retrieve_metadata(requests, data_source_id)
                 current_plan["metadata_requests"] = []
                 combined_plan["metadata_requests"] = []
                 iteration += 1
@@ -477,7 +492,12 @@ def schema_info_node(state: State) -> State:
     """Provides schema details (if needed)."""
     print("[SCHEMA INFO NODE] Fetching schema details...")
     print(f"[DEBUG] Schema info state before: schema_info={state.get('schema_info')}")
-    schema_graph = load_schema_graph()
+    
+    data_source_id = state.get("data_source_id")
+    if not data_source_id:
+        raise ValueError("data_source_id not found in state")
+    
+    schema_graph = load_schema_graph(data_source_id)
     state["schema_info"] = schema_graph
     print(f"[DEBUG] Schema info loaded: {len(schema_graph)} keys")
     return state
@@ -488,6 +508,10 @@ def sql_executor_node(state: State) -> State:
     plan = state.get("planner_output", {})
     print(f"[DEBUG] SQL executor plan: {plan}")
     
+    data_source_id = state.get("data_source_id")
+    if not data_source_id:
+        raise ValueError("data_source_id not found in state")
+    
     from .interpretor import interpret_and_execute
     
     # ✅ Pass preprocessed connection if available
@@ -495,10 +519,10 @@ def sql_executor_node(state: State) -> State:
     
     if preprocessed_con:
         print("[SQL EXECUTOR NODE] Using preprocessed DuckDB connection")
-        result = interpret_and_execute(plan, existing_connection=preprocessed_con)
+        result = interpret_and_execute(plan, data_source_id, existing_connection=preprocessed_con)
     else:
         print("[SQL EXECUTOR NODE] Loading fresh data (no preprocessing)")
-        result = interpret_and_execute(plan)
+        result = interpret_and_execute(plan, data_source_id)
     
     state["sql_result"] = result
     print(f"[DEBUG] SQL result: {result[:100] if result else 'None'}...")
