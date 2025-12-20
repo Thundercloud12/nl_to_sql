@@ -22,8 +22,6 @@ export default function SignInPage() {
           </div>
           <div className="hidden md:flex gap-6 text-sm font-medium text-zinc-400">
             <span className="hover:text-white cursor-pointer transition-colors">Features</span>
-            <span className="hover:text-white cursor-pointer transition-colors">Pricing</span>
-            <span className="hover:text-white cursor-pointer transition-colors">Docs</span>
           </div>
           <div className="flex gap-4">
             <a href="/" className="text-sm font-medium text-zinc-300 hover:text-white pt-2">Home</a>
