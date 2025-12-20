@@ -1,4 +1,4 @@
-# data_ingest.py
+from __future__ import annotations
 import os
 import pandas as pd
 from typing import Dict, Tuple, Any
@@ -7,6 +7,20 @@ import json
 import numpy as np
 import time
 from tenacity import retry, stop_after_attempt, wait_exponential
+import pyarrow as pa
+import pyarrow.parquet as pq
+import gc
+from pathlib import Path
+import pandas as pd
+
+
+MAX_SCHEMA_ROWS = 10_000
+import chardet
+
+def detect_encoding(path, bytes=100_000):
+    with open(path, "rb") as f:
+        raw = f.read(bytes)
+    return chardet.detect(raw)["encoding"] or "utf-8"
 
 
 # Configure Gemini API
@@ -50,69 +64,7 @@ def rate_limited_llm_call(prompt: str, model_name: str = "gemma-3-27b-it"):
     response = model.generate_content(prompt)
     return response.text.strip(), response
 
-def convert_csvs_to_excel(path: str) -> None:
-    """
-    Recursively scan the folder for CSV files, convert each to Excel (.xlsx),
-    save in the same location, and delete the original CSV.
-    Handles multiple encodings robustly.
-    """
-    if not os.path.exists(path):
-        raise FileNotFoundError(f"Path {path} does not exist.")
 
-    # Common encodings to try in order
-    encodings = [
-        'utf-8',
-        'latin-1',      # ISO-8859-1
-        'iso-8859-1',
-        'windows-1252', # Western European
-        'cp1252',       # Windows Western
-        'utf-16',
-        'utf-32',
-        'ascii',
-        'cp850',        # Western European (DOS)
-        'mac_roman',    # Mac OS Roman
-    ]
-
-    for root, dirs, files in os.walk(path):
-        for fname in files:
-            if fname.lower().endswith(".csv"):
-                csv_path = os.path.join(root, fname)
-                excel_path = os.path.splitext(csv_path)[0] + ".xlsx"
-                
-                df = None
-                successful_encoding = None
-                
-                # Try each encoding until one works
-                for encoding in encodings:
-                    try:
-                        df = pd.read_csv(csv_path, encoding=encoding)
-                        successful_encoding = encoding
-                        break
-                    except (UnicodeDecodeError, UnicodeError):
-                        continue
-                    except Exception as e:
-                        # Other errors (like file not found, permission issues)
-                        print(f"Failed to convert {csv_path}: {e}")
-                        break
-                
-                # If all encodings failed, try with error handling
-                if df is None:
-                    try:
-                        # Try UTF-8 with error replacement as last resort
-                        df = pd.read_csv(csv_path, encoding='utf-8', encoding_errors='replace')
-                        successful_encoding = 'utf-8 (with replacements)'
-                    except Exception as e:
-                        print(f"Failed to convert {csv_path} with all encodings: {e}")
-                        continue
-                
-                # Write to Excel if we successfully read the CSV
-                if df is not None:
-                    try:
-                        df.to_excel(excel_path, index=False, engine="openpyxl")
-                        os.remove(csv_path)
-                        print(f"Converted {csv_path} to {excel_path} using {successful_encoding} encoding and deleted original CSV.")
-                    except Exception as e:
-                        print(f"Failed to write Excel file {excel_path}: {e}")
 
 def normalize_col(c: str) -> str:
     """Normalize column names: strip, lowercase, replace spaces with underscores."""
@@ -239,6 +191,59 @@ def build_initial_schema_object(schema: Dict[str, Dict[str, Any]]) -> Dict[str, 
         }
 
     return initial_schema
+
+
+
+def convert_csv_to_parquet(data_folder: str = "data/") -> None:
+    """
+    Convert CSV files to Parquet in-place using a memory-conscious approach.
+    Reads only a limited number of rows, normalizes columns, drops empty columns,
+    and writes Parquet with minimal memory overhead.
+    """
+    base_path = Path(data_folder)
+
+    for csv_path in base_path.rglob("*.csv"):
+        print(f"[CONVERT] Processing {csv_path}")
+
+        try:
+            encoding = detect_encoding(csv_path)
+
+            # Read only required rows, no index, no dtype inference explosion
+            df = pd.read_csv(
+                csv_path,
+                encoding=encoding,
+                nrows=MAX_SCHEMA_ROWS,
+                low_memory=True
+            )
+
+            if df.empty:
+                continue
+
+            # Normalize columns (in-place, no new list retained)
+            df.columns = tuple(normalize_col(str(c)) for c in df.columns)
+
+            # Drop fully empty columns
+            df.dropna(axis=1, how="all", inplace=True)
+
+            parquet_path = csv_path.with_suffix(".parquet")
+
+            # Write parquet without keeping extra references
+            df.to_parquet(
+                parquet_path,
+                index=False
+            )
+
+        except Exception as exc:
+            print(f"[CONVERT] ✗ Error {csv_path}: {exc}")
+
+        finally:
+            # Explicit cleanup (important for Render / small containers)
+            if "df" in locals():
+                del df
+            gc.collect()
+
+        print(f"[CONVERT] ✓ Converted {csv_path.name}")
+
 
 if __name__ == "__main__":
     tables, schema = load_excel_folder("data/")
