@@ -351,7 +351,7 @@ def process_schema_build(input_folder: str) -> dict:
     """Main orchestration: Parquet first, then metadata, then relationships - return data directly"""
     print("[PIPELINE] Starting schema build...")
     
-    # Step 1: Convert Excel → Parquet (normalized)
+   
     convert_excel_to_parquet(input_folder)
     
     # Step 2: Build metadata from Parquet
