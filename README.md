@@ -105,7 +105,7 @@ my-app/                    # Next.js Frontend
 
 ## 💻 Tech Stack
 
-**Backend**: FastAPI, LangGraph 1.0, Gemini API, DuckDB, PostgreSQL, Cloudinary  
+**Backend**: FastAPI, LangGraph 1.0, Gemini API, DuckDB, PostgreSQL, Supabase   
 **Frontend**: Next.js 16, React 19, TypeScript, Tailwind CSS, Clerk auth
 
 ---
@@ -121,7 +121,7 @@ pip install -r requirements.txt
 # .env
 GOOGLE_API_KEY=your_key
 DATABASE_URL=postgresql://...
-CLOUDINARY_URL=cloudinary://...
+Supabase _URL=Supabase ://...
 
 uvicorn main:app --reload --port 8000
 ```
@@ -190,7 +190,7 @@ User:   "Last 30 days"
 - Clerk authentication
 - All queries filtered by `user_id` + `data_source_id`
 - Per-datasource session isolation
-- Secure file storage (Cloudinary)
+- Secure file storage (Supabase )
 
 ---
 
@@ -221,7 +221,7 @@ User:   "Last 30 days"
    - Relationship detection
    ↓
 5. Store
-   - Parquet → Cloudinary
+   - Parquet → Supabase 
    - Metadata → PostgreSQL
 ```
 
