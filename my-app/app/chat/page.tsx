@@ -86,25 +86,17 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
         setSession({
           id: data.session_id,
           conversationHistory: data.conversation_history || [],
+          last_result: data.last_result, 
+          last_plan: data.last_plan      
         });
 
         if (data.conversation_history) {
           const loadedMessages: Message[] = [];
-          let i = 0;
-          while (i < data.conversation_history.length) {
-            const msg = data.conversation_history[i];
+          for (const msg of data.conversation_history) {
             if (msg.role === "assistant") {
-              const nextMsg = data.conversation_history[i + 1];
-              if (nextMsg && nextMsg.role === "insight") {
-                loadedMessages.push({ role: "assistant", content: msg.content, insight: nextMsg.content });
-                i += 2;
-              } else {
-                loadedMessages.push({ role: "assistant", content: msg.content });
-                i += 1;
-              }
+              loadedMessages.push({ role: "assistant", content: msg.content, insight: msg.content });
             } else {
               loadedMessages.push({ role: msg.role, content: msg.content });
-              i += 1;
             }
           }
           setMessages(loadedMessages);
@@ -117,6 +109,29 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
     };
     initSession();
   }, [user, dataSourceId, sessionId]);
+
+  useEffect(() => {
+    if (!session?.id || !user?.id || !dataSourceId) return;
+
+    const handleBeforeUnload = () => {
+      const payload = JSON.stringify({
+        session_id: session.id,
+        user_id: user.id,
+        data_source_id: dataSourceId,
+      });
+
+      navigator.sendBeacon(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/save_session`,
+        payload
+      );
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [session?.id, user?.id, dataSourceId, messages]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -210,25 +225,19 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
     }
 
     try {
-      // Save session before leaving
+      // Save session before leaving (only sends required fields for cleanup)
       await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/save_session`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           session_id: session.id,
           user_id: user?.id,
-          data_source_id: dataSourceId,
-          conversation_history: messages.map(m => ({
-            role: m.role,
-            content: m.role === "assistant" ? (m.insight || m.content) : m.content
-          })),
-          last_result: session.last_result,
-          last_plan: session.last_plan
+          data_source_id: dataSourceId
         }),
       });
-      console.log("[CHAT] Session saved successfully");
+      console.log("[CHAT] Session cleanup completed");
     } catch (err) {
-      console.error("[CHAT] Failed to save session:", err);
+      console.error("[CHAT] Failed to cleanup session:", err);
     } finally {
       router.push("/dashboard");
     }

@@ -34,6 +34,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [startingChatId, setStartingChatId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false); // Add this state
 
   useEffect(() => {
     if (!user) return;
@@ -80,7 +81,7 @@ export default function DashboardPage() {
     if (!confirm("Are you sure? This will permanently erase this data source and all AI memory associated with it.")) return;
 
     try {
-      setLoading(true);
+      setDeleting(true); // Show loading screen
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/datasource/${id}?user_id=${user?.id}`, {
         method: "DELETE",
       });
@@ -89,7 +90,7 @@ export default function DashboardPage() {
     } catch (err: any) {
       setError(err.message);
     } finally {
-      setLoading(false);
+      setDeleting(false); // Hide loading screen
     }
   };
 
@@ -103,6 +104,19 @@ export default function DashboardPage() {
     return (
       <div className="min-h-screen bg-[#0D0E12] flex items-center justify-center">
         <Loader2 className="w-10 h-10 animate-spin text-[#00e599]" />
+      </div>
+    );
+  }
+
+  // Add loading screen when deleting
+  if (deleting) {
+    return (
+      <div className="min-h-screen bg-[#0D0E12] flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-[#00e599] mx-auto mb-4" />
+          <p className="text-white font-medium">Deleting data source...</p>
+          <p className="text-zinc-500 text-sm mt-2">This may take a few moments</p>
+        </div>
       </div>
     );
   }

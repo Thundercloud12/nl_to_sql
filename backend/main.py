@@ -1,6 +1,6 @@
 # main.py
 # Remove unused imports
-from fastapi import FastAPI, HTTPException, UploadFile, File, Form
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uuid
@@ -435,31 +435,14 @@ def clarify(req: dict):
     }
 
 @app.post("/save_session")
-async def save_session(req: dict):
-    """
-    Save session state to Neon DB.
-    Called when user closes chat.
-    Saves to both Session and Conversation tables.
-    Cleans up uploaded files and JSON metadata files after saving.
-    
-    Args:
-        - session_id: Session ID to save
-        - user_id: User ID for verification
-        - data_source_id: DataSource ID for verification
-        - conversation_history: Array of messages
-        - last_result: Last SQL result (optional)
-        - last_plan: Last plan (optional)
-    
-    Returns:
-        {status: "success", message: "Session saved"}
-    """
+async def save_session(req: Request):
     try:
+        body = await req.body()
+        req = json.loads(body.decode("utf-8"))
+
         session_id = req.get("session_id")
         user_id = req.get("user_id")
         data_source_id = req.get("data_source_id")
-        conversation_history = req.get("conversation_history", [])
-        last_result = req.get("last_result")
-        last_plan = req.get("last_plan")
         
         if not session_id or not user_id or not data_source_id:
             raise HTTPException(
@@ -467,97 +450,27 @@ async def save_session(req: dict):
                 detail="session_id, user_id, and data_source_id are required"
             )
         
-        print(f"[SAVE_SESSION] Persisting session {session_id} to database...")
-        print(f"[SAVE_SESSION] Conversation history: {len(conversation_history)} messages")
+        print(f"[SAVE_SESSION] Cleaning up files for session {session_id}...")
         
-        # Convert to proper JSON format
-        history_json = json.dumps(conversation_history) if conversation_history else json.dumps([])
-        last_result_json = json.dumps(last_result) if last_result else None
-        last_plan_json = json.dumps(last_plan) if last_plan else None
-        
-        # Update session in database
+        # Verify the session exists (for authorization)
         conn = get_db_connection()
         with conn.cursor() as cur:
-            # Step 1: Verify the session exists
             cur.execute(
                 "SELECT id FROM \"Session\" WHERE id = %s AND \"userId\" = %s AND \"dataSourceId\" = %s",
                 (session_id, user_id, data_source_id)
             )
             session_exists = cur.fetchone()
-            
-            if not session_exists:
-                print(f"[SAVE_SESSION] ⚠ Session not found: {session_id}")
-                conn.close()
-                raise HTTPException(
-                    status_code=404,
-                    detail="Session not found"
-                )
-            
-            # Step 2: Update the Session table
-            cur.execute(
-                """
-                UPDATE "Session" 
-                SET "conversationHistory" = %s, 
-                    "lastResult" = %s, 
-                    "lastPlan" = %s, 
-                    "updatedAt" = NOW()
-                WHERE id = %s AND "userId" = %s AND "dataSourceId" = %s
-                """,
-                (
-                    history_json,
-                    last_result_json,
-                    last_plan_json,
-                    session_id,
-                    user_id,
-                    data_source_id
-                )
-            )
-            
-            session_rows_affected = cur.rowcount
-            
-            # Step 3: Check if conversation record exists
-            cur.execute(
-                """
-                SELECT id FROM "Conversation" 
-                WHERE "userId" = %s AND "dataSourceId" = %s
-                ORDER BY "createdAt" DESC LIMIT 1
-                """,
-                (user_id, data_source_id)
-            )
-            existing_conversation = cur.fetchone()
-            
-            if existing_conversation:
-                # Update existing conversation
-                print(f"[SAVE_SESSION] Updating existing Conversation record...")
-                cur.execute(
-                    """
-                    UPDATE "Conversation" 
-                    SET messages = %s, "updatedAt" = NOW()
-                    WHERE "userId" = %s AND "dataSourceId" = %s
-                    """,
-                    (history_json, user_id, data_source_id)
-                )
-                conversation_rows_affected = cur.rowcount
-            else:
-                # Create new conversation record
-                print(f"[SAVE_SESSION] Creating new Conversation record...")
-                conversation_id = str(uuid.uuid4())
-                cur.execute(
-                    """
-                    INSERT INTO "Conversation" (id, "userId", "dataSourceId", messages, "updatedAt")
-                    VALUES (%s, %s, %s, %s, NOW())
-                    """,
-                    (conversation_id, user_id, data_source_id, history_json)
-                )
-                conversation_rows_affected = cur.rowcount
         
-        conn.commit()
+        if not session_exists:
+            conn.close()
+            raise HTTPException(
+                status_code=404,
+                detail="Session not found"
+            )
+        
         conn.close()
         
-        print(f"[SAVE_SESSION] ✓ Session saved: {session_id} (rows updated: {session_rows_affected})")
-        print(f"[SAVE_SESSION] ✓ Conversation saved (rows affected: {conversation_rows_affected})")
-        
-        # Step 4: Clean up datasource-specific folder only
+        # Clean up datasource-specific folder only
         print(f"[SAVE_SESSION] Cleaning up files for datasource: {data_source_id}...")
         
         datasource_folder = os.path.join("uploaded_files", f"datasource_{data_source_id}")
@@ -570,9 +483,8 @@ async def save_session(req: dict):
         
         return {
             "status": "success",
-            "message": "Session and Conversation saved, files cleaned up successfully",
-            "session_id": session_id,
-            "messages_saved": len(conversation_history)
+            "message": "Files cleaned up successfully",
+            "session_id": session_id
         }
     
     except HTTPException as e:
@@ -580,7 +492,7 @@ async def save_session(req: dict):
         raise e
     except Exception as e:
         print(f"[SAVE_SESSION] ✗ Error: {str(e)}", flush=True)
-        logger.error(f"Error saving session: {str(e)}")
+        logger.error(f"Error cleaning up session: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 

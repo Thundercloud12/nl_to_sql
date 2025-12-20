@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -28,6 +28,7 @@ export default function UploadPage() {
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null); // Add this ref
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) setFiles(e.target.files);
@@ -77,6 +78,10 @@ export default function UploadPage() {
     }
   };
 
+  const handleSelectFiles = () => {
+    fileInputRef.current?.click(); // Trigger file input
+  };
+
   return (
     <div className="min-h-screen bg-[#0D0E12] text-white pt-24 pb-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Background Decor */}
@@ -117,6 +122,7 @@ export default function UploadPage() {
                   )}
                 >
                   <input
+                    ref={fileInputRef} // Add ref
                     type="file"
                     id="file-upload"
                     multiple
@@ -141,7 +147,12 @@ export default function UploadPage() {
                       Drag and drop your spreadsheet files here or click to browse local storage.
                     </p>
 
-                    <Button type="button" variant="outline" className="border-white/10 hover:bg-white/5 rounded-full px-8">
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      className="border-white/10 hover:bg-white/5 rounded-full px-8"
+                      onClick={handleSelectFiles} // Add onClick
+                    >
                       Select Files
                     </Button>
                   </label>
