@@ -34,7 +34,13 @@ def convert_excel_to_parquet(data_folder: str = "data/") -> None:
             print(f"[CONVERT] Processing {excel_path}")
 
             try:
-                xls = pd.ExcelFile(excel_path, engine="openpyxl")
+                # Determine engine based on file extension
+                if filename.endswith('.xls'):
+                    engine = "xlrd"
+                else:  # .xlsx or .xlsm
+                    engine = "openpyxl"
+
+                xls = pd.ExcelFile(excel_path, engine=engine)
 
                 for sheet in xls.sheet_names:
                     print(f"[CONVERT] Sheet: {sheet}")
@@ -44,7 +50,7 @@ def convert_excel_to_parquet(data_folder: str = "data/") -> None:
                         excel_path,
                         sheet_name=sheet,
                         nrows=MAX_SCHEMA_ROWS,
-                        engine="openpyxl"
+                        engine=engine
                     )
 
                     if df.empty:
