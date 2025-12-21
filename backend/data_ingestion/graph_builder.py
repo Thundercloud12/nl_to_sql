@@ -26,15 +26,7 @@ MAX_SCHEMA_ROWS = 10_000
 
 def convert_excel_to_parquet(data_folder: str = "data/") -> dict:
     """
-    Convert Excel files to Parquet with detailed tracking.
-    
-    Returns:
-        {
-            "success": bool,
-            "converted_files": [list of parquet paths],
-            "failed_files": [list of {file, sheet, error}],
-            "total_files": int
-        }
+    Convert Excel files to Parquet with detailed tracking and type inference.
     """
     converted_files = []
     failed_files = []
@@ -128,12 +120,16 @@ def convert_excel_to_parquet(data_folder: str = "data/") -> dict:
                         })
                         continue
 
+                    # 🔧 NEW: Infer and clean column types before Parquet write
+                    print(f"[CONVERT-EXCEL] Inferring column types for {sheet}...")
+                    df = _infer_and_clean_types(df, sheet)
+
                     # Write Parquet
                     parquet_filename = f"{excel_path.stem}__{sheet}.parquet"
                     parquet_path = excel_path.parent / parquet_filename
 
                     try:
-                        df.to_parquet(parquet_path)
+                        df.to_parquet(parquet_path, index=False)
                         converted_files.append(str(parquet_path))
                         print(f"[CONVERT-EXCEL] ✓ {excel_path.name}/{sheet} → {parquet_filename}")
                     except Exception as pq_err:
@@ -182,6 +178,67 @@ def convert_excel_to_parquet(data_folder: str = "data/") -> dict:
     }
 
 
+def _infer_and_clean_types(df: pd.DataFrame, sheet_name: str) -> pd.DataFrame:
+    """
+    Infer and clean column types to ensure Parquet serializability.
+    Handles date strings, numeric strings, and mixed types.
+    """
+    date_formats = [
+        "%Y-%m-%d",
+        "%m/%d/%Y",
+        "%d/%m/%Y",
+        "%Y-%m-%d %H:%M:%S",
+        "%m/%d/%Y %H:%M:%S",
+        "%d/%m/%Y %H:%M:%S",
+    ]
+    
+    for col in df.columns:
+        original_dtype = df[col].dtype
+        
+        # Skip if already a proper type
+        if original_dtype in [np.int64, np.float64, 'datetime64[ns]']:
+            continue
+        
+        # Try to infer date columns
+        if 'date' in col.lower() or 'time' in col.lower():
+            print(f"[CONVERT-EXCEL] Attempting to parse {col} as datetime...")
+            try:
+                # Try pandas infer (fastest)
+                df[col] = pd.to_datetime(df[col], errors='coerce')
+                non_null_count = df[col].notna().sum()
+                if non_null_count > len(df) * 0.5:  # If >50% parsed successfully
+                    print(f"[CONVERT-EXCEL] ✓ {col} → datetime")
+                    continue
+                else:
+                    print(f"[CONVERT-EXCEL] ⚠️ Only {non_null_count}/{len(df)} rows parsed as date, reverting to string")
+                    df[col] = df[col].astype(str)
+            except Exception as e:
+                print(f"[CONVERT-EXCEL] ⚠️ Could not parse {col} as datetime: {e}, using string")
+                df[col] = df[col].astype(str)
+            continue
+        
+        # Try to infer numeric columns
+        if df[col].dtype == 'object':
+            try:
+                # Try converting to numeric (handles string numbers like "123")
+                numeric_col = pd.to_numeric(df[col], errors='coerce')
+                non_null_count = numeric_col.notna().sum()
+                if non_null_count > len(df) * 0.7:  # If >70% numeric
+                    df[col] = numeric_col
+                    print(f"[CONVERT-EXCEL] ✓ {col} → numeric")
+                    continue
+            except Exception as e:
+                print(f"[CONVERT-EXCEL] ⚠️ Could not parse {col} as numeric: {e}")
+        
+        # Default: convert object to string for safe serialization
+        if df[col].dtype == 'object':
+            try:
+                df[col] = df[col].astype(str)
+                print(f"[CONVERT-EXCEL] ✓ {col} → string")
+            except Exception as e:
+                print(f"[CONVERT-EXCEL] ✗ Could not convert {col} to string: {e}")
+    
+    return df
 def json_sanitize(obj):
     if isinstance(obj, dict):
         return {k: json_sanitize(v) for k, v in obj.items()}
