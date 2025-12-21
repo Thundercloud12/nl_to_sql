@@ -24,28 +24,70 @@ MAX_SCHEMA_ROWS = 10_000
 
 
 
-def convert_excel_to_parquet(data_folder: str = "data/") -> None:
-    for root, _, files in os.walk(data_folder):
-        for filename in files:
-            if not filename.endswith(('.xlsx', '.xls', '.xlsm')):
+def convert_excel_to_parquet(data_folder: str = "data/") -> dict:
+    """
+    Convert Excel files to Parquet with detailed tracking.
+    
+    Returns:
+        {
+            "success": bool,
+            "converted_files": [list of parquet paths],
+            "failed_files": [list of {file, sheet, error}],
+            "total_files": int
+        }
+    """
+    converted_files = []
+    failed_files = []
+    excel_files = list(Path(data_folder).rglob("*.xlsx")) + \
+                  list(Path(data_folder).rglob("*.xls")) + \
+                  list(Path(data_folder).rglob("*.xlsm"))
+    
+    print(f"[CONVERT-EXCEL] Found {len(excel_files)} Excel file(s)")
+    
+    if not excel_files:
+        return {
+            "success": False,
+            "converted_files": [],
+            "failed_files": [],
+            "total_files": 0,
+            "error": "No Excel files found"
+        }
+
+    for excel_path in excel_files:
+        print(f"[CONVERT-EXCEL] Processing {excel_path.name}...")
+
+        try:
+            # Determine engine based on file extension
+            if excel_path.suffix.lower() == '.xls':
+                engine = "xlrd"
+            else:  # .xlsx or .xlsm
+                engine = "openpyxl"
+
+            # Check if engine is installed
+            try:
+                xls = pd.ExcelFile(excel_path, engine=engine)
+            except ImportError as ie:
+                print(f"[CONVERT-EXCEL] ✗ Engine '{engine}' not installed: {ie}")
+                failed_files.append({
+                    "file": str(excel_path),
+                    "sheet": "N/A",
+                    "error": f"Missing {engine} engine. Install: pip install {engine}"
+                })
+                continue
+            except Exception as e:
+                print(f"[CONVERT-EXCEL] ✗ Failed to open {excel_path.name}: {e}")
+                failed_files.append({
+                    "file": str(excel_path),
+                    "sheet": "N/A",
+                    "error": f"Failed to open Excel: {str(e)}"
+                })
                 continue
 
-            excel_path = os.path.join(root, filename)
-            print(f"[CONVERT] Processing {excel_path}")
+            # Process each sheet
+            for sheet in xls.sheet_names:
+                try:
+                    print(f"[CONVERT-EXCEL] Processing sheet: {sheet}")
 
-            try:
-                # Determine engine based on file extension
-                if filename.endswith('.xls'):
-                    engine = "xlrd"
-                else:  # .xlsx or .xlsm
-                    engine = "openpyxl"
-
-                xls = pd.ExcelFile(excel_path, engine=engine)
-
-                for sheet in xls.sheet_names:
-                    print(f"[CONVERT] Sheet: {sheet}")
-
-                    # 🔥 LIMIT ROWS
                     df = pd.read_excel(
                         excel_path,
                         sheet_name=sheet,
@@ -54,25 +96,90 @@ def convert_excel_to_parquet(data_folder: str = "data/") -> None:
                     )
 
                     if df.empty:
-                        del df
+                        print(f"[CONVERT-EXCEL] ⚠️ Sheet '{sheet}' is empty, skipping")
+                        failed_files.append({
+                            "file": str(excel_path),
+                            "sheet": sheet,
+                            "error": "Empty sheet"
+                        })
                         continue
 
-                    df.columns = [normalize_col(str(c)) for c in df.columns]
+                    # Normalize columns
+                    try:
+                        df.columns = [normalize_col(str(c)) for c in df.columns]
+                    except Exception as col_err:
+                        print(f"[CONVERT-EXCEL] ✗ Failed to normalize columns for {sheet}: {col_err}")
+                        failed_files.append({
+                            "file": str(excel_path),
+                            "sheet": sheet,
+                            "error": f"Column normalization failed: {str(col_err)}"
+                        })
+                        continue
 
-                    # Drop empty cols only (rows are sampled anyway)
+                    # Drop empty columns
                     df.dropna(axis=1, how="all", inplace=True)
 
-                    parquet_filename = f"{os.path.splitext(filename)[0]}__{sheet}.parquet"
-                    parquet_path = os.path.join(root, parquet_filename)
+                    if len(df.columns) == 0:
+                        print(f"[CONVERT-EXCEL] ✗ All columns empty for sheet {sheet}")
+                        failed_files.append({
+                            "file": str(excel_path),
+                            "sheet": sheet,
+                            "error": "All columns are empty"
+                        })
+                        continue
 
-                    df.to_parquet(parquet_path)
+                    # Write Parquet
+                    parquet_filename = f"{excel_path.stem}__{sheet}.parquet"
+                    parquet_path = excel_path.parent / parquet_filename
 
-                    # 🚨 CRITICAL
-                    del df
+                    try:
+                        df.to_parquet(parquet_path)
+                        converted_files.append(str(parquet_path))
+                        print(f"[CONVERT-EXCEL] ✓ {excel_path.name}/{sheet} → {parquet_filename}")
+                    except Exception as pq_err:
+                        print(f"[CONVERT-EXCEL] ✗ Parquet write failed for {sheet}: {pq_err}")
+                        failed_files.append({
+                            "file": str(excel_path),
+                            "sheet": sheet,
+                            "error": f"Parquet write failed: {str(pq_err)}"
+                        })
+
+                except Exception as sheet_err:
+                    print(f"[CONVERT-EXCEL] ✗ Error processing sheet '{sheet}': {sheet_err}")
+                    failed_files.append({
+                        "file": str(excel_path),
+                        "sheet": sheet,
+                        "error": str(sheet_err)
+                    })
+
+                finally:
+                    if "df" in locals():
+                        del df
                     gc.collect()
 
-            except Exception as e:
-                print(f"[CONVERT] ✗ Error {excel_path}: {e}")
+        except Exception as file_err:
+            print(f"[CONVERT-EXCEL] ✗ Error processing {excel_path}: {file_err}")
+            failed_files.append({
+                "file": str(excel_path),
+                "sheet": "N/A",
+                "error": str(file_err)
+            })
+
+    # Summary
+    success = len(failed_files) == 0
+    print(f"[CONVERT-EXCEL] Summary: {len(converted_files)}/{len(excel_files)} file(s) converted successfully")
+    
+    if failed_files:
+        print(f"[CONVERT-EXCEL] Failed conversions:")
+        for item in failed_files:
+            print(f"  - {item['file']} (sheet: {item['sheet']}): {item['error']}")
+    
+    return {
+        "success": success,
+        "converted_files": converted_files,
+        "failed_files": failed_files,
+        "total_files": len(excel_files)
+    }
 
 
 def json_sanitize(obj):
