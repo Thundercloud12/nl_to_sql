@@ -101,7 +101,7 @@ def build_metadata_from_parquet(
     DuckDB try_cast / try_strptime, overwrite files with cleaned schema,
     and build metadata.
     """
-
+    
     canonical_types = [
         ("TIMESTAMP", "TIMESTAMP"),
         ("BIGINT", "INTEGER"),
@@ -121,7 +121,6 @@ def build_metadata_from_parquet(
     initial_schema: dict = {"tables": {}}
     table_counter = 1
 
-    # Single lightweight DuckDB connection (no pandas binding)
     con = duckdb.connect(database=":memory:")
 
     try:
@@ -130,16 +129,14 @@ def build_metadata_from_parquet(
             table_counter += 1
             parquet_str = parquet_path.as_posix().replace("'", "''")
             try:
-                # Load parquet lazily into DuckDB (no pandas yet)
+                # Load parquet lazily into DuckDB
                 con.execute(f"""
                     CREATE OR REPLACE VIEW raw AS
                     SELECT * FROM read_parquet('{parquet_str}')
                 """)
 
-
                 cols = con.execute("DESCRIBE raw").fetchall()
-                # FIX: Change tuple to list for pandas compatibility
-                col_names = [c[0] for c in cols]  # Was: tuple(c[0] for c in cols)
+                col_names = [c[0] for c in cols]
                 raw_types = {c[0]: c[1].upper() for c in cols}
 
                 select_exprs: list[str] = []
@@ -148,11 +145,15 @@ def build_metadata_from_parquet(
                 for col in col_names:
                     chosen_type = "VARCHAR"
 
-                    distinct_count = con.execute("""
-                        SELECT COUNT(DISTINCT "{col}")
-                        FROM raw
-                        WHERE "{col}" IS NOT NULL
-                    """.format(col=col)).fetchone()[0]
+                    try:
+                        distinct_count = con.execute("""
+                            SELECT COUNT(DISTINCT "{col}")
+                            FROM raw
+                            WHERE "{col}" IS NOT NULL
+                        """.format(col=col)).fetchone()[0]
+                    except Exception as e:
+                        print(f"[METADATA] Warning: Could not count distinct for {col}: {e}")
+                        distinct_count = 0
 
                     for duck_type, _ in canonical_types:
                         if duck_type == "BOOLEAN" and distinct_count > 2:
@@ -161,31 +162,35 @@ def build_metadata_from_parquet(
                         if duck_type == "TIMESTAMP" and raw_types[col] not in ("VARCHAR", "TEXT"):
                             continue
 
-                        if duck_type == "TIMESTAMP":
-                            success_ratio = con.execute(f"""
-                                SELECT
-                                    COUNT(
-                                        COALESCE(
-                                            {", ".join(
-                                                f'''try_strptime("{col}", '{fmt}')'''
-                                                for fmt in timestamp_formats
-                                            )}
-                                        )
-                                    )::DOUBLE
-                                    / NULLIF(COUNT(*), 0)
-                                FROM raw
-                            """).fetchone()[0]
-                        else:
-                            success_ratio = con.execute(f"""
-                                SELECT
-                                    COUNT(try_cast("{col}" AS {duck_type}))::DOUBLE
-                                    / NULLIF(COUNT(*), 0)
-                                FROM raw
-                            """).fetchone()[0]
+                        try:
+                            if duck_type == "TIMESTAMP":
+                                success_ratio = con.execute(f"""
+                                    SELECT
+                                        COUNT(
+                                            COALESCE(
+                                                {", ".join(
+                                                    f'''try_strptime("{col}", '{fmt}')'''
+                                                    for fmt in timestamp_formats
+                                                )}
+                                            )
+                                        )::DOUBLE
+                                        / NULLIF(COUNT(*), 0)
+                                    FROM raw
+                                """).fetchone()[0]
+                            else:
+                                success_ratio = con.execute(f"""
+                                    SELECT
+                                        COUNT(try_cast("{col}" AS {duck_type}))::DOUBLE
+                                        / NULLIF(COUNT(*), 0)
+                                    FROM raw
+                                """).fetchone()[0]
 
-                        if success_ratio is not None and success_ratio >= threshold:
-                            chosen_type = duck_type
-                            break
+                            if success_ratio is not None and success_ratio >= threshold:
+                                chosen_type = duck_type
+                                break
+                        except Exception as e:
+                            print(f"[METADATA] Skipping type {duck_type} for {col}: {e}")
+                            continue
 
                     if chosen_type == "TIMESTAMP":
                         select_exprs.append(f"""
@@ -202,6 +207,7 @@ def build_metadata_from_parquet(
                         )
 
                     final_types[col] = chosen_type
+                    print(f"[METADATA] Column {col}: inferred as {chosen_type}")
 
                 # Normalize without materializing intermediate pandas frames
                 con.execute(f"""
@@ -215,11 +221,10 @@ def build_metadata_from_parquet(
                     (FORMAT PARQUET, OVERWRITE_OR_IGNORE TRUE)
                 """)
 
-
-                # 🔴 Only now load minimal data into pandas
+                # Load minimal data into pandas
                 df = pd.read_parquet(
                     parquet_path,
-                    columns=col_names  # Now a list, as required by pandas
+                    columns=col_names
                 )
 
                 def json_safe(value):
@@ -259,7 +264,7 @@ def build_metadata_from_parquet(
                 print(f"[METADATA] ✗ Error processing {parquet_path}: {exc}")
 
             finally:
-                # Hard cleanup per file (critical on Render)
+                # Hard cleanup per file
                 if "df" in locals():
                     del df
                 con.execute("DROP TABLE IF EXISTS normalized")
@@ -337,43 +342,111 @@ Respond with ONLY this JSON:
         return {"final_graph": {}}
 
 def process_schema_build(input_folder: str) -> dict:
-    """Main orchestration: Parquet first, then metadata, then relationships - return data directly"""
+    """Main orchestration: Parquet first, then metadata, then relationships"""
     print("[PIPELINE] Starting schema build...")
     
-    has_csv = any(f.endswith('.csv') for f in os.listdir(input_folder) if os.path.isfile(os.path.join(input_folder, f)))
-    has_excel = any(f.endswith(('.xlsx', '.xls', '.xlsm')) for f in os.listdir(input_folder) if os.path.isfile(os.path.join(input_folder, f)))
+    try:
+        # Step 1: Convert files
+        print("[PIPELINE] Step 1: Converting files to Parquet...")
+        
+        csv_result = None
+        excel_result = None
+        
+        has_csv = any(f.endswith('.csv') for f in os.listdir(input_folder) if os.path.isfile(os.path.join(input_folder, f)))
+        has_excel = any(f.endswith(('.xlsx', '.xls', '.xlsm')) for f in os.listdir(input_folder) if os.path.isfile(os.path.join(input_folder, f)))
+        
+        if has_csv:
+            print("[PIPELINE] CSV files detected...")
+            csv_result = convert_csv_to_parquet(input_folder)
+            if not csv_result.get("success"):
+                print(f"[PIPELINE] ⚠️ CSV conversion had issues: {len(csv_result.get('failed_files', []))} files failed")
+        
+        if has_excel:
+            print("[PIPELINE] Excel files detected...")
+            excel_result = convert_excel_to_parquet(input_folder)
+            if not excel_result.get("success"):
+                print(f"[PIPELINE] ⚠️ Excel conversion had issues: {len(excel_result.get('failed_files', []))} files failed")
+        
+        if not has_csv and not has_excel:
+            print("[PIPELINE] ✗ No supported files found (CSV or Excel)")
+            return {
+                "raw_metadata": {"tables": {}},
+                "schema_graph": {},
+                "error": "No CSV or Excel files found"
+            }
+        
+        # Step 2: Verify Parquet files were created
+        print("[PIPELINE] Step 2: Verifying Parquet files...")
+        parquet_files = list(Path(input_folder).rglob("*.parquet"))
+        
+        if not parquet_files:
+            print("[PIPELINE] ✗ No Parquet files were generated")
+            errors = []
+            if csv_result:
+                errors.extend([f['error'] for f in csv_result.get('failed_files', [])])
+            if excel_result:
+                errors.extend([f['error'] for f in excel_result.get('failed_files', [])])
+            
+            return {
+                "raw_metadata": {"tables": {}},
+                "schema_graph": {},
+                "error": "No Parquet files generated",
+                "details": errors
+            }
+        
+        print(f"[PIPELINE] ✓ Generated {len(parquet_files)} Parquet file(s)")
+        
+        # Step 3: Build metadata
+        print("[PIPELINE] Step 3: Building metadata from Parquet files...")
+        try:
+            initial_schema = build_metadata_from_parquet(input_folder)
+            if not initial_schema.get("tables"):
+                print("[PIPELINE] ⚠️ No tables found in metadata")
+            else:
+                print(f"[PIPELINE] ✓ Generated metadata for {len(initial_schema['tables'])} table(s)")
+        except Exception as meta_err:
+            print(f"[PIPELINE] ✗ Metadata generation failed: {meta_err}")
+            return {
+                "raw_metadata": {"tables": {}},
+                "schema_graph": {},
+                "error": f"Metadata generation failed: {str(meta_err)}"
+            }
+        
+        # Step 4: Extract tiny metadata
+        print("[PIPELINE] Step 4: Extracting tiny metadata...")
+        try:
+            tiny_metadata = extract_tiny_metadata(initial_schema)
+            print(f"[PIPELINE] ✓ Extracted metadata for {len(tiny_metadata)} table(s)")
+        except Exception as tiny_err:
+            print(f"[PIPELINE] ⚠️ Tiny metadata extraction failed: {tiny_err}")
+            tiny_metadata = {}
+        
+        # Step 5: Call LLM for relationships
+        print("[PIPELINE] Step 5: Inferring table relationships...")
+        try:
+            user_explanation = "Just a single table"
+            llm_response = call_llm_for_relationships(tiny_metadata, user_explanation)
+            final_graph = llm_response.get("final_graph", {})
+            print(f"[PIPELINE] ✓ Generated schema graph")
+        except Exception as llm_err:
+            print(f"[PIPELINE] ⚠️ LLM relationship inference failed: {llm_err}")
+            final_graph = {}
+        
+        # Return with all components
+        return {
+            "raw_metadata": initial_schema,
+            "schema_graph": final_graph,
+            "conversion_summary": {
+                "csv": csv_result,
+                "excel": excel_result,
+                "parquet_count": len(parquet_files)
+            }
+        }
     
-    if has_csv:
-        print("[PIPELINE] CSV files detected, converting to Parquet...")
-        convert_csv_to_parquet(input_folder)
-    elif has_excel:
-        print("[PIPELINE] Excel files detected, converting to Parquet...")
-        convert_excel_to_parquet(input_folder)
-    else:
-        print("[PIPELINE] No supported files found (CSV or Excel)")
-        return {"raw_metadata": {"tables": {}}, "schema_graph": {}}
-    
-    # Step 2: Build metadata from Parquet
-    initial_schema = build_metadata_from_parquet(input_folder)
-    print("[PIPELINE] ✓ Generated raw metadata")
-    
-    # Step 3: Extract tiny metadata
-    tiny_metadata = extract_tiny_metadata(initial_schema)
-    user_explanation = "Just a single table"  # You can make this configurable
-    
-    # Step 4: Infer relationships
-    llm_response = call_llm_for_relationships(tiny_metadata, user_explanation)
-    final_graph = llm_response.get("final_graph", {})
-    
-    print("[PIPELINE] ✓ Generated schema graph")
-    
-    # Return data directly for DB compatibility
-    return {
-        "raw_metadata": initial_schema,
-        "schema_graph": final_graph
-    }
-
-if __name__ == "__main__":
-    user_explanation = "Consumer data about Brazil consumers"
-    result = process_schema_build(user_explanation)
-    print(json.dumps(result, indent=4))
+    except Exception as e:
+        print(f"[PIPELINE] ✗ Unexpected error in process_schema_build: {e}")
+        return {
+            "raw_metadata": {"tables": {}},
+            "schema_graph": {},
+            "error": f"Pipeline failed: {str(e)}"
+        }
