@@ -15,7 +15,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
       const attemptConnection = async () => {
         try {
-          const response = await fetch("http://localhost:8000/health", {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/health`, {
             method: "GET",
             signal: AbortSignal.timeout(5000)
           });
