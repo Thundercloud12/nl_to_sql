@@ -4,25 +4,22 @@ import { useState, useEffect, useRef, use } from "react";
 import { useUser, UserButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Send, 
-  Loader2, 
-  AlertCircle, 
-  Lightbulb, 
-  X, 
-  ArrowLeft, 
-  Bot, 
-  User as UserIcon,
-  ShieldCheck,
-  Zap,
-  ChevronDown,
+import {
+  Send,
+  Loader2,
+  AlertCircle,
+  ArrowLeft,
   Terminal,
-  Cpu
+  Zap,
+  Cpu,
+  ChevronDown,
+  ShieldCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+
+/* ----------------------------- Types ----------------------------- */
 
 interface Message {
   role: "user" | "assistant";
@@ -44,189 +41,207 @@ interface ChatPageProps {
   }>;
 }
 
+/* ----------------------------- Component ----------------------------- */
+
 export default function ChatPage({ searchParams }: ChatPageProps) {
   const { user } = useUser();
   const router = useRouter();
   const params = use(searchParams);
+
   const dataSourceId = params.dataSourceId;
-  const sessionId = params.sessionId;
-  
-  const [session, setSession] = useState<any>(null);
+  const sessionIdFromUrl = params.sessionId;
+
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [userInput, setUserInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [clarification, setClarification] = useState<ClarificationState | null>(null);
+  const [userInput, setUserInput] = useState("");
+
+  const [clarification, setClarification] =
+    useState<ClarificationState | null>(null);
   const [clarificationInput, setClarificationInput] = useState("");
-  const [expandedMessages, setExpandedMessages] = useState<Set<number>>(new Set());
+
+  const [expandedMessages, setExpandedMessages] = useState<Set<number>>(
+    new Set()
+  );
+
+  const initializedRef = useRef(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  /* ----------------------------- Auto Scroll ----------------------------- */
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
+  /* ----------------------------- Session Init ----------------------------- */
+
   useEffect(() => {
-    if (!user || !dataSourceId || !sessionId) return;
+    if (!user || !dataSourceId) return;
+    if (initializedRef.current) return;
+
+    initializedRef.current = true;
 
     const initSession = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/initialize_chat`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            data_source_id: dataSourceId,
-            user_id: user?.id,
-          }),
-        });
 
-        if (!response.ok) throw new Error("Failed to load session");
-        const data = await response.json();
-        
-        setSession({
-          id: data.session_id,
-          conversationHistory: data.conversation_history || [],
-          last_result: data.last_result, 
-          last_plan: data.last_plan      
-        });
-        console.log(data)
-        if (data.conversation_history) {
-          const loadedMessages: Message[] = [];
-          const messagesData = data.conversation_history.messages || data.conversation_history; // ✅ Handle both row object and direct array
-          for (const msg of messagesData) {
-            if (msg.role === "assistant") {
-              loadedMessages.push({ role: "assistant", content: msg.content, insight: msg.content });
-            } else {
-              loadedMessages.push({ role: msg.role, content: msg.content });
-            }
+        const endpoint = "/initialize_chat";
+
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}${endpoint}`,
+          {
+            method: "POST",
+            cache: "no-store",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              session_id: sessionIdFromUrl,
+              data_source_id: dataSourceId,
+              user_id: user.id,
+            }),
           }
-          setMessages(loadedMessages);
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to initialize session");
+        }
+
+        const data = await response.json();
+
+        setSessionId(data.session_id);
+
+        if (data.conversation_history) {
+          const msgs =
+            data.conversation_history.messages ||
+            data.conversation_history;
+
+          const hydrated: Message[] = msgs.map((m: any) => ({
+            role: m.role,
+            content: m.content,
+            insight: m.role === "assistant" ? m.insights : undefined,
+          }));
+
+          setMessages(hydrated);
         }
       } catch (err: any) {
-        setError(err.message);
+        setError(err.message || "Initialization failed");
       } finally {
         setLoading(false);
       }
     };
+
     initSession();
-  }, [user, dataSourceId, sessionId]);
+  }, [user, dataSourceId, sessionIdFromUrl]);
 
-  useEffect(() => {
-    if (!session?.id || !user?.id || !dataSourceId) return;
-
-    const handleBeforeUnload = () => {
-      const payload = JSON.stringify({
-        session_id: session.id,
-        user_id: user.id,
-        data_source_id: dataSourceId,
-        conversation_history: messages.map(m => ({
-          role: m.role,
-          content: m.role === "assistant"
-            ? (m.insight || m.content)
-            : m.content
-        }))
-      });
-
-      navigator.sendBeacon(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/save_session`,
-        payload
-      );
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, [session?.id, user?.id, dataSourceId, messages]);
+  /* ----------------------------- Send Message ----------------------------- */
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!userInput.trim() || loading || !session) return;
+    if (!userInput.trim() || !sessionId || loading) return;
 
-    const currentInput = userInput;
+    const question = userInput;
     setUserInput("");
     setLoading(true);
-    setMessages((prev) => [...prev, { role: "user", content: currentInput }]);
+
+    setMessages((prev) => [...prev, { role: "user", content: question }]);
 
     try {
-      const isFirstMessage = messages.length === 0;
-      const endpoint = isFirstMessage ? "/query" : "/continue";
+      const endpoint = messages.length === 0 ? "/query" : "/continue";
 
-      const response = await fetch(process.env.NEXT_PUBLIC_BACKEND_URL + endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          question: currentInput,
-          user_id: user?.id,
-          data_source_id: dataSourceId,
-          session_id: session.id
-        }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}${endpoint}`,
+        {
+          method: "POST",
+          cache: "no-store",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            question,
+            session_id: sessionId,
+            user_id: user?.id,
+            data_source_id: dataSourceId,
+          }),
+        }
+      );
 
       const data = await response.json();
+
       if (data.status === "need_clarification") {
-        setClarification({ ...data });
+        setClarification(data);
       } else {
-        setMessages((prev) => [...prev, { 
-          role: "assistant", 
-          content: data.answer || "", 
-          insight: data.insights 
-        }]);
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: data.answer || "",
+            insight: data.insights,
+          },
+        ]);
       }
-    } catch (err: any) {
-      setError("Communication failure. Please retry.");
+    } catch {
+      setError("Failed to send message");
     } finally {
       setLoading(false);
     }
   };
 
+  /* ----------------------------- Clarification ----------------------------- */
+
   const handleClarificationSubmit = async () => {
-    if (!clarificationInput.trim() || loading) return;
+    if (!clarificationInput.trim() || loading || !clarification) return;
 
     setLoading(true);
-    setClarification(null); // Clear UI immediately
+    setClarification(null);
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/clarify`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          session_id: clarification?.session_id,
-          answer: clarificationInput
-        }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/clarify`,
+        {
+          method: "POST",
+          cache: "no-store",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            session_id: clarification.session_id,
+            answer: clarificationInput,
+          }),
+        }
+      );
 
       const data = await response.json();
-      
+
       if (data.status === "need_clarification") {
-        // Another clarification needed
         setClarification(data);
       } else {
-        // Success - add to messages
         setMessages((prev) => [
           ...prev,
           { role: "user", content: clarificationInput },
-          { role: "assistant", content: data.answer || "", insight: data.insights }
+          {
+            role: "assistant",
+            content: data.answer || "",
+            insight: data.insights,
+          },
         ]);
       }
-      
+
       setClarificationInput("");
-    } catch (err: any) {
-      setError("Failed to process clarification");
+    } catch {
+      setError("Clarification failed");
     } finally {
       setLoading(false);
     }
   };
 
+  /* ----------------------------- UI Helpers ----------------------------- */
+
   const toggleExpansion = (idx: number) => {
-    const newSet = new Set(expandedMessages);
-    newSet.has(idx) ? newSet.delete(idx) : newSet.add(idx);
-    setExpandedMessages(newSet);
+    setExpandedMessages((prev) => {
+      const next = new Set(prev);
+      next.has(idx) ? next.delete(idx) : next.add(idx);
+      return next;
+    });
   };
 
-  const handleBackToDashboard = async () => {
-    if (!session?.id) {
+   const handleBackToDashboard = async () => {
+    if (!sessionId) {
       router.push("/dashboard");
       return;
     }
@@ -237,7 +252,7 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          session_id: session.id,
+          session_id: sessionId,
           user_id: user?.id,
           data_source_id: dataSourceId,
           conversation_history: messages.map(m => ({
@@ -256,8 +271,10 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
     }
   };
 
+  /* ----------------------------- Render ----------------------------- */
+
   return (
-    <div className="min-h-screen bg-[#0D0E12] text-white flex flex-col font-sans">
+   <div className="min-h-screen bg-[#0D0E12] text-white flex flex-col font-sans">
       {/* Background Effect */}
       <div className="fixed inset-0 pointer-events-none opacity-20">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:32px_32px]"></div>
@@ -283,7 +300,7 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
                 </div>
               </div>
               <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mt-0.5">
-                Session: {session?.id?.slice(0, 8) || "Initialising"}
+                Session: {sessionId?.slice(0, 8) || "Initialising"}
               </p>
             </div>
           </div>
