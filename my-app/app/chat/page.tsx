@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { useServerHealth } from "@/hooks/useServerHealth";
 
 /* ----------------------------- Types ----------------------------- */
 
@@ -47,6 +48,7 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
   const { user } = useUser();
   const router = useRouter();
   const params = use(searchParams);
+  const { isHealthy, isChecking } = useServerHealth();
 
   const dataSourceId = params.dataSourceId;
   const sessionIdFromUrl = params.sessionId;
@@ -275,6 +277,33 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
 
   return (
    <div className="min-h-screen bg-[#0D0E12] text-white flex flex-col font-sans">
+      {/* Health Check Loading State */}
+      {isChecking && (
+        <div className="fixed inset-0 flex flex-col items-center justify-center bg-[#0D0E12]/95 backdrop-blur-md z-50">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center"
+          >
+            <div className="w-16 h-16 bg-zinc-900 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-[#00e599]/30 shadow-[0_0_30px_-10px_rgba(0,229,153,0.3)]">
+              <Loader2 className="w-8 h-8 text-[#00e599] animate-spin" />
+            </div>
+            <h2 className="text-2xl font-bold text-white mb-2">Warming up backend...</h2>
+            <p className="text-zinc-500 max-w-sm mx-auto mb-6">
+              Initializing server connection. This may take a moment.
+            </p>
+            <div className="flex gap-2 justify-center">
+              <div className="w-2 h-2 bg-[#00e599] rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+              <div className="w-2 h-2 bg-[#00e599] rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+              <div className="w-2 h-2 bg-[#00e599] rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Page Content - Hidden while checking */}
+      {!isChecking && (
+        <>
       {/* Background Effect */}
       <div className="fixed inset-0 pointer-events-none opacity-20">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:32px_32px]"></div>
@@ -480,6 +509,8 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
           </p>
         </div>
       </footer>
+        </>
+      )}
     </div>
   );
 }

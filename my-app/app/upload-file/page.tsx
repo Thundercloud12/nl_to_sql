@@ -19,10 +19,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { useServerHealth } from "@/hooks/useServerHealth";
 
 export default function UploadPage() {
   const { user } = useUser();
   const router = useRouter();
+  const { isHealthy, isChecking } = useServerHealth();
   const [files, setFiles] = useState<FileList | null>(null);
   const [uploading, setUploading] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -84,6 +86,33 @@ export default function UploadPage() {
 
   return (
     <div className="min-h-screen bg-[#0D0E12] text-white pt-24 pb-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Health Check Loading State */}
+      {isChecking && (
+        <div className="fixed inset-0 flex flex-col items-center justify-center bg-[#0D0E12]/95 backdrop-blur-md z-50">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center"
+          >
+            <div className="w-16 h-16 bg-zinc-900 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-[#00e599]/30 shadow-[0_0_30px_-10px_rgba(0,229,153,0.3)]">
+              <Loader2 className="w-8 h-8 text-[#00e599] animate-spin" />
+            </div>
+            <h2 className="text-2xl font-bold text-white mb-2">Warming up backend...</h2>
+            <p className="text-zinc-500 max-w-sm mx-auto mb-6">
+              Initializing server connection. This may take a moment.
+            </p>
+            <div className="flex gap-2 justify-center">
+              <div className="w-2 h-2 bg-[#00e599] rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+              <div className="w-2 h-2 bg-[#00e599] rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+              <div className="w-2 h-2 bg-[#00e599] rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Page Content - Hidden while checking */}
+      {!isChecking && (
+        <>
       {/* Background Decor */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-[#00e599]/5 blur-[120px] pointer-events-none" />
 
@@ -279,6 +308,8 @@ export default function UploadPage() {
            ))}
         </motion.div>
       </div>
+        </>
+      )}
     </div>
   );
 }

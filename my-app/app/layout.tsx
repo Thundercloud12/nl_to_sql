@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { Providers } from "./providers";
 import { ConditionalNavbar } from "@/components/layout/conditional-navbar";
 import "./globals.css";
+import { ClerkProvider } from "@clerk/nextjs";
 
 export const metadata: Metadata = {
   title: "RELIX AI - Natural Language to SQL",
@@ -14,15 +14,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
+    <ClerkProvider>
     <html lang="en">
       <body className="min-h-screen">
-        <Providers>
           <ConditionalNavbar />
           <main className="pt-16">
             {children}
           </main>
-        </Providers>
+
       </body>
     </html>
+  </ClerkProvider>
   );
 }
