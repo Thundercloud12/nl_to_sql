@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ClerkProvider } from "@clerk/nextjs";
+import { Providers } from "./providers";
 import { ConditionalNavbar } from "@/components/layout/conditional-navbar";
 import "./globals.css";
 
@@ -14,15 +14,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body className="min-h-screen">
+    <html lang="en">
+      <body className="min-h-screen">
+        <Providers>
           <ConditionalNavbar />
           <main className="pt-16">
             {children}
           </main>
-        </body>
-      </html>
-    </ClerkProvider>
+        </Providers>
+      </body>
+    </html>
   );
 }

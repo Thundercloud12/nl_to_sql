@@ -146,8 +146,21 @@ def build_context_prompt(session_id: str, current_question: str) -> str:
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# ============ HEALTH CHECK ENDPOINT ============
+@app.get("/health")
+def health():
+    """
+    Lightweight health check endpoint.
+    Used for:
+    - Cold start detection
+    - Server warm-up before uploads
+    - Monitoring uptime
+    
+    Returns immediately with minimal overhead.
+    """
+    return {"status": "awake"}
 
-
+# ============================================
 
 
 @app.post("/query")
