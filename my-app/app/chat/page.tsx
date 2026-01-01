@@ -19,7 +19,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useServerHealth } from "@/hooks/useServerHealth";
+
 import { ThemeToggle } from "@/components/theme-toggle";
+
+import { Chart } from "@/components/Chart";  // ✅ ADD: Import Chart component
+
 
 /* ----------------------------- Types ----------------------------- */
 
@@ -27,6 +31,7 @@ interface Message {
   role: "user" | "assistant";
   content: string;
   insight?: string;
+  chart?: any;  // ✅ ADD: Chart data (Plotly JSON)
 }
 
 interface ClarificationState {
@@ -122,6 +127,7 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
             role: m.role,
             content: m.content,
             insight: m.role === "assistant" ? m.insights : undefined,
+            chart: m.chart || null,  // ✅ RESTORE: Chart data from saved session
           }));
 
           setMessages(hydrated);
@@ -177,6 +183,7 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
             role: "assistant",
             content: data.answer || "",
             insight: data.insights,
+            chart: data.chart || null,  // ✅ ADD: Chart data
           },
         ]);
       }
@@ -221,6 +228,7 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
             role: "assistant",
             content: data.answer || "",
             insight: data.insights,
+            chart: data.chart || null,  // ✅ ADD: Chart data
           },
         ]);
       }
@@ -262,7 +270,8 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
             role: m.role,
             content: m.role === "assistant"
               ? (m.insight || m.content)
-              : m.content
+              : m.content,
+            chart: m.chart || null  // ✅ INCLUDE: Chart data for persistence
           }))
         }),
       });
@@ -396,6 +405,9 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
                       <div className="text-sm leading-relaxed text-foreground whitespace-pre-wrap">
                         {msg.insight || msg.content}
                       </div>
+
+                      {/* ✅ ADD: Render chart if available */}
+                      {msg.chart && <Chart data={msg.chart} />}
 
                       {msg.insight && (
                         <div className="mt-4 pt-4 border-t border-border">

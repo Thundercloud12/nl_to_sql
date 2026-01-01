@@ -244,7 +244,8 @@ def query(req: dict):
         "status": "completed",
         "session_id": session_id,
         "answer": final_state.get("final_answer"),
-        "insights": final_state.get("insights")
+        "insights": final_state.get("insights"),
+        "chart": final_state.get("chart_data")  # ✅ ADD: Chart data
     }
 
 
@@ -349,7 +350,8 @@ def continue_conversation(req: dict):
         "status": "completed",
         "session_id": session_id,
         "answer": final_state.get("final_answer"),
-        "insights": final_state.get("insights")
+        "insights": final_state.get("insights"),
+        "chart": final_state.get("chart_data")  # ✅ ADD: Chart data
     }
 
 @app.post("/clarify")
@@ -431,7 +433,8 @@ def clarify(req: dict):
         "status": "completed",
         "session_id": session_id,
         "answer": final_state.get("final_answer"),
-        "insights": final_state.get("insights")
+        "insights": final_state.get("insights"),
+        "chart": final_state.get("chart_data")  # ✅ ADD: Chart data
     }
 
 @app.post("/save_session")
