@@ -2342,28 +2342,62 @@ export namespace Prisma {
 
   export type AggregateDataSource = {
     _count: DataSourceCountAggregateOutputType | null
+    _avg: DataSourceAvgAggregateOutputType | null
+    _sum: DataSourceSumAggregateOutputType | null
     _min: DataSourceMinAggregateOutputType | null
     _max: DataSourceMaxAggregateOutputType | null
+  }
+
+  export type DataSourceAvgAggregateOutputType = {
+    dbPort: number | null
+  }
+
+  export type DataSourceSumAggregateOutputType = {
+    dbPort: number | null
   }
 
   export type DataSourceMinAggregateOutputType = {
     id: string | null
     userId: string | null
+    connectionType: string | null
     cloudinaryUrl: string | null
+    dbType: string | null
+    dbHost: string | null
+    dbPort: number | null
+    dbName: string | null
+    dbUsername: string | null
+    dbPassword: string | null
+    displayName: string | null
     createdAt: Date | null
   }
 
   export type DataSourceMaxAggregateOutputType = {
     id: string | null
     userId: string | null
+    connectionType: string | null
     cloudinaryUrl: string | null
+    dbType: string | null
+    dbHost: string | null
+    dbPort: number | null
+    dbName: string | null
+    dbUsername: string | null
+    dbPassword: string | null
+    displayName: string | null
     createdAt: Date | null
   }
 
   export type DataSourceCountAggregateOutputType = {
     id: number
     userId: number
+    connectionType: number
     cloudinaryUrl: number
+    dbType: number
+    dbHost: number
+    dbPort: number
+    dbName: number
+    dbUsername: number
+    dbPassword: number
+    displayName: number
     rawMetadata: number
     schemaGraph: number
     createdAt: number
@@ -2371,24 +2405,56 @@ export namespace Prisma {
   }
 
 
+  export type DataSourceAvgAggregateInputType = {
+    dbPort?: true
+  }
+
+  export type DataSourceSumAggregateInputType = {
+    dbPort?: true
+  }
+
   export type DataSourceMinAggregateInputType = {
     id?: true
     userId?: true
+    connectionType?: true
     cloudinaryUrl?: true
+    dbType?: true
+    dbHost?: true
+    dbPort?: true
+    dbName?: true
+    dbUsername?: true
+    dbPassword?: true
+    displayName?: true
     createdAt?: true
   }
 
   export type DataSourceMaxAggregateInputType = {
     id?: true
     userId?: true
+    connectionType?: true
     cloudinaryUrl?: true
+    dbType?: true
+    dbHost?: true
+    dbPort?: true
+    dbName?: true
+    dbUsername?: true
+    dbPassword?: true
+    displayName?: true
     createdAt?: true
   }
 
   export type DataSourceCountAggregateInputType = {
     id?: true
     userId?: true
+    connectionType?: true
     cloudinaryUrl?: true
+    dbType?: true
+    dbHost?: true
+    dbPort?: true
+    dbName?: true
+    dbUsername?: true
+    dbPassword?: true
+    displayName?: true
     rawMetadata?: true
     schemaGraph?: true
     createdAt?: true
@@ -2433,6 +2499,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: DataSourceAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: DataSourceSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: DataSourceMinAggregateInputType
@@ -2463,6 +2541,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: DataSourceCountAggregateInputType | true
+    _avg?: DataSourceAvgAggregateInputType
+    _sum?: DataSourceSumAggregateInputType
     _min?: DataSourceMinAggregateInputType
     _max?: DataSourceMaxAggregateInputType
   }
@@ -2470,11 +2550,21 @@ export namespace Prisma {
   export type DataSourceGroupByOutputType = {
     id: string
     userId: string
-    cloudinaryUrl: string
+    connectionType: string
+    cloudinaryUrl: string | null
+    dbType: string | null
+    dbHost: string | null
+    dbPort: number | null
+    dbName: string | null
+    dbUsername: string | null
+    dbPassword: string | null
+    displayName: string | null
     rawMetadata: JsonValue
     schemaGraph: JsonValue
     createdAt: Date
     _count: DataSourceCountAggregateOutputType | null
+    _avg: DataSourceAvgAggregateOutputType | null
+    _sum: DataSourceSumAggregateOutputType | null
     _min: DataSourceMinAggregateOutputType | null
     _max: DataSourceMaxAggregateOutputType | null
   }
@@ -2496,7 +2586,15 @@ export namespace Prisma {
   export type DataSourceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
+    connectionType?: boolean
     cloudinaryUrl?: boolean
+    dbType?: boolean
+    dbHost?: boolean
+    dbPort?: boolean
+    dbName?: boolean
+    dbUsername?: boolean
+    dbPassword?: boolean
+    displayName?: boolean
     rawMetadata?: boolean
     schemaGraph?: boolean
     createdAt?: boolean
@@ -2509,7 +2607,15 @@ export namespace Prisma {
   export type DataSourceSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
+    connectionType?: boolean
     cloudinaryUrl?: boolean
+    dbType?: boolean
+    dbHost?: boolean
+    dbPort?: boolean
+    dbName?: boolean
+    dbUsername?: boolean
+    dbPassword?: boolean
+    displayName?: boolean
     rawMetadata?: boolean
     schemaGraph?: boolean
     createdAt?: boolean
@@ -2519,7 +2625,15 @@ export namespace Prisma {
   export type DataSourceSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
+    connectionType?: boolean
     cloudinaryUrl?: boolean
+    dbType?: boolean
+    dbHost?: boolean
+    dbPort?: boolean
+    dbName?: boolean
+    dbUsername?: boolean
+    dbPassword?: boolean
+    displayName?: boolean
     rawMetadata?: boolean
     schemaGraph?: boolean
     createdAt?: boolean
@@ -2529,13 +2643,21 @@ export namespace Prisma {
   export type DataSourceSelectScalar = {
     id?: boolean
     userId?: boolean
+    connectionType?: boolean
     cloudinaryUrl?: boolean
+    dbType?: boolean
+    dbHost?: boolean
+    dbPort?: boolean
+    dbName?: boolean
+    dbUsername?: boolean
+    dbPassword?: boolean
+    displayName?: boolean
     rawMetadata?: boolean
     schemaGraph?: boolean
     createdAt?: boolean
   }
 
-  export type DataSourceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "cloudinaryUrl" | "rawMetadata" | "schemaGraph" | "createdAt", ExtArgs["result"]["dataSource"]>
+  export type DataSourceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "connectionType" | "cloudinaryUrl" | "dbType" | "dbHost" | "dbPort" | "dbName" | "dbUsername" | "dbPassword" | "displayName" | "rawMetadata" | "schemaGraph" | "createdAt", ExtArgs["result"]["dataSource"]>
   export type DataSourceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     conversations?: boolean | DataSource$conversationsArgs<ExtArgs>
@@ -2559,7 +2681,15 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       userId: string
-      cloudinaryUrl: string
+      connectionType: string
+      cloudinaryUrl: string | null
+      dbType: string | null
+      dbHost: string | null
+      dbPort: number | null
+      dbName: string | null
+      dbUsername: string | null
+      dbPassword: string | null
+      displayName: string | null
       rawMetadata: Prisma.JsonValue
       schemaGraph: Prisma.JsonValue
       createdAt: Date
@@ -2991,7 +3121,15 @@ export namespace Prisma {
   interface DataSourceFieldRefs {
     readonly id: FieldRef<"DataSource", 'String'>
     readonly userId: FieldRef<"DataSource", 'String'>
+    readonly connectionType: FieldRef<"DataSource", 'String'>
     readonly cloudinaryUrl: FieldRef<"DataSource", 'String'>
+    readonly dbType: FieldRef<"DataSource", 'String'>
+    readonly dbHost: FieldRef<"DataSource", 'String'>
+    readonly dbPort: FieldRef<"DataSource", 'Int'>
+    readonly dbName: FieldRef<"DataSource", 'String'>
+    readonly dbUsername: FieldRef<"DataSource", 'String'>
+    readonly dbPassword: FieldRef<"DataSource", 'String'>
+    readonly displayName: FieldRef<"DataSource", 'String'>
     readonly rawMetadata: FieldRef<"DataSource", 'Json'>
     readonly schemaGraph: FieldRef<"DataSource", 'Json'>
     readonly createdAt: FieldRef<"DataSource", 'DateTime'>
@@ -5661,7 +5799,15 @@ export namespace Prisma {
   export const DataSourceScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
+    connectionType: 'connectionType',
     cloudinaryUrl: 'cloudinaryUrl',
+    dbType: 'dbType',
+    dbHost: 'dbHost',
+    dbPort: 'dbPort',
+    dbName: 'dbName',
+    dbUsername: 'dbUsername',
+    dbPassword: 'dbPassword',
+    displayName: 'displayName',
     rawMetadata: 'rawMetadata',
     schemaGraph: 'schemaGraph',
     createdAt: 'createdAt'
@@ -5779,6 +5925,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Int'
+   */
+  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+  /**
+   * Reference to a field of type 'Int[]'
+   */
+  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Json'
    */
   export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
@@ -5793,16 +5953,16 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'Int'
+   * Reference to a field of type 'Float'
    */
-  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
     
 
 
   /**
-   * Reference to a field of type 'Int[]'
+   * Reference to a field of type 'Float[]'
    */
-  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
   /**
    * Deep Input Types
@@ -5871,7 +6031,15 @@ export namespace Prisma {
     NOT?: DataSourceWhereInput | DataSourceWhereInput[]
     id?: StringFilter<"DataSource"> | string
     userId?: StringFilter<"DataSource"> | string
-    cloudinaryUrl?: StringFilter<"DataSource"> | string
+    connectionType?: StringFilter<"DataSource"> | string
+    cloudinaryUrl?: StringNullableFilter<"DataSource"> | string | null
+    dbType?: StringNullableFilter<"DataSource"> | string | null
+    dbHost?: StringNullableFilter<"DataSource"> | string | null
+    dbPort?: IntNullableFilter<"DataSource"> | number | null
+    dbName?: StringNullableFilter<"DataSource"> | string | null
+    dbUsername?: StringNullableFilter<"DataSource"> | string | null
+    dbPassword?: StringNullableFilter<"DataSource"> | string | null
+    displayName?: StringNullableFilter<"DataSource"> | string | null
     rawMetadata?: JsonFilter<"DataSource">
     schemaGraph?: JsonFilter<"DataSource">
     createdAt?: DateTimeFilter<"DataSource"> | Date | string
@@ -5883,7 +6051,15 @@ export namespace Prisma {
   export type DataSourceOrderByWithRelationInput = {
     id?: SortOrder
     userId?: SortOrder
-    cloudinaryUrl?: SortOrder
+    connectionType?: SortOrder
+    cloudinaryUrl?: SortOrderInput | SortOrder
+    dbType?: SortOrderInput | SortOrder
+    dbHost?: SortOrderInput | SortOrder
+    dbPort?: SortOrderInput | SortOrder
+    dbName?: SortOrderInput | SortOrder
+    dbUsername?: SortOrderInput | SortOrder
+    dbPassword?: SortOrderInput | SortOrder
+    displayName?: SortOrderInput | SortOrder
     rawMetadata?: SortOrder
     schemaGraph?: SortOrder
     createdAt?: SortOrder
@@ -5894,30 +6070,47 @@ export namespace Prisma {
 
   export type DataSourceWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    userId_cloudinaryUrl?: DataSourceUserIdCloudinaryUrlCompoundUniqueInput
     AND?: DataSourceWhereInput | DataSourceWhereInput[]
     OR?: DataSourceWhereInput[]
     NOT?: DataSourceWhereInput | DataSourceWhereInput[]
     userId?: StringFilter<"DataSource"> | string
-    cloudinaryUrl?: StringFilter<"DataSource"> | string
+    connectionType?: StringFilter<"DataSource"> | string
+    cloudinaryUrl?: StringNullableFilter<"DataSource"> | string | null
+    dbType?: StringNullableFilter<"DataSource"> | string | null
+    dbHost?: StringNullableFilter<"DataSource"> | string | null
+    dbPort?: IntNullableFilter<"DataSource"> | number | null
+    dbName?: StringNullableFilter<"DataSource"> | string | null
+    dbUsername?: StringNullableFilter<"DataSource"> | string | null
+    dbPassword?: StringNullableFilter<"DataSource"> | string | null
+    displayName?: StringNullableFilter<"DataSource"> | string | null
     rawMetadata?: JsonFilter<"DataSource">
     schemaGraph?: JsonFilter<"DataSource">
     createdAt?: DateTimeFilter<"DataSource"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     conversations?: ConversationListRelationFilter
     sessions?: SessionListRelationFilter
-  }, "id" | "userId_cloudinaryUrl">
+  }, "id">
 
   export type DataSourceOrderByWithAggregationInput = {
     id?: SortOrder
     userId?: SortOrder
-    cloudinaryUrl?: SortOrder
+    connectionType?: SortOrder
+    cloudinaryUrl?: SortOrderInput | SortOrder
+    dbType?: SortOrderInput | SortOrder
+    dbHost?: SortOrderInput | SortOrder
+    dbPort?: SortOrderInput | SortOrder
+    dbName?: SortOrderInput | SortOrder
+    dbUsername?: SortOrderInput | SortOrder
+    dbPassword?: SortOrderInput | SortOrder
+    displayName?: SortOrderInput | SortOrder
     rawMetadata?: SortOrder
     schemaGraph?: SortOrder
     createdAt?: SortOrder
     _count?: DataSourceCountOrderByAggregateInput
+    _avg?: DataSourceAvgOrderByAggregateInput
     _max?: DataSourceMaxOrderByAggregateInput
     _min?: DataSourceMinOrderByAggregateInput
+    _sum?: DataSourceSumOrderByAggregateInput
   }
 
   export type DataSourceScalarWhereWithAggregatesInput = {
@@ -5926,7 +6119,15 @@ export namespace Prisma {
     NOT?: DataSourceScalarWhereWithAggregatesInput | DataSourceScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"DataSource"> | string
     userId?: StringWithAggregatesFilter<"DataSource"> | string
-    cloudinaryUrl?: StringWithAggregatesFilter<"DataSource"> | string
+    connectionType?: StringWithAggregatesFilter<"DataSource"> | string
+    cloudinaryUrl?: StringNullableWithAggregatesFilter<"DataSource"> | string | null
+    dbType?: StringNullableWithAggregatesFilter<"DataSource"> | string | null
+    dbHost?: StringNullableWithAggregatesFilter<"DataSource"> | string | null
+    dbPort?: IntNullableWithAggregatesFilter<"DataSource"> | number | null
+    dbName?: StringNullableWithAggregatesFilter<"DataSource"> | string | null
+    dbUsername?: StringNullableWithAggregatesFilter<"DataSource"> | string | null
+    dbPassword?: StringNullableWithAggregatesFilter<"DataSource"> | string | null
+    displayName?: StringNullableWithAggregatesFilter<"DataSource"> | string | null
     rawMetadata?: JsonWithAggregatesFilter<"DataSource">
     schemaGraph?: JsonWithAggregatesFilter<"DataSource">
     createdAt?: DateTimeWithAggregatesFilter<"DataSource"> | Date | string
@@ -6136,7 +6337,15 @@ export namespace Prisma {
 
   export type DataSourceCreateInput = {
     id?: string
-    cloudinaryUrl: string
+    connectionType?: string
+    cloudinaryUrl?: string | null
+    dbType?: string | null
+    dbHost?: string | null
+    dbPort?: number | null
+    dbName?: string | null
+    dbUsername?: string | null
+    dbPassword?: string | null
+    displayName?: string | null
     rawMetadata: JsonNullValueInput | InputJsonValue
     schemaGraph: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
@@ -6148,7 +6357,15 @@ export namespace Prisma {
   export type DataSourceUncheckedCreateInput = {
     id?: string
     userId: string
-    cloudinaryUrl: string
+    connectionType?: string
+    cloudinaryUrl?: string | null
+    dbType?: string | null
+    dbHost?: string | null
+    dbPort?: number | null
+    dbName?: string | null
+    dbUsername?: string | null
+    dbPassword?: string | null
+    displayName?: string | null
     rawMetadata: JsonNullValueInput | InputJsonValue
     schemaGraph: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
@@ -6158,7 +6375,15 @@ export namespace Prisma {
 
   export type DataSourceUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    cloudinaryUrl?: StringFieldUpdateOperationsInput | string
+    connectionType?: StringFieldUpdateOperationsInput | string
+    cloudinaryUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    dbType?: NullableStringFieldUpdateOperationsInput | string | null
+    dbHost?: NullableStringFieldUpdateOperationsInput | string | null
+    dbPort?: NullableIntFieldUpdateOperationsInput | number | null
+    dbName?: NullableStringFieldUpdateOperationsInput | string | null
+    dbUsername?: NullableStringFieldUpdateOperationsInput | string | null
+    dbPassword?: NullableStringFieldUpdateOperationsInput | string | null
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
     rawMetadata?: JsonNullValueInput | InputJsonValue
     schemaGraph?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -6170,7 +6395,15 @@ export namespace Prisma {
   export type DataSourceUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    cloudinaryUrl?: StringFieldUpdateOperationsInput | string
+    connectionType?: StringFieldUpdateOperationsInput | string
+    cloudinaryUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    dbType?: NullableStringFieldUpdateOperationsInput | string | null
+    dbHost?: NullableStringFieldUpdateOperationsInput | string | null
+    dbPort?: NullableIntFieldUpdateOperationsInput | number | null
+    dbName?: NullableStringFieldUpdateOperationsInput | string | null
+    dbUsername?: NullableStringFieldUpdateOperationsInput | string | null
+    dbPassword?: NullableStringFieldUpdateOperationsInput | string | null
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
     rawMetadata?: JsonNullValueInput | InputJsonValue
     schemaGraph?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -6181,7 +6414,15 @@ export namespace Prisma {
   export type DataSourceCreateManyInput = {
     id?: string
     userId: string
-    cloudinaryUrl: string
+    connectionType?: string
+    cloudinaryUrl?: string | null
+    dbType?: string | null
+    dbHost?: string | null
+    dbPort?: number | null
+    dbName?: string | null
+    dbUsername?: string | null
+    dbPassword?: string | null
+    displayName?: string | null
     rawMetadata: JsonNullValueInput | InputJsonValue
     schemaGraph: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
@@ -6189,7 +6430,15 @@ export namespace Prisma {
 
   export type DataSourceUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    cloudinaryUrl?: StringFieldUpdateOperationsInput | string
+    connectionType?: StringFieldUpdateOperationsInput | string
+    cloudinaryUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    dbType?: NullableStringFieldUpdateOperationsInput | string | null
+    dbHost?: NullableStringFieldUpdateOperationsInput | string | null
+    dbPort?: NullableIntFieldUpdateOperationsInput | number | null
+    dbName?: NullableStringFieldUpdateOperationsInput | string | null
+    dbUsername?: NullableStringFieldUpdateOperationsInput | string | null
+    dbPassword?: NullableStringFieldUpdateOperationsInput | string | null
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
     rawMetadata?: JsonNullValueInput | InputJsonValue
     schemaGraph?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -6198,7 +6447,15 @@ export namespace Prisma {
   export type DataSourceUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    cloudinaryUrl?: StringFieldUpdateOperationsInput | string
+    connectionType?: StringFieldUpdateOperationsInput | string
+    cloudinaryUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    dbType?: NullableStringFieldUpdateOperationsInput | string | null
+    dbHost?: NullableStringFieldUpdateOperationsInput | string | null
+    dbPort?: NullableIntFieldUpdateOperationsInput | number | null
+    dbName?: NullableStringFieldUpdateOperationsInput | string | null
+    dbUsername?: NullableStringFieldUpdateOperationsInput | string | null
+    dbPassword?: NullableStringFieldUpdateOperationsInput | string | null
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
     rawMetadata?: JsonNullValueInput | InputJsonValue
     schemaGraph?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -6455,6 +6712,32 @@ export namespace Prisma {
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
+
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
   export type JsonFilter<$PrismaModel = never> =
     | PatchUndefined<
         Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
@@ -6484,32 +6767,98 @@ export namespace Prisma {
     isNot?: UserWhereInput
   }
 
-  export type DataSourceUserIdCloudinaryUrlCompoundUniqueInput = {
-    userId: string
-    cloudinaryUrl: string
+  export type SortOrderInput = {
+    sort: SortOrder
+    nulls?: NullsOrder
   }
 
   export type DataSourceCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
+    connectionType?: SortOrder
     cloudinaryUrl?: SortOrder
+    dbType?: SortOrder
+    dbHost?: SortOrder
+    dbPort?: SortOrder
+    dbName?: SortOrder
+    dbUsername?: SortOrder
+    dbPassword?: SortOrder
+    displayName?: SortOrder
     rawMetadata?: SortOrder
     schemaGraph?: SortOrder
     createdAt?: SortOrder
   }
 
+  export type DataSourceAvgOrderByAggregateInput = {
+    dbPort?: SortOrder
+  }
+
   export type DataSourceMaxOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
+    connectionType?: SortOrder
     cloudinaryUrl?: SortOrder
+    dbType?: SortOrder
+    dbHost?: SortOrder
+    dbPort?: SortOrder
+    dbName?: SortOrder
+    dbUsername?: SortOrder
+    dbPassword?: SortOrder
+    displayName?: SortOrder
     createdAt?: SortOrder
   }
 
   export type DataSourceMinOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
+    connectionType?: SortOrder
     cloudinaryUrl?: SortOrder
+    dbType?: SortOrder
+    dbHost?: SortOrder
+    dbPort?: SortOrder
+    dbName?: SortOrder
+    dbUsername?: SortOrder
+    dbPassword?: SortOrder
+    displayName?: SortOrder
     createdAt?: SortOrder
+  }
+
+  export type DataSourceSumOrderByAggregateInput = {
+    dbPort?: SortOrder
+  }
+
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
   }
   export type JsonWithAggregatesFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -6589,11 +6938,6 @@ export namespace Prisma {
     gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-  }
-
-  export type SortOrderInput = {
-    sort: SortOrder
-    nulls?: NullsOrder
   }
 
   export type SessionCountOrderByAggregateInput = {
@@ -6818,6 +7162,18 @@ export namespace Prisma {
     connect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
   }
 
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type UserUpdateOneRequiredWithoutDataSourcesNestedInput = {
     create?: XOR<UserCreateWithoutDataSourcesInput, UserUncheckedCreateWithoutDataSourcesInput>
     connectOrCreate?: UserCreateOrConnectWithoutDataSourcesInput
@@ -7004,6 +7360,75 @@ export namespace Prisma {
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
+
+  export type NestedStringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type NestedIntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
   export type NestedJsonFilter<$PrismaModel = never> =
     | PatchUndefined<
         Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
@@ -7026,17 +7451,6 @@ export namespace Prisma {
     gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-  }
-
-  export type NestedIntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
   export type NestedJsonNullableFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -7064,7 +7478,15 @@ export namespace Prisma {
 
   export type DataSourceCreateWithoutUserInput = {
     id?: string
-    cloudinaryUrl: string
+    connectionType?: string
+    cloudinaryUrl?: string | null
+    dbType?: string | null
+    dbHost?: string | null
+    dbPort?: number | null
+    dbName?: string | null
+    dbUsername?: string | null
+    dbPassword?: string | null
+    displayName?: string | null
     rawMetadata: JsonNullValueInput | InputJsonValue
     schemaGraph: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
@@ -7074,7 +7496,15 @@ export namespace Prisma {
 
   export type DataSourceUncheckedCreateWithoutUserInput = {
     id?: string
-    cloudinaryUrl: string
+    connectionType?: string
+    cloudinaryUrl?: string | null
+    dbType?: string | null
+    dbHost?: string | null
+    dbPort?: number | null
+    dbName?: string | null
+    dbUsername?: string | null
+    dbPassword?: string | null
+    displayName?: string | null
     rawMetadata: JsonNullValueInput | InputJsonValue
     schemaGraph: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
@@ -7172,7 +7602,15 @@ export namespace Prisma {
     NOT?: DataSourceScalarWhereInput | DataSourceScalarWhereInput[]
     id?: StringFilter<"DataSource"> | string
     userId?: StringFilter<"DataSource"> | string
-    cloudinaryUrl?: StringFilter<"DataSource"> | string
+    connectionType?: StringFilter<"DataSource"> | string
+    cloudinaryUrl?: StringNullableFilter<"DataSource"> | string | null
+    dbType?: StringNullableFilter<"DataSource"> | string | null
+    dbHost?: StringNullableFilter<"DataSource"> | string | null
+    dbPort?: IntNullableFilter<"DataSource"> | number | null
+    dbName?: StringNullableFilter<"DataSource"> | string | null
+    dbUsername?: StringNullableFilter<"DataSource"> | string | null
+    dbPassword?: StringNullableFilter<"DataSource"> | string | null
+    displayName?: StringNullableFilter<"DataSource"> | string | null
     rawMetadata?: JsonFilter<"DataSource">
     schemaGraph?: JsonFilter<"DataSource">
     createdAt?: DateTimeFilter<"DataSource"> | Date | string
@@ -7404,7 +7842,15 @@ export namespace Prisma {
 
   export type DataSourceCreateWithoutConversationsInput = {
     id?: string
-    cloudinaryUrl: string
+    connectionType?: string
+    cloudinaryUrl?: string | null
+    dbType?: string | null
+    dbHost?: string | null
+    dbPort?: number | null
+    dbName?: string | null
+    dbUsername?: string | null
+    dbPassword?: string | null
+    displayName?: string | null
     rawMetadata: JsonNullValueInput | InputJsonValue
     schemaGraph: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
@@ -7415,7 +7861,15 @@ export namespace Prisma {
   export type DataSourceUncheckedCreateWithoutConversationsInput = {
     id?: string
     userId: string
-    cloudinaryUrl: string
+    connectionType?: string
+    cloudinaryUrl?: string | null
+    dbType?: string | null
+    dbHost?: string | null
+    dbPort?: number | null
+    dbName?: string | null
+    dbUsername?: string | null
+    dbPassword?: string | null
+    displayName?: string | null
     rawMetadata: JsonNullValueInput | InputJsonValue
     schemaGraph: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
@@ -7469,7 +7923,15 @@ export namespace Prisma {
 
   export type DataSourceUpdateWithoutConversationsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    cloudinaryUrl?: StringFieldUpdateOperationsInput | string
+    connectionType?: StringFieldUpdateOperationsInput | string
+    cloudinaryUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    dbType?: NullableStringFieldUpdateOperationsInput | string | null
+    dbHost?: NullableStringFieldUpdateOperationsInput | string | null
+    dbPort?: NullableIntFieldUpdateOperationsInput | number | null
+    dbName?: NullableStringFieldUpdateOperationsInput | string | null
+    dbUsername?: NullableStringFieldUpdateOperationsInput | string | null
+    dbPassword?: NullableStringFieldUpdateOperationsInput | string | null
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
     rawMetadata?: JsonNullValueInput | InputJsonValue
     schemaGraph?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7480,7 +7942,15 @@ export namespace Prisma {
   export type DataSourceUncheckedUpdateWithoutConversationsInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    cloudinaryUrl?: StringFieldUpdateOperationsInput | string
+    connectionType?: StringFieldUpdateOperationsInput | string
+    cloudinaryUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    dbType?: NullableStringFieldUpdateOperationsInput | string | null
+    dbHost?: NullableStringFieldUpdateOperationsInput | string | null
+    dbPort?: NullableIntFieldUpdateOperationsInput | number | null
+    dbName?: NullableStringFieldUpdateOperationsInput | string | null
+    dbUsername?: NullableStringFieldUpdateOperationsInput | string | null
+    dbPassword?: NullableStringFieldUpdateOperationsInput | string | null
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
     rawMetadata?: JsonNullValueInput | InputJsonValue
     schemaGraph?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7512,7 +7982,15 @@ export namespace Prisma {
 
   export type DataSourceCreateWithoutSessionsInput = {
     id?: string
-    cloudinaryUrl: string
+    connectionType?: string
+    cloudinaryUrl?: string | null
+    dbType?: string | null
+    dbHost?: string | null
+    dbPort?: number | null
+    dbName?: string | null
+    dbUsername?: string | null
+    dbPassword?: string | null
+    displayName?: string | null
     rawMetadata: JsonNullValueInput | InputJsonValue
     schemaGraph: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
@@ -7523,7 +8001,15 @@ export namespace Prisma {
   export type DataSourceUncheckedCreateWithoutSessionsInput = {
     id?: string
     userId: string
-    cloudinaryUrl: string
+    connectionType?: string
+    cloudinaryUrl?: string | null
+    dbType?: string | null
+    dbHost?: string | null
+    dbPort?: number | null
+    dbName?: string | null
+    dbUsername?: string | null
+    dbPassword?: string | null
+    displayName?: string | null
     rawMetadata: JsonNullValueInput | InputJsonValue
     schemaGraph: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
@@ -7577,7 +8063,15 @@ export namespace Prisma {
 
   export type DataSourceUpdateWithoutSessionsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    cloudinaryUrl?: StringFieldUpdateOperationsInput | string
+    connectionType?: StringFieldUpdateOperationsInput | string
+    cloudinaryUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    dbType?: NullableStringFieldUpdateOperationsInput | string | null
+    dbHost?: NullableStringFieldUpdateOperationsInput | string | null
+    dbPort?: NullableIntFieldUpdateOperationsInput | number | null
+    dbName?: NullableStringFieldUpdateOperationsInput | string | null
+    dbUsername?: NullableStringFieldUpdateOperationsInput | string | null
+    dbPassword?: NullableStringFieldUpdateOperationsInput | string | null
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
     rawMetadata?: JsonNullValueInput | InputJsonValue
     schemaGraph?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7588,7 +8082,15 @@ export namespace Prisma {
   export type DataSourceUncheckedUpdateWithoutSessionsInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    cloudinaryUrl?: StringFieldUpdateOperationsInput | string
+    connectionType?: StringFieldUpdateOperationsInput | string
+    cloudinaryUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    dbType?: NullableStringFieldUpdateOperationsInput | string | null
+    dbHost?: NullableStringFieldUpdateOperationsInput | string | null
+    dbPort?: NullableIntFieldUpdateOperationsInput | number | null
+    dbName?: NullableStringFieldUpdateOperationsInput | string | null
+    dbUsername?: NullableStringFieldUpdateOperationsInput | string | null
+    dbPassword?: NullableStringFieldUpdateOperationsInput | string | null
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
     rawMetadata?: JsonNullValueInput | InputJsonValue
     schemaGraph?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7597,7 +8099,15 @@ export namespace Prisma {
 
   export type DataSourceCreateManyUserInput = {
     id?: string
-    cloudinaryUrl: string
+    connectionType?: string
+    cloudinaryUrl?: string | null
+    dbType?: string | null
+    dbHost?: string | null
+    dbPort?: number | null
+    dbName?: string | null
+    dbUsername?: string | null
+    dbPassword?: string | null
+    displayName?: string | null
     rawMetadata: JsonNullValueInput | InputJsonValue
     schemaGraph: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
@@ -7624,7 +8134,15 @@ export namespace Prisma {
 
   export type DataSourceUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    cloudinaryUrl?: StringFieldUpdateOperationsInput | string
+    connectionType?: StringFieldUpdateOperationsInput | string
+    cloudinaryUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    dbType?: NullableStringFieldUpdateOperationsInput | string | null
+    dbHost?: NullableStringFieldUpdateOperationsInput | string | null
+    dbPort?: NullableIntFieldUpdateOperationsInput | number | null
+    dbName?: NullableStringFieldUpdateOperationsInput | string | null
+    dbUsername?: NullableStringFieldUpdateOperationsInput | string | null
+    dbPassword?: NullableStringFieldUpdateOperationsInput | string | null
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
     rawMetadata?: JsonNullValueInput | InputJsonValue
     schemaGraph?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7634,7 +8152,15 @@ export namespace Prisma {
 
   export type DataSourceUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    cloudinaryUrl?: StringFieldUpdateOperationsInput | string
+    connectionType?: StringFieldUpdateOperationsInput | string
+    cloudinaryUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    dbType?: NullableStringFieldUpdateOperationsInput | string | null
+    dbHost?: NullableStringFieldUpdateOperationsInput | string | null
+    dbPort?: NullableIntFieldUpdateOperationsInput | number | null
+    dbName?: NullableStringFieldUpdateOperationsInput | string | null
+    dbUsername?: NullableStringFieldUpdateOperationsInput | string | null
+    dbPassword?: NullableStringFieldUpdateOperationsInput | string | null
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
     rawMetadata?: JsonNullValueInput | InputJsonValue
     schemaGraph?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7644,7 +8170,15 @@ export namespace Prisma {
 
   export type DataSourceUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    cloudinaryUrl?: StringFieldUpdateOperationsInput | string
+    connectionType?: StringFieldUpdateOperationsInput | string
+    cloudinaryUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    dbType?: NullableStringFieldUpdateOperationsInput | string | null
+    dbHost?: NullableStringFieldUpdateOperationsInput | string | null
+    dbPort?: NullableIntFieldUpdateOperationsInput | number | null
+    dbName?: NullableStringFieldUpdateOperationsInput | string | null
+    dbUsername?: NullableStringFieldUpdateOperationsInput | string | null
+    dbPassword?: NullableStringFieldUpdateOperationsInput | string | null
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
     rawMetadata?: JsonNullValueInput | InputJsonValue
     schemaGraph?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

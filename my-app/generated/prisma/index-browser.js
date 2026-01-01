@@ -130,7 +130,15 @@ exports.Prisma.UserScalarFieldEnum = {
 exports.Prisma.DataSourceScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
+  connectionType: 'connectionType',
   cloudinaryUrl: 'cloudinaryUrl',
+  dbType: 'dbType',
+  dbHost: 'dbHost',
+  dbPort: 'dbPort',
+  dbName: 'dbName',
+  dbUsername: 'dbUsername',
+  dbPassword: 'dbPassword',
+  displayName: 'displayName',
   rawMetadata: 'rawMetadata',
   schemaGraph: 'schemaGraph',
   createdAt: 'createdAt'

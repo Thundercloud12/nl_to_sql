@@ -9,6 +9,10 @@ from typing import Dict,List
 import time
 from tenacity import retry, stop_after_attempt, wait_exponential
 from dotenv import load_dotenv
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+from utils.database_utilities import PostgreSQLConnectionManager
+
 load_dotenv()
 
 # Configure Gemini API
@@ -487,7 +491,7 @@ def apply_preprocessing(con: duckdb.DuckDBPyConnection, operations: List[Dict]) 
             print(f"[PREPROCESSING] ✗ Error applying {op_type} on {table}: {e}")
 
 
-def interpret_and_execute(plan: dict, data_source_id: str, existing_connection=None) -> str:
+def interpret_and_execute(plan: dict, data_source_id: str, existing_connection=None, connection_type: str = "FILE", db_config: dict = None) -> str:
     """
     Main entry point: load tables → generate SQL → execute → return result.
     
@@ -495,10 +499,18 @@ def interpret_and_execute(plan: dict, data_source_id: str, existing_connection=N
         plan: Execution plan from planner
         data_source_id: DataSource ID for folder isolation
         existing_connection: Pre-loaded DuckDB connection (from preprocessing)
+        connection_type: "FILE" (DuckDB) or "DATABASE" (PostgreSQL)
+        db_config: Dictionary with PostgreSQL credentials (host, port, database, username, password)
     """
     if not plan.get("tables"):
         return "No tables specified in plan."
     
+    # Handle PostgreSQL databases
+    if connection_type == "DATABASE" and db_config:
+        print("[INTERPRETER] Using PostgreSQL database connection")
+        return execute_postgres_query(plan, db_config)
+    
+    # Handle FILE datasources with DuckDB
     # ✅ Use existing connection if provided (preprocessing already applied)
     if existing_connection:
         print("[INTERPRETER] Using existing DuckDB connection (preprocessed)")
@@ -631,3 +643,103 @@ SELECT category, COUNT(*) as count FROM temp_result GROUP BY category ORDER BY c
         return result_str
     else:
         return str(result_df)
+
+
+# ============================================================================
+# PostgreSQL Query Execution
+# ============================================================================
+
+def execute_postgres_query(plan: dict, db_config: dict) -> str:
+    """
+    Execute SQL query on PostgreSQL database.
+    
+    Args:
+        plan: Execution plan with tables and operations
+        db_config: {host, port, database, username, password}
+    
+    Returns:
+        Result string with data or error
+    """
+    try:
+        # Load metadata for schema context
+        metadata = db_config.get("metadata", {})
+        
+        # Generate SQL query using LLM
+        sql_query = generate_postgres_sql(plan, metadata)
+        
+        print(f"[POSTGRES] Executing query:\n{sql_query}")
+        
+        # Execute query using PostgreSQL connection manager
+        result = PostgreSQLConnectionManager.execute_query(
+            host=db_config["host"],
+            port=db_config["port"],
+            database=db_config["database"],
+            username=db_config["username"],
+            password=db_config["password"],
+            query=sql_query
+        )
+        
+        if not result.get("success"):
+            return f"Query failed: {result.get('message')}"
+        
+        # Convert to DataFrame for consistent formatting
+        if "rows" in result:
+            df = pd.DataFrame(result["rows"])
+            
+            if len(df) > 100:
+                print(f"[POSTGRES] Result has {len(df)} rows, limiting to 100")
+                df = df.head(100)
+            
+            return df.to_string(index=False)
+        else:
+            return result.get("message", "Query executed successfully")
+    
+    except Exception as e:
+        print(f"[POSTGRES] Error: {str(e)}")
+        return f"Error executing query: {str(e)}"
+
+
+def generate_postgres_sql(plan: dict, metadata: dict) -> str:
+    """
+    Generate PostgreSQL-compatible SQL from plan using LLM.
+    
+    Args:
+        plan: Execution plan with tables, filters, operations
+        metadata: Database schema metadata
+    
+    Returns:
+        PostgreSQL SQL query string
+    """
+    prompt = f"""
+You are a PostgreSQL SQL query generator.
+
+Generate a VALID PostgreSQL query based on the execution plan below.
+
+RULES:
+1. Use only standard PostgreSQL syntax
+2. Table and column names MUST match the schema exactly
+3. Use proper PostgreSQL functions (no DuckDB-specific functions)
+4. Include all filters, joins, and aggregations from the plan
+5. Output ONLY the SQL query (no markdown, no comments)
+
+SCHEMA:
+{json.dumps(metadata.get("tables", {}), indent=2)}
+
+EXECUTION PLAN:
+{json.dumps(plan, indent=2)}
+
+Generate the PostgreSQL query:
+"""
+    
+    try:
+        sql, _ = rate_limited_llm_call(prompt)
+        # Clean up SQL
+        sql = sql.replace("```sql", "").replace("```", "").strip()
+        return sql
+    except Exception as e:
+        print(f"[POSTGRES_GEN] Error generating SQL: {str(e)}")
+        # Fallback: basic query construction
+        tables = plan.get("tables", [])
+        if tables:
+            return f"SELECT * FROM {tables[0]} LIMIT 100;"
+        return "SELECT 1;"  # Minimal valid query

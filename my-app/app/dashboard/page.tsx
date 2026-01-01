@@ -25,6 +25,8 @@ interface DataSource {
   userId: string;
   cloudinaryUrl: string;
   createdAt: string;
+  connectionType?: string;
+  displayName?: string;
 }
 
 export default function DashboardPage() {
@@ -207,14 +209,18 @@ export default function DashboardPage() {
                 <CardHeader className="pb-4">
                   <div className="flex justify-between items-start mb-4">
                     <div className="p-3 bg-muted rounded-xl text-[#00e599] group-hover:bg-[#00e599] group-hover:text-black transition-colors duration-300">
-                      <FileSpreadsheet size={24} />
+                      {ds.connectionType === "DATABASE" ? (
+                        <Database size={24} />
+                      ) : (
+                        <FileSpreadsheet size={24} />
+                      )}
                     </div>
                     <div className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest">
-                      Ready
+                      {ds.connectionType === "DATABASE" ? "Connected" : "Ready"}
                     </div>
                   </div>
                   <CardTitle className="text-lg font-bold text-foreground group-hover:text-foreground transition-colors truncate">
-                    {getFileName(ds.cloudinaryUrl)}
+                    {ds.connectionType === "DATABASE" ? ds.displayName : getFileName(ds.cloudinaryUrl)}
                   </CardTitle>
                   <CardDescription className="text-zinc-500 font-mono text-[11px] flex items-center gap-2">
                     <Calendar size={12} />

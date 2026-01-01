@@ -18,7 +18,7 @@ from llm.plan_generator import build_graph, State
 from utils.cloudinary_handler import upload_to_cloudinary, deletefromsupabase
 from utils.prisma_handler import PrismaHandler
 from utils.datasource_loader import download_from_cloudinary, load_datasource_files, load_chat, ensure_datasource_files
-from utils.database_utilities import get_db_connection, db_connection, db_cursor
+from utils.database_utilities import get_db_connection, db_connection, db_cursor, PostgreSQLConnectionManager
 
 app = FastAPI()
 url=os.getenv("NEXT_JS_API_URL")
@@ -188,8 +188,24 @@ def query(req: dict):
     if not data_source:
         raise HTTPException(status_code=404, detail="DataSource not found")
     
-
-    ensure_datasource_files(data_source)
+    connection_type = data_source.get("connectionType", "FILE")
+    print(f"[QUERY] Connection type: {connection_type}")
+    
+    # For FILE datasources, ensure files are present
+    if connection_type == "FILE":
+        ensure_datasource_files(data_source)
+    
+    # For DATABASE datasources, prepare db_config
+    db_config = None
+    if connection_type == "DATABASE":
+        db_config = {
+            "host": data_source.get("dbHost"),
+            "port": data_source.get("dbPort"),
+            "database": data_source.get("dbName"),
+            "username": data_source.get("dbUsername"),
+            "password": data_source.get("dbPassword"),
+        }
+        print(f"[QUERY] Using database: {db_config['host']}/{db_config['database']}")
 
     state = State({
         "user_question": question,
@@ -204,6 +220,8 @@ def query(req: dict):
         "status": "running",
         "pending_question": None,
         "appended_data": "",
+        "connection_type": connection_type,
+        "db_config": db_config,
     })
     graph = build_graph()
 
@@ -825,6 +843,175 @@ async def initialize_chat(req: dict):
         logger.error(f"Error initializing chat: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
+
+# ============================================================================
+# DATABASE CONNECTION ENDPOINTS
+# ============================================================================
+
+class DatabaseConnectionRequest(BaseModel):
+    host: str
+    port: int
+    database: str
+    username: str
+    password: str
+    user_id: str
+    display_name: str = None
+
+@app.post("/test_db_connection")
+async def test_db_connection(req: DatabaseConnectionRequest):
+    """
+    Test PostgreSQL database connection credentials.
+    
+    Args:
+        - host: Database host
+        - port: Database port
+        - database: Database name
+        - username: Database username
+        - password: Database password
+    
+    Returns:
+        {success: true/false, message: "Connection status"}
+    """
+    try:
+        result = PostgreSQLConnectionManager.test_connection(
+            host=req.host,
+            port=req.port,
+            database=req.database,
+            username=req.username,
+            password=req.password
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error testing database connection: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/connect_database")
+async def connect_database(req: DatabaseConnectionRequest):
+    """
+    Connect to a PostgreSQL database and save as a datasource.
+    
+    Args:
+        - host, port, database, username, password: DB credentials
+        - user_id: User ID for ownership
+        - display_name: Optional friendly name
+    
+    Returns:
+        {success: true, data_source_id: "...", schema: {...}}
+    """
+    try:
+        # Test connection first
+        test_result = PostgreSQLConnectionManager.test_connection(
+            host=req.host,
+            port=req.port,
+            database=req.database,
+            username=req.username,
+            password=req.password
+        )
+        
+        if not test_result.get("success"):
+            raise HTTPException(status_code=400, detail=test_result.get("message"))
+        
+        # Fetch schema
+        schema_result = PostgreSQLConnectionManager.fetch_database_schema(
+            host=req.host,
+            port=req.port,
+            database=req.database,
+            username=req.username,
+            password=req.password
+        )
+        
+        if not schema_result.get("success"):
+            raise HTTPException(status_code=400, detail=schema_result.get("message"))
+        
+        schema = schema_result.get("schema")
+        
+        # Save to database
+        with db_cursor(commit=True) as cur:
+            data_source_id = str(uuid.uuid4())
+            display_name = req.display_name or f"{req.database}@{req.host}"
+            
+            cur.execute(
+                """
+                INSERT INTO "DataSource" 
+                (id, "userId", "connectionType", "dbType", "dbHost", "dbPort", "dbName", 
+                 "dbUsername", "dbPassword", "displayName", "rawMetadata", "schemaGraph", "createdAt")
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())
+                RETURNING id
+                """,
+                (
+                    data_source_id,
+                    req.user_id,
+                    "DATABASE",
+                    "postgresql",
+                    req.host,
+                    req.port,
+                    req.database,
+                    req.username,
+                    req.password,  # TODO: Encrypt in production
+                    display_name,
+                    json.dumps(schema),
+                    json.dumps(schema)
+                )
+            )
+        
+        print(f"[DB_CONNECT] Created DataSource: {data_source_id} for user: {req.user_id}")
+        
+        return {
+            "success": True,
+            "data_source_id": data_source_id,
+            "display_name": display_name,
+            "schema": schema,
+            "message": "Database connected successfully"
+        }
+    
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        logger.error(f"Error connecting database: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/fetch_db_schema/{data_source_id}")
+async def fetch_db_schema(data_source_id: str, user_id: str):
+    """
+    Fetch schema for an existing database datasource.
+    
+    Args:
+        - data_source_id: DataSource ID
+        - user_id: User ID for authorization
+    
+    Returns:
+        {success: true, schema: {...}}
+    """
+    try:
+        with db_cursor() as cur:
+            cur.execute(
+                """
+                SELECT "dbHost", "dbPort", "dbName", "dbUsername", "dbPassword", "rawMetadata"
+                FROM "DataSource"
+                WHERE id = %s AND "userId" = %s AND "connectionType" = 'DATABASE'
+                """,
+                (data_source_id, user_id)
+            )
+            datasource = cur.fetchone()
+        
+        if not datasource:
+            raise HTTPException(status_code=404, detail="Database datasource not found")
+        
+        # Return cached schema or fetch fresh
+        schema = datasource.get("rawMetadata")
+        if isinstance(schema, str):
+            schema = json.loads(schema)
+        
+        return {"success": True, "schema": schema}
+    
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        logger.error(f"Error fetching schema: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 if __name__ == "__main__":

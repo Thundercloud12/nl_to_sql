@@ -1,3 +1,4 @@
+
 # 🚀 RELIX - Natural Language to SQL
 
 Transform data questions into AI-driven SQL queries through conversational intelligence.
@@ -15,21 +16,34 @@ Upload data files (Excel, CSV) → Ask questions in English → Get SQL results 
 - ❓ Smart clarification for ambiguous queries
 - 💬 LLM-powered result summarization
 - 🔐 Multi-tenant with Clerk auth
+- 🌗 Universal Light/Dark theme toggle (next-themes, Tailwind)
+- 🗄️ **NEW:** Direct PostgreSQL database connections (query live databases)
+
+---
+
+
+## 🖌️ New UI/UX Features
+
+- **Light/Dark Theme Toggle**: All pages now support instant switching between true light and true dark modes. Toggle is available on landing, dashboard, chat, upload, sign-in, and sign-up pages.
+- **Theme Persistence**: User preference is saved and restored automatically.
+- **Modern Color Palette**: Professional, high-contrast colors for accessibility and aesthetics.
+- **Animated Toggle Button**: Sun/Moon icon with smooth transitions.
 
 ---
 
 ## 🏗️ Architecture at a Glance
 
 ```
-User Query → FastAPI Backend → LangGraph Workflow → DuckDB SQL Execution → Gemini Insights → Response
+User Query → FastAPI Backend → LangGraph Workflow → SQL Execution (DuckDB or PostgreSQL) → Gemini Insights → Response
 ```
 
 ### Data Flow
 ```
-1. File Upload → Convert to Parquet → Generate Schema (DuckDB + LLM)
-2. User Query → LangGraph State Machine → Intelligent Routing
-3. Planner LLM → Generate Execution Plan (tables, filters, aggregations)
-4. Execute SQL → Generate Insights → Return to User
+1. FILE Mode: File Upload → Convert to Parquet → Generate Schema (DuckDB + LLM)
+2. DATABASE Mode: Connect Database → Fetch Schema (PostgreSQL) → Store Metadata
+3. User Query → LangGraph State Machine → Intelligent Routing
+4. Planner LLM → Generate Execution Plan (tables, filters, aggregations)
+5. Execute SQL (DuckDB for files, PostgreSQL for databases) → Generate Insights → Return to User
 ```
 
 ---
@@ -103,12 +117,14 @@ my-app/                    # Next.js Frontend
 
 ---
 
+
 ## 💻 Tech Stack
 
 **Backend**: FastAPI, LangGraph 1.0, Gemini API, DuckDB, PostgreSQL, Supabase   
-**Frontend**: Next.js 16, React 19, TypeScript, Tailwind CSS, Clerk auth
+**Frontend**: Next.js 16, React 19, TypeScript, Tailwind CSS, Clerk auth, next-themes
 
 ---
+
 
 ## 🚀 Quick Start
 
@@ -121,7 +137,7 @@ pip install -r requirements.txt
 # .env
 GOOGLE_API_KEY=your_key
 DATABASE_URL=postgresql://...
-Supabase _URL=Supabase ://...
+SUPABASE_URL=supabase://...
 
 uvicorn main:app --reload --port 8000
 ```
@@ -229,9 +245,23 @@ User:   "Last 30 days"
 
 ## 🛠️ API Endpoints
 
-**Files**: `POST /upload_and_process`  
-**Queries**: `POST /query`, `POST /continue_conversation`, `POST /clarify`  
-**Sessions**: `POST /save_session`
+**Files**: 
+- `POST /upload_and_process` - Upload CSV/Excel files
+- `POST /connect_database` - Connect PostgreSQL database
+- `POST /test_db_connection` - Test database credentials
+
+**Queries**: 
+- `POST /query` - Execute natural language query
+- `POST /continue_conversation` - Multi-turn conversation
+- `POST /clarify` - Answer clarification questions
+
+**Sessions**: 
+- `POST /save_session` - Save conversation state
+- `POST /initialize_chat` - Start new chat session
+
+**Data Sources**:
+- `GET /datasource/{id}` - Get datasource details
+- `DELETE /datasource/{id}` - Delete datasource
 
 ---
 
@@ -267,6 +297,7 @@ User:   "Last 30 days"
 
 ---
 
+
 ## 🤝 Contributing
 
 1. Create feature branch: `git checkout -b feature/your-feature`
@@ -275,4 +306,24 @@ User:   "Last 30 days"
 
 ---
 
-**Built with ❤️ using LangGraph, DuckDB, and Gemini API**
+## 📝 Recent Changes
+
+### Database Connection Feature (v2.0)
+- **Direct PostgreSQL Support**: Connect your own databases and query them in natural language
+- **New Pages**: `/connect-database` with credential testing and validation
+- **Dashboard Updates**: Separate icons for FILE (FileSpreadsheet) and DATABASE (Database) sources
+- **Navbar Updates**: Added "Upload File" and "Connect Database" buttons
+- **Backend Infrastructure**: PostgreSQLConnectionManager with schema extraction
+- **API Endpoints**: `/test_db_connection`, `/connect_database`, `/fetch_db_schema`
+- **Prisma Schema**: Extended DataSource model with connection fields
+
+### Theme System (v1.5)
+- Added universal light/dark theme toggle (next-themes, Tailwind)
+- Created ThemeProvider and ThemeToggle components
+- Integrated toggle on all pages (landing, dashboard, chat, upload, sign-in, sign-up)
+- Updated all hardcoded colors to use theme-aware CSS variables
+- Improved accessibility and color contrast
+
+---
+
+**Built with ❤️ using LangGraph, DuckDB, PostgreSQL, Gemini API, and next-themes**

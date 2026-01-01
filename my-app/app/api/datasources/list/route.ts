@@ -21,6 +21,8 @@ export async function GET(req: NextRequest) {
         rawMetadata: true,
         schemaGraph: true,
         createdAt: true,
+        connectionType: true,
+        displayName: true,
       },
       orderBy: { createdAt: "desc" },
     });

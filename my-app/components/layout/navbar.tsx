@@ -10,7 +10,9 @@ import {
   Home, 
   Command, 
   Terminal,
-  BarChart3
+  BarChart3,
+  Upload,
+  Plus
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -98,6 +100,18 @@ export function Navbar() {
             <SignedIn>
               {/* Customizing Clerk Trigger to match Dark Theme */}
               <div className="flex items-center gap-4">
+                <Link href="/upload-file">
+                  <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white hover:bg-white/5 gap-2">
+                    <Upload className="w-4 h-4" />
+                    <span className="hidden lg:inline">Upload File</span>
+                  </Button>
+                </Link>
+                <Link href="/connect-database">
+                  <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white hover:bg-white/5 gap-2">
+                    <Database className="w-4 h-4" />
+                    <span className="hidden lg:inline">Connect Database</span>
+                  </Button>
+                </Link>
                 <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-md bg-[#1A1C23] border border-white/10">
                     <div className="w-2 h-2 rounded-full bg-[#00e599] animate-pulse" />
                     <span className="text-xs text-zinc-400 font-mono">System Operational</span>

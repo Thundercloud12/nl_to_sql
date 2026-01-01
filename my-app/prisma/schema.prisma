@@ -27,7 +27,21 @@ model User {
 model DataSource {
   id              String    @id @default(cuid())
   userId          String
-  cloudinaryUrl   String
+  connectionType  String    @default("FILE") // "FILE" or "DATABASE"
+  
+  // FILE source fields
+  cloudinaryUrl   String?
+  
+  // DATABASE source fields
+  dbType          String?   // "postgresql", "mysql", etc.
+  dbHost          String?
+  dbPort          Int?
+  dbName          String?
+  dbUsername      String?
+  dbPassword      String?   // Encrypted in application layer
+  
+  // Common metadata fields
+  displayName     String?   // User-friendly name
   rawMetadata     Json      // Stores raw metadata from backend
   schemaGraph     Json      // Stores final schema graph from backend
   createdAt       DateTime  @default(now())
@@ -35,11 +49,11 @@ model DataSource {
   // Relations
   user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   conversations   Conversation[]
-  sessions        Session[]  // ✅ NEW
+  sessions        Session[]
 
   // Constraints
-  @@unique([userId, cloudinaryUrl])
   @@index([userId])
+  @@index([connectionType])
   @@index([createdAt])
 }
 

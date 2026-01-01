@@ -12,6 +12,36 @@ from utils.llm_utils import rate_limited_llm_call
 from dotenv import load_dotenv
 load_dotenv()
 
+def convert_db_schema_to_graph(schema_data: dict) -> dict:
+    """Convert database schema format to graph format."""
+    relationships = []
+    for rel in schema_data.get("relationships", []):
+        relationships.append({
+            "from_table": rel["from_table"],
+            "from_column": rel["from_column"],
+            "to_table": rel["to_table"],
+            "to_column": rel["to_column"]
+        })
+    return {"relationships": relationships}
+
+def convert_db_schema_to_metadata(schema_data: dict) -> dict:
+    """Convert database schema format to raw metadata format."""
+    tables = {}
+    for table_name, table_info in schema_data.get("tables", {}).items():
+        columns = [col["name"] for col in table_info.get("columns", [])]
+        canonical_types = {col["name"]: col["type"] for col in table_info.get("columns", [])}
+        sample_values = {}  # Database doesn't fetch sample values yet
+        
+        tables[table_name] = {
+            "original_name": table_name,
+            "columns": columns,
+            "canonical_types": canonical_types,
+            "sample_values": sample_values,
+            "row_count": table_info.get("row_count", 0)
+        }
+    
+    return {"tables": tables}
+
 def merge_plans(old, new):
     """Merge two plans, accumulating lists and preferring new values for scalars."""
     if old is None:
@@ -88,7 +118,9 @@ class State(dict):
     appended_data: str | None 
     preprocessing_operations: List[Dict] | None
     preprocessing_applied: bool | None  # ✅ NEW: Track if preprocessing done
-    duckdb_connection: Any | None 
+    duckdb_connection: Any | None
+    connection_type: str | None  # ✅ NEW: FILE or DATABASE
+    db_config: Dict[str, Any] | None  # ✅ NEW: Database credentials for DATABASE type 
 
 def preprocessing_node(state: State) -> State:
     """
@@ -153,15 +185,18 @@ def sql_executor_node(state: State) -> State:
     
     from .interpretor import interpret_and_execute
     
+    connection_type = state.get("connection_type", "FILE")
+    db_config = state.get("db_config")
+    
     # ✅ Pass preprocessed connection if available
     preprocessed_con = state.get("duckdb_connection")
     
     if preprocessed_con:
         print("[SQL EXECUTOR NODE] Using preprocessed DuckDB connection")
-        result = interpret_and_execute(plan, data_source_id, existing_connection=preprocessed_con)
+        result = interpret_and_execute(plan, data_source_id, existing_connection=preprocessed_con, connection_type=connection_type, db_config=db_config)
     else:
         print("[SQL EXECUTOR NODE] Loading fresh data (no preprocessing)")
-        result = interpret_and_execute(plan, data_source_id)
+        result = interpret_and_execute(plan, data_source_id, connection_type=connection_type, db_config=db_config)
     
     state["sql_result"] = result
     print(f"[DEBUG] SQL result: {result[:100] if result else 'None'}...")
@@ -176,16 +211,45 @@ def sql_executor_node(state: State) -> State:
     
     return state
 
-def load_schema_graph(data_source_id: str) -> dict:
-    """Load schema graph from datasource-specific folder."""
+def load_schema_graph(data_source_id: str, connection_type: str = "FILE", db_config: dict = None) -> dict:
+    """Load schema graph from datasource-specific folder or database."""
+    if connection_type == "DATABASE" and db_config:
+        # For DATABASE, fetch from database
+        from utils.database_utilities import PostgreSQLConnectionManager
+        print(f"[SCHEMA] Loading schema from database...")
+        schema_data = PostgreSQLConnectionManager.fetch_database_schema(
+            host=db_config["host"],
+            port=db_config["port"],
+            database=db_config["database"],
+            username=db_config["username"],
+            password=db_config["password"]
+        )
+        # Convert database schema to graph format
+        return convert_db_schema_to_graph(schema_data)
+    
+    # For FILE, load from disk
     graph_path = os.path.join("uploaded_files", f"datasource_{data_source_id}", "schema_graph.json")
     if not os.path.exists(graph_path):
         raise FileNotFoundError(f"Schema graph not found at {graph_path}. Please run schema build first.")
     with open(graph_path, "r") as f:
         return json.load(f)
 
-def load_raw_metadata(data_source_id: str) -> dict:
-    """Load raw metadata from datasource-specific folder."""
+def load_raw_metadata(data_source_id: str, connection_type: str = "FILE", db_config: dict = None) -> dict:
+    """Load raw metadata from datasource-specific folder or database."""
+    if connection_type == "DATABASE" and db_config:
+        # For DATABASE, fetch from database
+        from utils.database_utilities import PostgreSQLConnectionManager
+        print(f"[METADATA] Loading metadata from database...")
+        schema_data = PostgreSQLConnectionManager.fetch_database_schema(
+            host=db_config["host"],
+            port=db_config["port"],
+            database=db_config["database"],
+            username=db_config["username"],
+            password=db_config["password"]
+        )
+        return convert_db_schema_to_metadata(schema_data)
+    
+    # For FILE, load from disk
     metadata_path = os.path.join("uploaded_files", f"datasource_{data_source_id}", "raw_metadata.json")
     if not os.path.exists(metadata_path):
         raise FileNotFoundError(f"Metadata not found at {metadata_path}. Please run schema build first.")
@@ -333,8 +397,11 @@ def planner_node(state: State) -> State:
     if not data_source_id:
         raise ValueError("data_source_id not found in state")
     
-    schema_graph = load_schema_graph(data_source_id)
-    raw_metadata = load_raw_metadata(data_source_id)
+    connection_type = state.get("connection_type", "FILE")
+    db_config = state.get("db_config")
+    
+    schema_graph = load_schema_graph(data_source_id, connection_type, db_config)
+    raw_metadata = load_raw_metadata(data_source_id, connection_type, db_config)
     
     schema_text = json.dumps(schema_graph, indent=2)
     
@@ -556,15 +623,18 @@ def sql_executor_node(state: State) -> State:
     
     from .interpretor import interpret_and_execute
     
+    connection_type = state.get("connection_type", "FILE")
+    db_config = state.get("db_config")
+    
     # ✅ Pass preprocessed connection if available
     preprocessed_con = state.get("duckdb_connection")
     
     if preprocessed_con:
         print("[SQL EXECUTOR NODE] Using preprocessed DuckDB connection")
-        result = interpret_and_execute(plan, data_source_id, existing_connection=preprocessed_con)
+        result = interpret_and_execute(plan, data_source_id, existing_connection=preprocessed_con, connection_type=connection_type, db_config=db_config)
     else:
         print("[SQL EXECUTOR NODE] Loading fresh data (no preprocessing)")
-        result = interpret_and_execute(plan, data_source_id)
+        result = interpret_and_execute(plan, data_source_id, connection_type=connection_type, db_config=db_config)
     
     state["sql_result"] = result
     print(f"[DEBUG] SQL result: {result[:100] if result else 'None'}...")
