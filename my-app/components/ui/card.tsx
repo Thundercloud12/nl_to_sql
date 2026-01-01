@@ -9,11 +9,11 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant = "default", ...props }, ref) => {
     const variants = {
       default:
-        "bg-card border border-border shadow-md hover:shadow-xl transition-all duration-300",
+        "bg-card border border-border/50 shadow-sm hover:shadow transition-all duration-300",
       glass:
         "glass",
       bordered:
-        "bg-card border-2 border-primary/20 shadow-lg hover:shadow-xl hover:border-primary/40 transition-all duration-300",
+        "bg-card border border-primary/20 shadow-sm hover:shadow-md hover:border-primary/40 transition-all duration-300",
     };
 
     return (
