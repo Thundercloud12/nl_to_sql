@@ -61,36 +61,29 @@ def generate_chart(sql_result: str, plan: dict, user_question: str) -> Dict[str,
 def parse_sql_result_to_df(sql_result: str) -> pd.DataFrame | None:
     """
     Parse SQL result string back to DataFrame.
-    Handles space-separated and other common formats.
+    Uses pandas read_csv with fixed-width format to handle spaces in values.
     """
     try:
-        # Try to parse as space-separated values (from to_string())
-        lines = sql_result.strip().split('\n')
+        # Use pandas to parse the string representation
+        # This handles the aligned column format from DataFrame.to_string()
+        from io import StringIO
         
-        if len(lines) < 2:
+        # Try reading as fixed-width format (handles spaces in values)
+        df = pd.read_fwf(StringIO(sql_result), dtype=str)
+        
+        if df is None or df.empty:
             return None
         
-        # First line is header
-        header = lines[0].split()
-        
-        # Remaining lines are data
-        data_lines = []
-        for line in lines[1:]:
-            if line.strip():  # Skip empty lines
-                data_lines.append(line.split())
-        
-        if not data_lines:
-            return None
-        
-        # Create DataFrame
-        df = pd.DataFrame(data_lines, columns=header)
-        
-        # Try to convert numeric columns
+        # Convert numeric columns
         for col in df.columns:
             try:
-                df[col] = pd.to_numeric(df[col])
+                # Try to convert to numeric, keeping NaN for non-numeric
+                df[col] = pd.to_numeric(df[col], errors='ignore')
             except:
-                pass  # Keep as string if conversion fails
+                pass
+        
+        print(f"[CHART] Parsed DataFrame: {len(df)} rows x {len(df.columns)} columns")
+        print(f"[CHART] Columns: {list(df.columns)}")
         
         return df
     

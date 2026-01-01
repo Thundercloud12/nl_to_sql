@@ -10,6 +10,7 @@ import logging
 import shutil
 import tempfile
 import psycopg2
+import pandas as pd
 from psycopg2.extras import RealDictCursor
 from pathlib import Path
 from data_ingestion.graph_builder import process_schema_build
@@ -828,6 +829,281 @@ async def initialize_chat(req: dict):
         logger.error(f"Error initializing chat: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
+# ============ DATA PREPARATION ENDPOINTS ============
+
+@app.post("/prepare_data/profile")
+async def profile_data(file: UploadFile = File(...)):
+    """
+    Step 1: Upload file and profile dataset.
+    Returns profile + intent options (no expert plans yet).
+    
+    Response:
+        {
+            "session_id": "temp_xxx",
+            "file_name": "data.csv",
+            "profile": {...},
+            "intent_options": [...]
+        }
+    """
+    try:
+        from data_preparation.profiler import profile_dataset
+        from data_preparation.expert_engine import INTENT_OBJECTIVES
+        
+        # Validate file type
+        if not file.filename.endswith(('.csv', '.xlsx', '.xls')):
+            raise HTTPException(
+                status_code=400,
+                detail="Only CSV and Excel files supported"
+            )
+        
+        # Create temporary session ID
+        session_id = f"temp_{uuid.uuid4().hex[:12]}"
+        
+        # Save file temporarily
+        temp_dir = tempfile.mkdtemp(prefix=f"data_prep_{session_id}_")
+        file_path = os.path.join(temp_dir, file.filename)
+        
+        with open(file_path, "wb") as f:
+            shutil.copyfileobj(file.file, f)
+        
+        print(f"[PREPARE] Profiling {file.filename}...")
+        
+        # Profile the dataset
+        profile = profile_dataset(file_path)
+        
+        print(f"[PREPARE] ✓ Profile complete: {profile['row_count']} rows, "
+              f"{len(profile['columns'])} columns, {len(profile['quality_issues'])} issues")
+        
+        # Store temp file path in memory for next step
+        SESSIONS[session_id] = {
+            "file_path": file_path,
+            "temp_dir": temp_dir,
+            "file_name": file.filename,
+            "profile": profile
+        }
+        
+        return {
+            "session_id": session_id,
+            "file_name": file.filename,
+            "profile": profile,
+            "intent_options": [
+                {"id": key, "name": val["name"], "description": f"{val['priority']} | Avoid: {val['avoid']}"}
+                for key, val in INTENT_OBJECTIVES.items()
+            ]
+        }
+    
+    except Exception as e:
+        print(f"[PREPARE] ✗ Error profiling data: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/prepare_data/generate_plans")
+async def generate_expert_plans(req: dict):
+    """
+    Step 2: Generate 3 expert cleaning plans based on user's intent.
+    
+    Request body:
+        {
+            "session_id": "temp_xxx",
+            "intent": "visualization" | "machine_learning" | "forecasting" | "reporting" | "exploration"
+        }
+    
+    Response:
+        {
+            "expert_plans": [3 plans with scores, pros, cons],
+            "recommended_plan": "expert_2",
+            "intent_context": {...}
+        }
+    """
+    try:
+        from data_preparation.expert_engine import generate_expert_plans
+        
+        session_id = req.get("session_id")
+        intent = req.get("intent", "exploration")
+        
+        if not session_id or session_id not in SESSIONS:
+            raise HTTPException(status_code=400, detail="Invalid or expired session_id")
+        
+        session_data = SESSIONS[session_id]
+        file_path = session_data["file_path"]
+        profile = session_data["profile"]
+        
+        print(f"[PREPARE] Generating expert plans for intent: {intent}")
+        
+        # Load data sample (first 100 rows) for grounding
+        if file_path.endswith('.csv'):
+            try:
+                import chardet
+                with open(file_path, 'rb') as f:
+                    raw_data = f.read(100000)
+                    result = chardet.detect(raw_data)
+                    detected_encoding = result['encoding'] or 'utf-8'
+            except:
+                detected_encoding = 'utf-8'
+            
+            try:
+                df_sample = pd.read_csv(file_path, encoding=detected_encoding, nrows=100, on_bad_lines='skip')
+            except:
+                df_sample = pd.read_csv(file_path, encoding='latin1', nrows=100, on_bad_lines='skip')
+        elif file_path.endswith(('.xlsx', '.xls')):
+            df_sample = pd.read_excel(file_path, nrows=100)
+        else:
+            raise HTTPException(status_code=400, detail="Unsupported file type")
+        
+        # Generate expert plans (3 parallel LLM calls + arbiter)
+        result = generate_expert_plans(profile, intent, df_sample)
+        
+        # Store plans for next step
+        session_data["expert_plans"] = result["expert_plans"]
+        session_data["intent"] = intent
+        
+        print(f"[PREPARE] ✓ Generated 3 expert plans, recommended: {result['recommended_plan']}")
+        
+        return result
+    
+    except Exception as e:
+        print(f"[PREPARE] ✗ Error generating plans: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/prepare_data/clean")
+async def clean_data(req: dict):
+    """
+    Step 3: Apply selected expert plan and return cleaned data.
+    
+    Request body:
+        {
+            "session_id": "temp_xxx",
+            "selected_expert": "expert_1" | "expert_2" | "expert_3"
+        }
+    
+    Response:
+        {
+            "cleaned_file_name": "data_cleaned.csv",
+            "download_url": "/prepare_data/download/{session_id}",
+            "decision_log": {...},
+            "actual_stats": {...},
+            "expert_plan_used": {...}
+        }
+    """
+    try:
+        from data_preparation.expert_engine import apply_expert_plan
+        
+        session_id = req.get("session_id")
+        selected_expert = req.get("selected_expert", "expert_1")
+        
+        if not session_id or session_id not in SESSIONS:
+            raise HTTPException(status_code=400, detail="Invalid or expired session_id")
+        
+        session_data = SESSIONS[session_id]
+        
+        if "expert_plans" not in session_data:
+            raise HTTPException(status_code=400, detail="Must generate expert plans first")
+        
+        file_path = session_data["file_path"]
+        profile = session_data["profile"]
+        expert_plans = session_data["expert_plans"]
+        
+        # Get selected expert plan
+        expert_idx = int(selected_expert.split("_")[1]) - 1
+        if expert_idx < 0 or expert_idx >= len(expert_plans):
+            raise HTTPException(status_code=400, detail="Invalid expert selection")
+        
+        expert_plan = expert_plans[expert_idx]
+        
+        print(f"[PREPARE] Applying {expert_plan['expert_name']} plan...")
+        
+        # Load full dataset
+        if file_path.endswith('.csv'):
+            try:
+                import chardet
+                with open(file_path, 'rb') as f:
+                    raw_data = f.read(100000)
+                    result = chardet.detect(raw_data)
+                    detected_encoding = result['encoding'] or 'utf-8'
+            except:
+                detected_encoding = 'utf-8'
+            
+            try:
+                df = pd.read_csv(file_path, encoding=detected_encoding, on_bad_lines='skip')
+            except:
+                df = pd.read_csv(file_path, encoding='latin1', on_bad_lines='skip')
+        elif file_path.endswith(('.xlsx', '.xls')):
+            df = pd.read_excel(file_path)
+        else:
+            raise HTTPException(status_code=400, detail="Unsupported file type")
+        
+        # Apply expert plan and measure real deltas
+        df_cleaned, actual_stats, logger = apply_expert_plan(df, expert_plan, profile)
+        
+        # Save cleaned file
+        original_name = session_data["file_name"]
+        name_without_ext = os.path.splitext(original_name)[0]
+        cleaned_file_name = f"{name_without_ext}_cleaned.csv"
+        cleaned_file_path = os.path.join(session_data["temp_dir"], cleaned_file_name)
+        
+        df_cleaned.to_csv(cleaned_file_path, index=False)
+        
+        # Store cleaned file path
+        session_data["cleaned_file_path"] = cleaned_file_path
+        session_data["cleaned_file_name"] = cleaned_file_name
+        session_data["decision_log"] = logger.get_summary()
+        
+        print(f"[PREPARE] ✓ Cleaning complete: {actual_stats['deltas']['row_loss']} rows removed, "
+              f"{actual_stats['deltas']['missing_reduction']} missing cells filled")
+        
+        return {
+            "cleaned_file_name": cleaned_file_name,
+            "download_url": f"/prepare_data/download/{session_id}",
+            "decision_log": logger.get_summary(),
+            "actual_stats": actual_stats,
+            "expert_plan_used": {
+                "name": expert_plan["expert_name"],
+                "score": expert_plan.get("score", 0),
+                "operations_applied": len(expert_plan["operations"])
+            }
+        }
+    
+    except Exception as e:
+        print(f"[PREPARE] ✗ Error cleaning data: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/prepare_data/download/{session_id}")
+async def download_cleaned_file(session_id: str):
+    """Download the cleaned CSV file."""
+    try:
+        if session_id not in SESSIONS:
+            raise HTTPException(status_code=404, detail="Session not found or expired")
+        
+        session_data = SESSIONS[session_id]
+        
+        if "cleaned_file_path" not in session_data:
+            raise HTTPException(status_code=400, detail="No cleaned file available")
+        
+        cleaned_file_path = session_data["cleaned_file_path"]
+        cleaned_file_name = session_data["cleaned_file_name"]
+        
+        if not os.path.exists(cleaned_file_path):
+            raise HTTPException(status_code=404, detail="Cleaned file not found")
+        
+        from fastapi.responses import FileResponse
+        
+        # Clean up after download (temp files)
+        # Note: FileResponse handles file deletion via background task
+        return FileResponse(
+            path=cleaned_file_path,
+            filename=cleaned_file_name,
+            media_type="text/csv",
+            background=None  # We'll clean up sessions periodically
+        )
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[PREPARE] ✗ Error downloading file: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 if __name__ == "__main__":
