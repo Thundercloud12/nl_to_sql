@@ -85,26 +85,26 @@ export default function UploadPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0D0E12] text-white pt-24 pb-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div className="min-h-screen bg-background text-foreground dark:bg-[#0D0E12] dark:text-white pt-24 pb-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Health Check Loading State */}
       {isChecking && (
-        <div className="fixed inset-0 flex flex-col items-center justify-center bg-[#0D0E12]/95 backdrop-blur-md z-50">
+        <div className="fixed inset-0 flex flex-col items-center justify-center bg-background/95 dark:bg-[#0D0E12]/95 backdrop-blur-md z-50">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="text-center"
           >
-            <div className="w-16 h-16 bg-zinc-900 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-[#00e599]/30 shadow-[0_0_30px_-10px_rgba(0,229,153,0.3)]">
-              <Loader2 className="w-8 h-8 text-[#00e599] animate-spin" />
+            <div className="w-16 h-16 bg-muted dark:bg-zinc-900 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-primary/30 dark:border-[#00e599]/30 shadow-[0_0_30px_-10px_rgba(0,113,227,0.3)] dark:shadow-[0_0_30px_-10px_rgba(0,229,153,0.3)]">
+              <Loader2 className="w-8 h-8 text-primary dark:text-[#00e599] animate-spin" />
             </div>
             <h2 className="text-2xl font-bold text-foreground mb-2">Warming up backend...</h2>
             <p className="text-zinc-500 max-w-sm mx-auto mb-6">
               Initializing server connection. This may take a moment.
             </p>
             <div className="flex gap-2 justify-center">
-              <div className="w-2 h-2 bg-[#00e599] rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-              <div className="w-2 h-2 bg-[#00e599] rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-              <div className="w-2 h-2 bg-[#00e599] rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+              <div className="w-2 h-2 bg-primary dark:bg-[#00e599] rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+              <div className="w-2 h-2 bg-primary dark:bg-[#00e599] rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+              <div className="w-2 h-2 bg-primary dark:bg-[#00e599] rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
             </div>
           </motion.div>
         </div>
@@ -122,7 +122,7 @@ export default function UploadPage() {
           <Button
             variant="ghost"
             onClick={() => router.push("/dashboard")}
-            className="text-muted-foreground hover:text-[#00e599] hover:bg-[#00e599]/5 transition-all mb-6 px-0"
+            className="text-muted-foreground hover:text-primary dark:hover:text-[#00e599] hover:bg-primary/5 dark:hover:bg-[#00e599]/5 transition-all mb-6 px-0"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Dashboard
@@ -134,7 +134,7 @@ export default function UploadPage() {
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-xl overflow-hidden shadow-2xl">
+          <Card className="bg-card dark:bg-zinc-900/50 border-border dark:border-white/5 backdrop-blur-xl overflow-hidden shadow-2xl">
             <CardContent className="p-8">
               {/* Dropzone Area */}
               {!result && (
@@ -146,8 +146,8 @@ export default function UploadPage() {
                   className={cn(
                     "relative border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300 group",
                     dragActive 
-                      ? "border-[#00e599] bg-[#00e599]/5 scale-[1.02]" 
-                      : "border-white/10 hover:border-white/20 hover:bg-white/[0.02]"
+                      ? "border-primary dark:border-[#00e599] bg-primary/5 dark:bg-[#00e599]/5 scale-[1.02]" 
+                      : "border-border/50 dark:border-white/10 hover:border-primary/20 dark:hover:border-white/20 hover:bg-muted/50 dark:hover:bg-white/[0.02]"
                   )}
                 >
                   <input
@@ -163,7 +163,7 @@ export default function UploadPage() {
                   <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center">
                     <div className={cn(
                       "w-20 h-20 rounded-3xl flex items-center justify-center mb-6 transition-all duration-500 shadow-2xl",
-                      dragActive ? "bg-[#00e599] text-black scale-110" : "bg-muted text-muted-foreground group-hover:text-foreground group-hover:bg-muted/80"
+                      dragActive ? "bg-primary dark:bg-[#00e599] text-white dark:text-black scale-110" : "bg-muted text-muted-foreground group-hover:text-foreground group-hover:bg-muted/80"
                     )}>
                       <Upload size={32} />
                     </div>
@@ -208,13 +208,13 @@ export default function UploadPage() {
                     
                     <div className="space-y-3">
                       {Array.from(files).map((file, idx) => (
-                        <div key={idx} className="flex items-center justify-between p-4 bg-black/40 border border-white/5 rounded-xl group hover:border-white/10 transition-colors">
+                        <div key={idx} className="flex items-center justify-between p-4 bg-muted/50 dark:bg-black/40 border border-border dark:border-white/5 rounded-xl group hover:border-primary/20 dark:hover:border-white/10 transition-colors">
                           <div className="flex items-center space-x-4">
-                            <div className="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center text-[#00e599]">
+                            <div className="w-10 h-10 rounded-lg bg-background dark:bg-zinc-800 flex items-center justify-center text-primary dark:text-[#00e599]">
                               <FileSpreadsheet size={18} />
                             </div>
                             <div>
-                              <p className="text-sm font-medium text-zinc-200">{file.name}</p>
+                              <p className="text-sm font-medium text-foreground dark:text-zinc-200">{file.name}</p>
                               <p className="text-xs text-zinc-500 font-mono">{(file.size / 1024).toFixed(1)} KB</p>
                             </div>
                           </div>
@@ -226,7 +226,7 @@ export default function UploadPage() {
                     <Button
                       onClick={handleUpload}
                       disabled={uploading}
-                      className="w-full h-14 bg-[#00e599] text-black hover:bg-[#00e599]/90 font-bold text-lg rounded-xl shadow-[0_0_30px_-10px_#00e599] transition-all disabled:opacity-50"
+                      className="w-full h-14 bg-black dark:bg-[#00e599] text-white dark:text-black hover:bg-black/90 dark:hover:bg-[#00e599]/90 font-bold text-lg rounded-xl shadow-sm dark:shadow-[0_0_30px_-10px_#00e599] transition-all disabled:opacity-50"
                     >
                       {uploading ? (
                         <div className="flex items-center gap-3">
@@ -247,12 +247,12 @@ export default function UploadPage() {
               {/* Success Result */}
               {result && (
                 <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-6">
-                  <div className="bg-[#00e599]/10 border border-[#00e599]/20 rounded-2xl p-8 text-center">
-                    <div className="w-16 h-16 bg-[#00e599] rounded-full flex items-center justify-center mx-auto mb-4 text-black shadow-[0_0_40px_-10px_#00e599]">
+                  <div className="bg-primary/10 dark:bg-[#00e599]/10 border border-primary/20 dark:border-[#00e599]/20 rounded-2xl p-8 text-center">
+                    <div className="w-16 h-16 bg-primary dark:bg-[#00e599] rounded-full flex items-center justify-center mx-auto mb-4 text-white dark:text-black shadow-sm dark:shadow-[0_0_40px_-10px_#00e599]">
                       <CheckCircle size={32} />
                     </div>
                     <h2 className="text-2xl font-bold text-foreground mb-2">Ingestion Complete</h2>
-                    <p className="text-[#00e599]/80 text-sm mb-6 font-mono">Source ID: {result.data_source_id}</p>
+                    <p className="text-primary/80 dark:text-[#00e599]/80 text-sm mb-6 font-mono">Source ID: {result.data_source_id}</p>
                     
                     <div className="grid grid-cols-2 gap-4 text-left">
                        <div className="p-4 bg-muted rounded-xl border border-border">
@@ -299,7 +299,7 @@ export default function UploadPage() {
              { icon: Zap, title: "Edge Processing", desc: "Lightning fast ingestion for files up to 100MB." }
            ].map((item, i) => (
              <div key={i} className="space-y-2">
-                <div className="flex items-center gap-2 text-[#00e599]">
+                <div className="flex items-center gap-2 text-primary dark:text-[#00e599]">
                   <item.icon size={16} />
                   <span className="text-[10px] font-bold uppercase tracking-widest">{item.title}</span>
                 </div>

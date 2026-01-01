@@ -4,12 +4,14 @@ import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { BarChart3 } from 'lucide-react';
 
+import { useTheme } from "next-themes";
+
 // Dynamically import Plotly to avoid SSR issues
 const Plot = dynamic(() => import('react-plotly.js'), { 
   ssr: false,
   loading: () => (
-    <div className="flex items-center justify-center h-[400px] bg-black/40 rounded-lg border border-white/5">
-      <div className="text-zinc-500 text-sm font-mono">Loading chart...</div>
+    <div className="flex items-center justify-center h-[400px] bg-muted/50 dark:bg-black/40 rounded-lg border border-border dark:border-white/5">
+      <div className="text-muted-foreground dark:text-zinc-500 text-sm font-mono">Loading chart...</div>
     </div>
   )
 });
@@ -19,21 +21,25 @@ interface ChartProps {
 }
 
 export function Chart({ data }: ChartProps) {
+  const { theme } = useTheme();
+  
   if (!data || !data.data) {
     return null;
   }
   
+  const isDark = theme === "dark";
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.3 }}
-      className="mt-4 p-4 bg-black/40 rounded-lg border border-[#00e599]/20 overflow-hidden backdrop-blur-sm"
+      className="mt-4 p-4 bg-white/50 dark:bg-black/40 rounded-lg border border-primary/20 dark:border-[#00e599]/20 overflow-hidden backdrop-blur-sm"
     >
       {/* Chart Header */}
-      <div className="flex items-center gap-2 mb-3 pb-3 border-b border-white/5">
-        <BarChart3 size={16} className="text-[#00e599]" />
-        <span className="text-xs font-mono text-zinc-400 uppercase tracking-wider">
+      <div className="flex items-center gap-2 mb-3 pb-3 border-b border-border dark:border-white/5">
+        <BarChart3 size={16} className="text-primary dark:text-[#00e599]" />
+        <span className="text-xs font-mono text-muted-foreground dark:text-zinc-400 uppercase tracking-wider">
           Visualization
         </span>
       </div>
@@ -46,23 +52,23 @@ export function Chart({ data }: ChartProps) {
             ...data.layout,
             autosize: true,
             margin: { l: 60, r: 40, t: 50, b: 60 },
-            // Ensure dark theme
+            // Ensure theme awareness
             plot_bgcolor: 'rgba(0,0,0,0)',
             paper_bgcolor: 'rgba(0,0,0,0)',
             font: { 
-              color: 'white',
+              color: isDark ? 'white' : '#1d1d1f',
               family: 'ui-monospace, monospace'
             },
             // Style axes
             xaxis: {
               ...data.layout?.xaxis,
-              gridcolor: 'rgba(255,255,255,0.05)',
-              linecolor: 'rgba(255,255,255,0.1)',
+              gridcolor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
+              linecolor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
             },
             yaxis: {
               ...data.layout?.yaxis,
-              gridcolor: 'rgba(255,255,255,0.05)',
-              linecolor: 'rgba(255,255,255,0.1)',
+              gridcolor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
+              linecolor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
             },
           }}
           config={{
@@ -88,7 +94,7 @@ export function Chart({ data }: ChartProps) {
       </div>
       
       {/* Footer note */}
-      <div className="mt-3 pt-3 border-t border-white/5 text-xs text-zinc-600 font-mono text-center">
+      <div className="mt-3 pt-3 border-t border-border dark:border-white/5 text-xs text-muted-foreground dark:text-zinc-600 font-mono text-center">
         Interactive • Hover for details • Click and drag to zoom
       </div>
     </motion.div>

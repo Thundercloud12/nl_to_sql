@@ -101,10 +101,10 @@ export default function LandingPage() {
       <nav className="fixed top-0 w-full z-50 border-b border-border bg-background/80 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
             <div className="flex items-center gap-2 font-bold text-xl tracking-tighter">
-                <div className="w-8 h-8 bg-[#00e599] rounded-lg flex items-center justify-center text-black">
+                <div className="w-8 h-8 bg-black dark:bg-[#00e599] rounded-lg flex items-center justify-center text-white dark:text-black">
                     <Command size={18} />
                 </div>
-                RELIX
+                <span className="text-foreground">RELIX</span>
             </div>
             <div className="hidden md:flex gap-6 text-sm font-medium text-muted-foreground">
                 <span className="hover:text-foreground cursor-pointer transition-colors">Features</span>
@@ -126,7 +126,7 @@ export default function LandingPage() {
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#00e599]/10 border border-[#00e599]/20 text-[#00e599] text-xs font-mono font-medium"
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/5 dark:bg-[#00e599]/10 border border-black/10 dark:border-[#00e599]/20 text-black dark:text-[#00e599] text-xs font-mono font-medium"
             >
               <Zap size={12} />
               <span>AI-POWERED DATA QUERYING</span>
@@ -139,7 +139,7 @@ export default function LandingPage() {
               className="text-5xl md:text-7xl font-bold tracking-tight leading-[1.1]"
             >
               Query your data <br />
-              <span className="text-[#00e599]">in plain English.</span>
+              <span className="text-primary dark:text-[#00e599]">in plain English.</span>
             </motion.h1>
 
             <motion.p
@@ -159,7 +159,7 @@ export default function LandingPage() {
             >
                <SignedOut>
                 <Link href="/sign-up">
-                  <Button size="lg" className="bg-[#00e599] text-black hover:bg-[#00e599]/90 h-12 px-8 rounded-full font-semibold">
+                  <Button size="lg" className="bg-black dark:bg-[#00e599] text-white dark:text-black hover:bg-black/90 dark:hover:bg-[#00e599]/90 h-12 px-8 rounded-full font-semibold shadow-sm">
                     Start Building
                     <ArrowRight className="ml-2 w-4 h-4" />
                   </Button>
@@ -202,7 +202,7 @@ export default function LandingPage() {
                       <span className="text-muted-foreground">U</span>
                     </div>
                     <div className="space-y-2">
-                      <div className="text-[#00e599] text-xs mb-1">USER</div>
+                      <div className="text-primary dark:text-[#00e599] text-xs mb-1">USER</div>
                       <div className="text-foreground">
                         <TypewriterText 
                           text="How many records are in the uploaded dataset?" 
@@ -220,7 +220,7 @@ export default function LandingPage() {
                       <Sparkles size={14} className="text-[#00e599]" />
                     </div>
                     <div className="w-full space-y-2">
-                      <div className="text-[#00e599] text-xs mb-1">AI AGENT</div>
+                      <div className="text-primary dark:text-[#00e599] text-xs mb-1">AI AGENT</div>
                       
                       {animationStep === "thinking" ? (
                         <div className="flex items-center gap-2 text-zinc-500">
@@ -236,12 +236,12 @@ export default function LandingPage() {
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           onAnimationComplete={() => {}} // Could trigger next step
-                          className="bg-zinc-900/50 border border-white/5 rounded-lg p-4 w-full"
+                           className="bg-zinc-50 dark:bg-zinc-900/50 border border-black/5 dark:border-white/5 rounded-lg p-4 w-full"
                         >
                           <div className="flex justify-between items-baseline mb-4">
                              <div>
-                                <h4 className="text-zinc-400 text-xs uppercase tracking-wider">Total Records</h4>
-                                <p className="text-2xl font-bold text-white">1,250 <span className="text-[#00e599] text-sm font-normal ml-2">✓ Validated</span></p>
+                                <h4 className="text-zinc-500 dark:text-zinc-400 text-xs uppercase tracking-wider">Total Records</h4>
+                                <p className="text-2xl font-bold text-foreground dark:text-white">1,250 <span className="text-primary dark:text-[#00e599] text-sm font-normal ml-2">✓ Validated</span></p>
                              </div>
                              <select className="bg-transparent text-xs text-muted-foreground border border-border rounded px-2 py-1">
                                 <option>Dataset Summary</option>
