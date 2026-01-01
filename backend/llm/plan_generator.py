@@ -242,8 +242,90 @@ def input_node(state: State) -> State:
     print(f"[DEBUG] Initial state: {dict(state)}")
     return state
 
+def analyze_column_patterns(sample_values):
+    """Analyze sample values to detect data patterns automatically."""
+    if not sample_values:
+        return {}
+    
+    patterns = {}
+    for col, vals in sample_values.items():
+        if not vals:
+            continue
+            
+        # Filter out None/NaN values
+        valid_vals = [str(v) for v in vals if v is not None and str(v) != 'nan']
+        if not valid_vals:
+            continue
+        
+        col_patterns = []
+        
+        # Check for delimiters
+        delimiters = [',', '|', ';', '/', '-']
+        for delim in delimiters:
+            if any(delim in v for v in valid_vals):
+                col_patterns.append(f"Contains '{delim}' delimiter - values may have multiple items")
+        
+        # Check for list/array structures
+        if any(v.startswith('[') and v.endswith(']') for v in valid_vals):
+            col_patterns.append("Array/list format detected")
+        
+        # Check for JSON
+        if any((v.startswith('{') and v.endswith('}')) for v in valid_vals):
+            col_patterns.append("JSON object format detected")
+        
+        # Check for numeric ranges (e.g., "100-200")
+        if any('-' in v and v.replace('-','').replace('.','').isdigit() for v in valid_vals):
+            col_patterns.append("May contain numeric ranges")
+        
+        # Check cardinality vs sample size
+        unique_count = len(set(valid_vals))
+        if unique_count == 1:
+            col_patterns.append(f"Low cardinality - only 1 unique value in sample")
+        elif unique_count < len(valid_vals) * 0.5:
+            col_patterns.append(f"Low cardinality - {unique_count} unique values in {len(valid_vals)} samples")
+        
+        if col_patterns:
+            patterns[col] = {
+                "samples": valid_vals[:5],
+                "patterns": col_patterns
+            }
+    
+    return patterns
+
+
+def build_intelligent_schema(raw_metadata):
+    """Build schema with intelligent pattern analysis."""
+    schema_text = "AVAILABLE TABLES & COLUMNS:\n"
+    
+    for table_short, table_info in raw_metadata.get("tables", {}).items():
+        original_name = table_info.get("original_name", "Unknown")
+        columns = table_info.get("columns", [])
+        canonical_types = table_info.get("canonical_types", {})
+        sample_values = table_info.get("sample_values", {})
+        
+        schema_text += f"\n{table_short} ({original_name}):\n"
+        schema_text += f"  Columns: {', '.join(columns)}\n"
+        
+        if canonical_types:
+            types_str = ', '.join([f'{k}:{v}' for k, v in list(canonical_types.items())[:15]])
+            schema_text += f"  Types: {types_str}\n"
+        
+        # Analyze patterns
+        patterns = analyze_column_patterns(sample_values)
+        
+        if patterns:
+            schema_text += f"  Column Samples & Patterns:\n"
+            for col, info in patterns.items():
+                schema_text += f"    {col}:\n"
+                schema_text += f"      Examples: {info['samples']}\n"
+                for pattern in info['patterns']:
+                    schema_text += f"      Note: {pattern}\n"
+    
+    return schema_text
+
+
 def planner_node(state: State) -> State:
-    """LLM Planner Node with iterative metadata retrieval and preprocessing detection."""
+    """LLM Planner Node with intelligent pattern detection."""
     print("[PLANNER NODE] Running LLM planner...")
     print(f"[DEBUG] State before planner: user_question={state.get('user_question')}, appended_data={state.get('appended_data', '')[:100]}...")
     
@@ -256,26 +338,9 @@ def planner_node(state: State) -> State:
     
     schema_text = json.dumps(schema_graph, indent=2)
     
-    # ✅ Build comprehensive schema with all columns AND sample values
+    # Build intelligent schema description
     full_schema_text = "SCHEMA GRAPH:\n" + schema_text + "\n\n"
-    full_schema_text += "AVAILABLE TABLES & COLUMNS:\n"
-    for table_short, table_info in raw_metadata.get("tables", {}).items():
-        original_name = table_info.get("original_name", "Unknown")
-        columns = table_info.get("columns", [])
-        canonical_types = table_info.get("canonical_types", {})
-        sample_values = table_info.get("sample_values", {})
-        
-        full_schema_text += f"\n{table_short} ({original_name}):\n"
-        full_schema_text += f"  Columns: {', '.join(columns)}\n"
-        
-        if canonical_types:
-            full_schema_text += f"  Types: {', '.join([f'{k}:{v}' for k, v in list(canonical_types.items())[:10]])}\n"
-        
-        # ✅ ADD: Include sample values for preprocessing decisions
-        if sample_values:
-            full_schema_text += f"  Sample values:\n"
-            for col, vals in list(sample_values.items())[:5]:
-                full_schema_text += f"    {col}: {vals[:3]}\n"
+    full_schema_text += build_intelligent_schema(raw_metadata)
     
     user_question = state["user_question"]
     previous_metadata = state.get("metadata_requests", [])
@@ -290,51 +355,68 @@ def planner_node(state: State) -> State:
     while iteration < max_iterations:
         print(f"[DEBUG] Iteration {iteration}: appended_data preview={appended_data[:100]}...")
         prompt = f"""
-You are a query planner with preprocessing capabilities. Using the schema, columns, types, and sample values, generate a JSON plan.
+You are an intelligent query planner. Analyze the schema carefully, paying special attention to the sample values and patterns noted for each column.
 
 {full_schema_text}
 
 Question: {user_question}
 {appended_data}
 
-OUTPUT: Valid JSON only. Example:
+IMPORTANT PRINCIPLES:
+1. EXAMINE THE SAMPLE VALUES: Look at the actual data examples provided. They tell you how the data is structured.
+2. INFER THE RIGHT APPROACH: If samples show multiple values in one cell (delimited, arrays, etc.), you need partial matching or special handling.
+3. THINK LIKE AN ANALYST: What would a data analyst do with this specific data format?
+4. BE ADAPTIVE: Different columns may need different approaches based on their actual content.
+
+OUTPUT: Valid JSON only. Structure:
 {{
   "tables": ["T1"],
-  "filters": [],
+  "filters": [
+    {{
+      "column": "column_name",
+      "operator": "contains|==|>|<|>=|<=|in|between",
+      "value": "search_value",
+      "reason": "Why this approach is correct given the sample data"
+    }}
+  ],
   "joins": [{{"left": "", "right": "", "reason": ""}}],
-  "operations": ["COUNT(*)"],
-  "group_by": [],
-  "final_output": "description of answer or result",
-  "execution_mode": "sql",
+  "operations": ["COUNT(*)", "SUM(col)", "AVG(col)", etc.],
+  "group_by": ["col1"],
+  "final_output": "Clear description of what the answer represents",
+  "execution_mode": "sql|model",
   "needs_clarification": false,
   "clarification_questions": [],
   "metadata_requests": [],
   "preprocessing_operations": [
     {{
-      "type": "encode",
+      "type": "encode|normalize|split|extract",
       "table": "T1",
-      "column": "sex",
-      "method": "label",
-      "reason": "Correlation requires numerical values"
+      "column": "col_name",
+      "method": "specific_method",
+      "reason": "Why this preprocessing is needed"
     }}
   ]
 }}
 
-PREPROCESSING RULES:
-- Add "preprocessing_operations" array ONLY if query requires it
+EXECUTION MODE:
+- "sql": For queries requiring data retrieval, filtering, aggregation, joins, comparisons
+- "model": ONLY for questions about schema structure itself (what tables exist, what columns, data types)
+
+FILTER OPERATORS - Choose based on actual data structure:
+- "==": Exact match (use when samples show single discrete values)
+- "contains": Partial text match (use when samples show delimited lists, concatenated values, or when searching within text)
+- ">", "<", ">=", "<=": Numeric/date comparisons
+- "in": Value is one of several options
+- "between": Numeric range
+
+CRITICAL: Always explain your reasoning based on the observed sample values. If samples show "Action, Comedy", explain why you chose "contains" over "==".
 
 Rules:
-- "sql" mode for ANY retrieval/filters/joins/aggs/grouping/comparisons/trends/best/worst/data-value usage.
-- "model" mode ONLY when answerable from schema/structure info (tables, columns, dtypes).
-- For BOTH modes: If you need additional info, add to "metadata_requests".
-- Never request full schema (already provided above).
-- Output ONLY valid JSON.
-- For "sql" mode, operations must describe steps convertible to pandas.
-- For complex analysis/comparisons/trends: ALWAYS use "sql".
-- Use EXACT column names from the schema above.
--if current_question has INCOMPLETE INFORMATION OR DOESNT MAKE MEANING:
-     ASK FOR CLARIFICATION
-- In final_output, provide the actual answer (not placeholders like "T1" or "table").
+- Output ONLY valid JSON (no markdown, no explanations outside JSON)
+- Use EXACT column names from schema
+- If question is unclear or missing information: set needs_clarification=true
+- In final_output, describe the actual answer (not table names or placeholders)
+- Include reasoning for your filter/operator choices
 """
         
         try:
@@ -380,12 +462,19 @@ Rules:
             combined_plan = merge_plans(combined_plan, current_plan)
             print(f"[DEBUG] Merged plan: {combined_plan}")
             
-            # ✅ Log preprocessing operations
+            # Log preprocessing operations
             preprocessing_ops = current_plan.get("preprocessing_operations", [])
             if preprocessing_ops:
                 print(f"[PLANNER NODE] Detected {len(preprocessing_ops)} preprocessing operations:")
                 for op in preprocessing_ops:
                     print(f"  - {op.get('type')} on {op.get('table')}.{op.get('column', op.get('columns', 'N/A'))}: {op.get('reason')}")
+            
+            # Log filter operations with reasoning
+            filters = current_plan.get("filters", [])
+            if filters:
+                print(f"[PLANNER NODE] Detected {len(filters)} filter operations:")
+                for f in filters:
+                    print(f"  - {f.get('column')} {f.get('operator')} '{f.get('value')}' - Reason: {f.get('reason', 'N/A')}")
             
             requests = current_plan.get("metadata_requests", [])
             if requests:
@@ -399,8 +488,6 @@ Rules:
                 print("[DEBUG] No metadata requests, finalizing plan")
                 state["planner_output"] = combined_plan
                 state["metadata_requests"] = previous_metadata
-                
-                # ✅ Store preprocessing operations in state
                 state["preprocessing_operations"] = combined_plan.get("preprocessing_operations", [])
                 
                 print(f"[DEBUG] Final state from planner: planner_output={combined_plan}")
@@ -422,7 +509,7 @@ Rules:
                     "needs_clarification": False,
                     "clarification_questions": [],
                     "metadata_requests": [],
-                    "preprocessing_operations": []  # ✅ ADD
+                    "preprocessing_operations": []
                 }
             print(f"[DEBUG] Error fallback plan: {state['planner_output']}")
             return state

@@ -185,10 +185,14 @@ GLOBAL HARD RULES
 - Allowed aggregates: COUNT, SUM, AVG, MIN, MAX, LIST, ARRAY_AGG.
 - DO NOT use window functions unless explicitly required by PLAN.
 
-5. STRING RULES
-- Case-insensitive matching uses ILIKE.
-- String concatenation uses || only.
+5. STRING MATCHING (CRITICAL FOR DuckDB)
+- CASE-INSENSITIVE pattern matching: Use (column_name ILIKE '%pattern%') with ILIKE OPERATOR (not function).
+  ✓ CORRECT: WHERE genre ILIKE '%comedy%'
+  ✗ WRONG: WHERE ILIKE(genre, '%comedy%')
+- String concatenation uses ||.
 - Regex uses REGEXP_MATCHES(col, pattern).
+- For EXACT case-insensitive comparison (no wildcards): LOWER(column) = LOWER('value')
+  Example: WHERE LOWER(genre) LIKE '%comedy%'
 
 6. DATE & TIME RULES (STRICT)
 Allowed ONLY:

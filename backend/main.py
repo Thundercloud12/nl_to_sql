@@ -11,7 +11,7 @@ import shutil
 import tempfile
 import psycopg2
 from psycopg2.extras import RealDictCursor
-
+from pathlib import Path
 from data_ingestion.graph_builder import process_schema_build
 from llm.plan_generator import build_graph, State
 
@@ -573,8 +573,17 @@ async def upload_and_process(
                 file_path = os.path.join(temp_folder, file.filename)
                 with open(file_path, "wb") as f:
                     shutil.copyfileobj(file.file, f)
-                uploaded_files.append(file_path)
-                print(f"[UPLOAD] ✓ Saved {file.filename} to temp folder")
+                
+                # Rename file to include user_id before processing
+                
+                original_stem = Path(file.filename).stem
+                suffix = Path(file.filename).suffix
+                new_filename = f"{original_stem}_{user_id}{suffix}"
+                new_file_path = os.path.join(temp_folder, new_filename)
+                os.rename(file_path, new_file_path)
+                
+                uploaded_files.append(new_file_path)
+                print(f"[UPLOAD] ✓ Saved and renamed {file.filename} to {new_filename}")
             
   
             print(f"[UPLOAD] Processing schema and converting to Parquet...")
