@@ -102,7 +102,7 @@ export default function DashboardPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-[#0D0E12] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="w-10 h-10 animate-spin text-[#00e599]" />
       </div>
     );
@@ -111,20 +111,20 @@ export default function DashboardPage() {
   // Add loading screen when deleting
   if (deleting) {
     return (
-      <div className="min-h-screen bg-[#0D0E12] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 animate-spin text-[#00e599] mx-auto mb-4" />
-          <p className="text-white font-medium">Deleting data source...</p>
-          <p className="text-zinc-500 text-sm mt-2">This may take a few moments</p>
+          <p className="text-foreground font-medium">Deleting data source...</p>
+          <p className="text-muted-foreground text-sm mt-2">This may take a few moments</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0D0E12] text-white pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background text-foreground pt-24 pb-12 px-4 sm:px-6 lg:px-8">
       {/* Background Decor */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
+      <div className="fixed inset-0 z-0 pointer-events-none dark:block hidden">
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#00e599]/5 blur-[120px]" />
       </div>
 
@@ -139,7 +139,7 @@ export default function DashboardPage() {
               <Activity size={14} />
               <span>System / Data Manager</span>
             </div>
-            <h1 className="text-4xl font-bold tracking-tight text-white">
+            <h1 className="text-4xl font-bold tracking-tight text-foreground">
               Datasets
             </h1>
           </motion.div>
@@ -159,7 +159,7 @@ export default function DashboardPage() {
         {error && (
           <div className="mb-8 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm flex items-center gap-3">
             <span className="flex-1">⚠️ {error}</span>
-            <button onClick={() => setError(null)} className="hover:text-white underline">Dismiss</button>
+            <button onClick={() => setError(null)} className="hover:text-foreground underline">Dismiss</button>
           </div>
         )}
 
@@ -206,14 +206,14 @@ export default function DashboardPage() {
                 
                 <CardHeader className="pb-4">
                   <div className="flex justify-between items-start mb-4">
-                    <div className="p-3 bg-zinc-800 rounded-xl text-[#00e599] group-hover:bg-[#00e599] group-hover:text-black transition-colors duration-300">
+                    <div className="p-3 bg-muted rounded-xl text-[#00e599] group-hover:bg-[#00e599] group-hover:text-black transition-colors duration-300">
                       <FileSpreadsheet size={24} />
                     </div>
                     <div className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest">
                       Ready
                     </div>
                   </div>
-                  <CardTitle className="text-lg font-bold text-zinc-100 group-hover:text-white transition-colors truncate">
+                  <CardTitle className="text-lg font-bold text-foreground group-hover:text-foreground transition-colors truncate">
                     {getFileName(ds.cloudinaryUrl)}
                   </CardTitle>
                   <CardDescription className="text-zinc-500 font-mono text-[11px] flex items-center gap-2">
@@ -237,7 +237,7 @@ export default function DashboardPage() {
                         "flex-1 font-bold transition-all",
                         startingChatId === ds.id 
                             ? "bg-zinc-800 text-zinc-500" 
-                            : "bg-white text-black hover:bg-[#00e599]"
+                            : "bg-foreground text-background hover:bg-[#00e599]"
                     )}
                     size="sm"
                   >
