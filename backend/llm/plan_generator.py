@@ -460,13 +460,22 @@ CHART GENERATION:
 - Set "chart_type" to: "bar" (categorical comparison), "line" (time series), "pie" (part-to-whole), "scatter" (correlation), or "auto" (let system decide)
 - If no visualization requested, set "needs_chart": false and "chart_type": null
 
-IMPORTANT FOR CHARTS:
-- Charts require aggregated/grouped data, NOT raw rows
-- For "average sales by region" → operations: ["AVG(sales)"], group_by: ["region"]
-- For "top 10 products" → operations: ["SUM(revenue)"], group_by: ["product"], and mention ORDER BY + LIMIT 10 in final_output
-- For "monthly trends" → group by month/date column
-- For "distribution" or "breakdown" → use GROUP BY with COUNT or SUM
-- Always aggregate when needs_chart=true unless user asks for raw scatter plot
+CRITICAL CHART DATA RULES:
+1. SCATTER PLOTS (correlation/relationship between two variables):
+   - For "plot X vs Y" or "relationship between X and Y" → operations: [], group_by: [] (raw data)
+   - For "discount vs profit" or "between X and Y" → Select raw columns WITHOUT aggregation
+   - Each row becomes a point on the scatter plot showing correlation
+   
+2. BAR/PIE/LINE CHARTS (aggregated comparisons):
+   - For "average sales by region" → operations: ["AVG(sales)"], group_by: ["region"]
+   - For "top 10 products" → operations: ["SUM(revenue)"], group_by: ["product"], mention ORDER BY + LIMIT 10
+   - For "monthly trends" → operations: ["SUM(sales)"], group_by: ["month"]
+   - Always use GROUP BY with aggregations (COUNT, SUM, AVG, etc.)
+
+3. KEYWORD DETECTION:
+   - "between", "vs", "relationship", "correlation" → Scatter plot with RAW data (operations: [], group_by: [])
+   - "by category", "per region", "breakdown", "distribution" → Bar/Pie with GROUP BY
+   - "over time", "trend", "monthly" → Line chart with GROUP BY date
 
 Rules:
 - Output ONLY valid JSON (no markdown, no explanations outside JSON)
