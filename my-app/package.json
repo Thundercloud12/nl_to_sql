@@ -17,8 +17,11 @@
     "lucide-react": "^0.561.0",
     "next": "16.0.10",
     "next-themes": "^0.4.6",
+    "plotly.js": "^3.3.1",
+
     "react": "19.2.1",
     "react-dom": "19.2.1",
+    "react-plotly.js": "^2.6.0",
     "svix": "^1.82.0",
     "tail": "^2.2.6",
     "tailwind-merge": "^3.4.0"
@@ -27,8 +30,10 @@
     "@prisma/internals": "^7.1.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/plotly.js": "^3.0.9",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/react-plotly.js": "^2.6.4",
     "eslint": "^9",
     "eslint-config-next": "16.0.10",
     "prisma": "^7.1.0",

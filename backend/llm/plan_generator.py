@@ -88,7 +88,8 @@ class State(dict):
     appended_data: str | None 
     preprocessing_operations: List[Dict] | None
     preprocessing_applied: bool | None  # ✅ NEW: Track if preprocessing done
-    duckdb_connection: Any | None 
+    duckdb_connection: Any | None
+    chart_data: Dict[str, Any] | None  # ✅ NEW: Chart JSON for visualization 
 
 def preprocessing_node(state: State) -> State:
     """
@@ -173,6 +174,47 @@ def sql_executor_node(state: State) -> State:
             print("[SQL EXECUTOR NODE] Closed DuckDB connection")
         except:
             pass
+    
+    return state
+
+def chart_generator_node(state: State) -> State:
+    """
+    Chart Generator Node: Creates visualization if requested.
+    Converts SQL result to Plotly chart JSON.
+    """
+    print("[CHART GENERATOR NODE] Checking if chart generation needed...")
+    
+    plan = state.get("planner_output", {})
+    needs_chart = plan.get("needs_chart", False)
+    
+    if not needs_chart:
+        print("[CHART GENERATOR NODE] No chart requested, skipping")
+        state["chart_data"] = None
+        return state
+    
+    sql_result = state.get("sql_result", "")
+    
+    if not sql_result or sql_result == "No tables specified in plan.":
+        print("[CHART GENERATOR NODE] No SQL result to visualize")
+        state["chart_data"] = None
+        return state
+    
+    try:
+        from .chart_generator import generate_chart
+        
+        user_question = state.get("user_question", "")
+        chart_json = generate_chart(sql_result, plan, user_question)
+        
+        if chart_json:
+            state["chart_data"] = chart_json
+            print(f"[CHART GENERATOR NODE] ✓ Chart generated successfully")
+        else:
+            state["chart_data"] = None
+            print(f"[CHART GENERATOR NODE] Chart generation returned None")
+    
+    except Exception as e:
+        print(f"[CHART GENERATOR NODE] ✗ Error generating chart: {e}")
+        state["chart_data"] = None
     
     return state
 
@@ -387,6 +429,8 @@ OUTPUT: Valid JSON only. Structure:
   "needs_clarification": false,
   "clarification_questions": [],
   "metadata_requests": [],
+  "needs_chart": false,
+  "chart_type": "bar|line|pie|scatter|auto|null",
   "preprocessing_operations": [
     {{
       "type": "encode|normalize|split|extract",
@@ -410,6 +454,19 @@ FILTER OPERATORS - Choose based on actual data structure:
 - "between": Numeric range
 
 CRITICAL: Always explain your reasoning based on the observed sample values. If samples show "Action, Comedy", explain why you chose "contains" over "==".
+
+CHART GENERATION:
+- Set "needs_chart": true if user explicitly asks for visualization, chart, graph, or plot
+- Set "chart_type" to: "bar" (categorical comparison), "line" (time series), "pie" (part-to-whole), "scatter" (correlation), or "auto" (let system decide)
+- If no visualization requested, set "needs_chart": false and "chart_type": null
+
+IMPORTANT FOR CHARTS:
+- Charts require aggregated/grouped data, NOT raw rows
+- For "average sales by region" → operations: ["AVG(sales)"], group_by: ["region"]
+- For "top 10 products" → operations: ["SUM(revenue)"], group_by: ["product"], and mention ORDER BY + LIMIT 10 in final_output
+- For "monthly trends" → group by month/date column
+- For "distribution" or "breakdown" → use GROUP BY with COUNT or SUM
+- Always aggregate when needs_chart=true unless user asks for raw scatter plot
 
 Rules:
 - Output ONLY valid JSON (no markdown, no explanations outside JSON)
@@ -628,6 +685,11 @@ def output_node(state: State) -> State:
     state["insights"] = insights
     state["final_answer"] = final_answer
     
+    # ✅ Add chart data to response if available
+    chart_data = state.get("chart_data")
+    if chart_data:
+        print(f"[DEBUG] Chart data included in response")
+    
     print(f"[DEBUG] insights stored: {insights[:100] if insights else 'None'}...")
     print(f"[DEBUG] final_answer stored: {final_answer[:100] if final_answer else 'None'}...")
     
@@ -681,6 +743,7 @@ def build_graph():
     workflow.add_node("schema_info", schema_info_node)
     workflow.add_node("preprocessing", preprocessing_node)  # ✅ NEW
     workflow.add_node("sql_executor", sql_executor_node)
+    workflow.add_node("chart_generator", chart_generator_node)  # ✅ NEW: Chart generation
     workflow.add_node("output", output_node)
 
     workflow.set_entry_point("input")
@@ -702,7 +765,8 @@ def build_graph():
     workflow.add_edge("user_clarification", END)
     workflow.add_edge("schema_info", "planner")
     workflow.add_edge("preprocessing", "sql_executor")  # ✅ NEW: Preprocessing → SQL Executor
-    workflow.add_edge("sql_executor", "output")
+    workflow.add_edge("sql_executor", "chart_generator")  # ✅ MODIFIED: SQL → Chart
+    workflow.add_edge("chart_generator", "output")  # ✅ NEW: Chart → Output
     workflow.add_edge("output", END)
 
     return workflow.compile()
