@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useServerHealth } from "@/hooks/useServerHealth";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 /* ----------------------------- Types ----------------------------- */
 
@@ -276,20 +277,20 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
   /* ----------------------------- Render ----------------------------- */
 
   return (
-   <div className="min-h-screen bg-[#0D0E12] text-white flex flex-col font-sans">
+   <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
       {/* Health Check Loading State */}
       {isChecking && (
-        <div className="fixed inset-0 flex flex-col items-center justify-center bg-[#0D0E12]/95 backdrop-blur-md z-50">
+        <div className="fixed inset-0 flex flex-col items-center justify-center bg-background/95 backdrop-blur-md z-50">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="text-center"
           >
-            <div className="w-16 h-16 bg-zinc-900 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-[#00e599]/30 shadow-[0_0_30px_-10px_rgba(0,229,153,0.3)]">
+            <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mx-auto mb-6 border border-[#00e599]/30 shadow-[0_0_30px_-10px_rgba(0,229,153,0.3)]">
               <Loader2 className="w-8 h-8 text-[#00e599] animate-spin" />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-2">Warming up backend...</h2>
-            <p className="text-zinc-500 max-w-sm mx-auto mb-6">
+            <h2 className="text-2xl font-bold text-foreground mb-2">Warming up backend...</h2>
+            <p className="text-muted-foreground max-w-sm mx-auto mb-6">
               Initializing server connection. This may take a moment.
             </p>
             <div className="flex gap-2 justify-center">
@@ -310,13 +311,13 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
       </div>
 
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-[#0D0E12]/80 backdrop-blur-xl border-b border-white/5 px-6 py-4">
+      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button 
               variant="ghost" 
               onClick={handleBackToDashboard}  // ✅ CHANGE THIS
-              className="text-zinc-500 hover:text-white p-0 h-auto"
+              className="text-muted-foreground hover:text-foreground p-0 h-auto"
             >
               <ArrowLeft size={20} />
             </Button>
@@ -328,19 +329,20 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
                   LIVE_SYNC
                 </div>
               </div>
-              <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mt-0.5">
+              <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest mt-0.5">
                 Session: {sessionId?.slice(0, 8) || "Initialising"}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
              <div className="hidden md:flex flex-col items-end mr-2">
-                <span className="text-[10px] text-zinc-500 font-mono">ENCRYPTION</span>
+                <span className="text-[10px] text-muted-foreground font-mono">ENCRYPTION</span>
                 <span className="text-[10px] text-[#00e599] font-mono flex items-center gap-1">
                    <ShieldCheck size={10} /> AES-256
                 </span>
              </div>
-             <UserButton appearance={{ elements: { avatarBox: "w-8 h-8 border border-white/10" } }} />
+             <ThemeToggle />
+             <UserButton appearance={{ elements: { avatarBox: "w-8 h-8 border border-border" } }} />
           </div>
         </div>
       </header>
@@ -351,11 +353,11 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
           <AnimatePresence mode="popLayout">
             {messages.length === 0 && !loading && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-20">
-                    <div className="w-16 h-16 bg-zinc-900 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-white/5">
+                    <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mx-auto mb-6 border border-border">
                         <Terminal className="text-[#00e599]" size={32} />
                     </div>
-                    <h2 className="text-2xl font-bold text-white mb-2">Awaiting Instructions</h2>
-                    <p className="text-zinc-500 max-w-sm mx-auto">Ask a question about the uploaded dataset. The AI will analyze schema and provide insights.</p>
+                    <h2 className="text-2xl font-bold text-foreground mb-2">Awaiting Instructions</h2>
+                    <p className="text-muted-foreground max-w-sm mx-auto">Ask a question about the uploaded dataset. The AI will analyze schema and provide insights.</p>
                 </motion.div>
             )}
 
@@ -381,7 +383,7 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
                   ) : (
                     /* Assistant Message */
                     <div className={cn(
-                        "bg-zinc-900/50 border border-white/10 backdrop-blur-md px-6 py-4 rounded-2xl rounded-tl-none",
+                        "bg-card border border-border backdrop-blur-md px-6 py-4 rounded-2xl rounded-tl-none",
                         msg.insight && "border-[#00e599]/30 shadow-[0_0_40px_-10px_rgba(0,229,153,0.1)]"
                     )}>
                       {msg.insight && (
@@ -391,15 +393,15 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
                         </div>
                       )}
                       
-                      <div className="text-sm leading-relaxed text-zinc-100 whitespace-pre-wrap">
+                      <div className="text-sm leading-relaxed text-foreground whitespace-pre-wrap">
                         {msg.insight || msg.content}
                       </div>
 
                       {msg.insight && (
-                        <div className="mt-4 pt-4 border-t border-white/5">
+                        <div className="mt-4 pt-4 border-t border-border">
                           <button 
                             onClick={() => toggleExpansion(idx)}
-                            className="flex items-center gap-2 text-xs text-zinc-500 hover:text-white transition-colors"
+                            className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
                           >
                             <Cpu size={12} />
                             {expandedMessages.has(idx) ? "Hide technical output" : "Show technical output"}
@@ -414,7 +416,7 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
                                 exit={{ height: 0, opacity: 0 }}
                                 className="overflow-hidden"
                               >
-                                <div className="mt-3 p-3 bg-black/50 rounded-lg border border-white/5 text-[12px] font-mono text-zinc-400 leading-relaxed">
+                                <div className="mt-3 p-3 bg-muted rounded-lg border border-border text-[12px] font-mono text-muted-foreground leading-relaxed">
                                   {msg.content}
                                 </div>
                               </motion.div>
@@ -431,7 +433,7 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
             {/* Thinking State */}
             {loading && !clarification && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-zinc-900 border border-white/5 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-full bg-muted border border-border flex items-center justify-center">
                   <Loader2 size={14} className="animate-spin text-[#00e599]" />
                 </div>
                 <div className="flex gap-1">
@@ -449,17 +451,17 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
       <footer className="p-6 bg-gradient-to-t from-[#0D0E12] via-[#0D0E12] to-transparent">
         <div className="max-w-4xl mx-auto">
           {clarification ? (
-            <motion.div initial={{ y: 20 }} animate={{ y: 0 }} className="bg-zinc-900 border border-amber-500/30 p-6 rounded-2xl mb-4 shadow-[0_0_30px_-10px_rgba(245,158,11,0.2)]">
+            <motion.div initial={{ y: 20 }} animate={{ y: 0 }} className="bg-card border border-amber-500/30 p-6 rounded-2xl mb-4 shadow-[0_0_30px_-10px_rgba(245,158,11,0.2)]">
                <h3 className="text-amber-500 text-xs font-bold uppercase tracking-widest mb-2 flex items-center gap-2">
                  <AlertCircle size={14} /> Clarification Needed
                </h3>
-               <p className="text-sm mb-6 text-zinc-300">{clarification.question}</p>
+               <p className="text-sm mb-6 text-foreground">{clarification.question}</p>
                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
                   {clarification.all_questions.map((q, i) => (
                     <button 
                         key={i} 
                         onClick={() => { setClarificationInput(q); }}
-                        className="text-left px-4 py-2 text-xs bg-black border border-white/5 hover:border-[#00e599] rounded-lg transition-all"
+                        className="text-left px-4 py-2 text-xs bg-muted border border-border hover:border-[#00e599] rounded-lg transition-all"
                     >
                       {q}
                     </button>
@@ -467,7 +469,7 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
                </div>
                <div className="flex gap-2">
                   <Input 
-                    className="bg-black border-white/10 rounded-xl"
+                    className="bg-card border-border rounded-xl"
                     placeholder="Type detail..."
                     value={clarificationInput}
                     onChange={(e) => setClarificationInput(e.target.value)}
@@ -484,19 +486,19 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
           ) : (
             <form onSubmit={handleSendMessage} className="relative group">
                <div className="absolute -inset-1 bg-gradient-to-r from-[#00e599] to-cyan-500 rounded-2xl blur opacity-10 group-focus-within:opacity-30 transition-opacity" />
-               <div className="relative flex items-center bg-[#1A1C23] border border-white/10 rounded-2xl p-2 pr-3 focus-within:border-[#00e599]/50 transition-all shadow-2xl">
-                  <div className="pl-4 text-zinc-600"><Terminal size={18} /></div>
+               <div className="relative flex items-center bg-card border border-border rounded-2xl p-2 pr-3 focus-within:border-[#00e599]/50 transition-all shadow-2xl">
+                  <div className="pl-4 text-muted-foreground"><Terminal size={18} /></div>
                   <Input 
                     value={userInput}
                     onChange={(e) => setUserInput(e.target.value)}
                     placeholder="Ask about trends, patterns, or specific data points..."
-                    className="bg-transparent border-none focus-visible:ring-0 text-white placeholder:text-zinc-600 h-12"
+                    className="bg-transparent border-none focus-visible:ring-0 text-foreground placeholder:text-muted-foreground h-12"
                     disabled={loading}
                   />
                   <Button 
                     type="submit" 
                     disabled={loading || !userInput.trim()}
-                    className="bg-[#00e599] text-black font-bold rounded-xl h-10 px-6 hover:bg-[#00e599]/90 disabled:bg-zinc-800 disabled:text-zinc-600"
+                    className="bg-[#00e599] text-black font-bold rounded-xl h-10 px-6 hover:bg-[#00e599]/90 disabled:bg-muted disabled:text-muted-foreground"
                   >
                     {loading ? <Loader2 className="animate-spin w-4 h-4" /> : "Analyze"}
                   </Button>
@@ -504,7 +506,7 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
             </form>
           )}
           
-          <p className="text-center text-[10px] text-zinc-600 mt-4 uppercase tracking-[0.2em] font-mono">
+          <p className="text-center text-[10px] text-muted-foreground mt-4 uppercase tracking-[0.2em] font-mono">
             AI can make mistakes. Verify critical data.
           </p>
         </div>

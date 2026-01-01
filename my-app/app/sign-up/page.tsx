@@ -1,16 +1,17 @@
 import { SignUp } from "@clerk/nextjs";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function SignUpPage() {
   return (
-    <div className="min-h-screen bg-[#0D0E12] text-white overflow-hidden selection:bg-[#00e599]/30">
+    <div className="min-h-screen bg-background text-foreground overflow-hidden selection:bg-[#00e599]/30">
       {/* Neon Grid Background */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
+      <div className="fixed inset-0 z-0 pointer-events-none dark:block hidden">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
         <div className="absolute top-0 left-0 right-0 h-[500px] bg-[radial-gradient(circle_800px_at_50%_-100px,#00e59915,transparent)]"></div>
       </div>
 
       {/* Navbar Placeholder */}
-      <nav className="fixed top-0 w-full z-50 border-b border-white/5 bg-[#0D0E12]/80 backdrop-blur-md">
+      <nav className="fixed top-0 w-full z-50 border-b border-border bg-background/80 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 font-bold text-xl tracking-tighter">
             <div className="w-8 h-8 bg-[#00e599] rounded-lg flex items-center justify-center text-black">
@@ -20,11 +21,12 @@ export default function SignUpPage() {
             </div>
             RELIX
           </div>
-          <div className="hidden md:flex gap-6 text-sm font-medium text-zinc-400">
-            <span className="hover:text-white cursor-pointer transition-colors">Features</span>
+          <div className="hidden md:flex gap-6 text-sm font-medium text-muted-foreground">
+            <span className="hover:text-foreground cursor-pointer transition-colors">Features</span>
           </div>
-          <div className="flex gap-4">
-            <a href="/" className="text-sm font-medium text-zinc-300 hover:text-white pt-2">Home</a>
+          <div className="flex gap-4 items-center">
+            <ThemeToggle />
+            <a href="/" className="text-sm font-medium text-muted-foreground hover:text-foreground pt-2">Home</a>
           </div>
         </div>
       </nav>

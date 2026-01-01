@@ -97,7 +97,7 @@ export default function UploadPage() {
             <div className="w-16 h-16 bg-zinc-900 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-[#00e599]/30 shadow-[0_0_30px_-10px_rgba(0,229,153,0.3)]">
               <Loader2 className="w-8 h-8 text-[#00e599] animate-spin" />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-2">Warming up backend...</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-2">Warming up backend...</h2>
             <p className="text-zinc-500 max-w-sm mx-auto mb-6">
               Initializing server connection. This may take a moment.
             </p>
@@ -122,7 +122,7 @@ export default function UploadPage() {
           <Button
             variant="ghost"
             onClick={() => router.push("/dashboard")}
-            className="text-zinc-500 hover:text-[#00e599] hover:bg-[#00e599]/5 transition-all mb-6 px-0"
+            className="text-muted-foreground hover:text-[#00e599] hover:bg-[#00e599]/5 transition-all mb-6 px-0"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Dashboard
@@ -163,7 +163,7 @@ export default function UploadPage() {
                   <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center">
                     <div className={cn(
                       "w-20 h-20 rounded-3xl flex items-center justify-center mb-6 transition-all duration-500 shadow-2xl",
-                      dragActive ? "bg-[#00e599] text-black scale-110" : "bg-zinc-800 text-zinc-400 group-hover:text-white group-hover:bg-zinc-700"
+                      dragActive ? "bg-[#00e599] text-black scale-110" : "bg-muted text-muted-foreground group-hover:text-foreground group-hover:bg-muted/80"
                     )}>
                       <Upload size={32} />
                     </div>
@@ -251,26 +251,26 @@ export default function UploadPage() {
                     <div className="w-16 h-16 bg-[#00e599] rounded-full flex items-center justify-center mx-auto mb-4 text-black shadow-[0_0_40px_-10px_#00e599]">
                       <CheckCircle size={32} />
                     </div>
-                    <h2 className="text-2xl font-bold text-white mb-2">Ingestion Complete</h2>
+                    <h2 className="text-2xl font-bold text-foreground mb-2">Ingestion Complete</h2>
                     <p className="text-[#00e599]/80 text-sm mb-6 font-mono">Source ID: {result.data_source_id}</p>
                     
                     <div className="grid grid-cols-2 gap-4 text-left">
-                       <div className="p-4 bg-black/40 rounded-xl border border-[#00e599]/10">
-                          <p className="text-[10px] text-zinc-500 uppercase mb-1">Status</p>
-                          <p className="text-sm font-bold text-white">Schema Validated</p>
+                       <div className="p-4 bg-muted rounded-xl border border-border">
+                          <p className="text-[10px] text-muted-foreground uppercase mb-1">Status</p>
+                          <p className="text-sm font-bold text-foreground">Schema Validated</p>
                        </div>
-                       <div className="p-4 bg-black/40 rounded-xl border border-[#00e599]/10">
-                          <p className="text-[10px] text-zinc-500 uppercase mb-1">Tables</p>
-                          <p className="text-sm font-bold text-white">{Object.keys(result.raw_metadata?.tables || {}).length} detected</p>
+                       <div className="p-4 bg-muted rounded-xl border border-border">
+                          <p className="text-[10px] text-muted-foreground uppercase mb-1">Tables</p>
+                          <p className="text-sm font-bold text-foreground">{Object.keys(result.raw_metadata?.tables || {}).length} detected</p>
                        </div>
                     </div>
                   </div>
 
                   <div className="flex gap-4">
-                    <Button onClick={() => router.push("/dashboard")} className="flex-1 h-12 rounded-full bg-white text-black hover:bg-zinc-200 font-bold">
+                    <Button onClick={() => router.push("/dashboard")} className="flex-1 h-12 rounded-full bg-foreground text-background hover:opacity-90 font-bold">
                       Enter Dashboard
                     </Button>
-                    <Button onClick={() => {setResult(null); setFiles(null);}} variant="outline" className="flex-1 h-12 rounded-full border-white/10 hover:bg-white/5">
+                    <Button onClick={() => {setResult(null); setFiles(null);}} variant="outline" className="flex-1 h-12 rounded-full border-border hover:bg-muted">
                       Upload More
                     </Button>
                   </div>

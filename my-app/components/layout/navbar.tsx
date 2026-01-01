@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -101,6 +102,7 @@ export function Navbar() {
                     <div className="w-2 h-2 rounded-full bg-[#00e599] animate-pulse" />
                     <span className="text-xs text-zinc-400 font-mono">System Operational</span>
                 </div>
+                <ThemeToggle />
                 <UserButton
                   afterSignOutUrl="/"
                   appearance={{

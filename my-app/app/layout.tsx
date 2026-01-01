@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ConditionalNavbar } from "@/components/layout/conditional-navbar";
+import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 
@@ -15,13 +16,19 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider>
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
           <ConditionalNavbar />
           <main className="pt-16">
             {children}
           </main>
-
+        </ThemeProvider>
       </body>
     </html>
   </ClerkProvider>
