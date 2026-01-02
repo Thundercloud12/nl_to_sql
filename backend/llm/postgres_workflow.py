@@ -462,7 +462,7 @@ Return ONLY the corrected SQL query with no markdown formatting."""
 
 def chart_generator_node(state: PostgresState) -> PostgresState:
     """
-    Generates chart data if requested by planner.
+    Generates chart data in Plotly format if requested by planner.
     """
     print("[POSTGRES CHART GENERATOR NODE] Checking if chart needed...")
     
@@ -484,23 +484,62 @@ def chart_generator_node(state: PostgresState) -> PostgresState:
         print("[POSTGRES CHART GENERATOR] No data for chart")
         return state
     
-    chart_type = planner_output.get("chart_type", "bar")
+    chart_type = planner_output.get("chart_type", "scatter")
     
-    # Build chart data
+    # Convert rows to lists for Plotly
+    x_data = []
+    y_data = []
+    
+    for row in rows[:50]:  # Limit to 50 points for performance
+        x_val = row.get(columns[0])
+        y_val = row.get(columns[1]) if len(columns) > 1 else 0
+        
+        # Convert to float for numeric types
+        if y_val is not None:
+            try:
+                from decimal import Decimal
+                if isinstance(y_val, Decimal):
+                    y_val = float(y_val)
+                elif not isinstance(y_val, (int, float)):
+                    y_val = float(y_val)
+            except:
+                pass
+        
+        x_data.append(str(x_val))
+        y_data.append(y_val)
+    
+    # Build Plotly-format chart data
     chart_data = {
-        "type": chart_type,
-        "data": {
-            "labels": [str(row.get(columns[0])) for row in rows[:50]],  # X-axis
-            "datasets": [
-                {
-                    "label": columns[1] if len(columns) > 1 else "Value",
-                    "data": [float(row.get(columns[1], 0)) if len(columns) > 1 else 0 for row in rows[:50]]
+        "data": [
+            {
+                "x": x_data,
+                "y": y_data,
+                "name": columns[1] if len(columns) > 1 else "Value",
+                "type": "scatter" if chart_type == "line" else chart_type,
+                "mode": "lines+markers" if chart_type == "line" else "markers",
+                "line": {
+                    "color": "#00e599",
+                    "width": 2
+                } if chart_type == "line" else None,
+                "marker": {
+                    "color": "#00e599",
+                    "size": 6
                 }
-            ]
+            }
+        ],
+        "layout": {
+            "title": f"{chart_type.capitalize()} Chart",
+            "xaxis": {
+                "title": columns[0],
+            },
+            "yaxis": {
+                "title": columns[1] if len(columns) > 1 else "Value",
+            },
+            "hovermode": "closest"
         }
     }
     
-    print(f"[POSTGRES CHART GENERATOR] ✓ Generated {chart_type} chart with {len(rows)} points")
+    print(f"[POSTGRES CHART GENERATOR] ✓ Generated {chart_type} chart with {len(rows)} points (Plotly format)")
     state["chart_data"] = chart_data
     
     return state
