@@ -122,8 +122,21 @@ def generate_expert_plans(
         profile=profile
     )
     
+    # Slim down expert plans before returning to save memory
+    slimmed_plans = [
+        {
+            "expert_name": p["expert_name"],
+            "operations": p["operations"],
+            "score": p.get("score", 0),
+            "confidence_score": p["confidence_score"],
+            "pros": p["pros"],
+            "cons": p["cons"]
+        }
+        for p in [expert_1, expert_2, expert_3]
+    ]
+    
     return {
-        "expert_plans": [expert_1, expert_2, expert_3],
+        "expert_plans": slimmed_plans,
         "recommended_plan": arbiter_result["recommended"],
         "intent_context": intent_obj,
         "arbiter_reasoning": arbiter_result["reasoning"]
@@ -410,7 +423,7 @@ def apply_expert_plan(
     """
     
     logger = DecisionLogger()
-    df_cleaned = df.copy()
+    df_cleaned = df.copy(deep=False)  # Shallow copy - operations modify in place
     
     before_stats = {
         "row_count": len(df),

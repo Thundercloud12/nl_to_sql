@@ -64,6 +64,8 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [userInput, setUserInput] = useState("");
+  const [datasourceType, setDatasourceType] = useState<string>("file");
+  const [datasourceName, setDatasourceName] = useState<string>("");
 
   const [clarification, setClarification] =
     useState<ClarificationState | null>(null);
@@ -117,6 +119,13 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
         const data = await response.json();
 
         setSessionId(data.session_id);
+        
+        // Fetch datasource info to detect type
+        if (data.data_source) {
+          const metadata = data.data_source.rawMetadata || {};
+          setDatasourceType(metadata.type || "file");
+          setDatasourceName(metadata.connection_name || data.data_source.cloudinaryUrl?.split('/').pop() || "Unknown");
+        }
 
         if (data.conversation_history) {
           const msgs =
@@ -333,22 +342,24 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="font-bold tracking-tight">AI Data Agent</h1>
-                <div className="px-2 py-0.5 rounded-full bg-primary/10 dark:bg-[#00e599]/10 text-primary dark:text-[#00e599] text-[10px] font-mono border border-primary/20 dark:border-[#00e599]/20 flex items-center gap-1">
-                  <div className="w-1 h-1 bg-primary dark:bg-[#00e599] rounded-full animate-pulse" />
-                  LIVE_SYNC
+                <div className="px-2 py-0.5 rounded-full bg-[#00e599]/10 text-[#00e599] text-[10px] font-mono border border-[#00e599]/20 flex items-center gap-1">
+                  <div className="w-1 h-1 bg-[#00e599] rounded-full animate-pulse" />
+                  {datasourceType === "postgres" ? "POSTGRES_LIVE" : "LIVE_SYNC"}
                 </div>
               </div>
               <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest mt-0.5">
-                Session: {sessionId?.slice(0, 8) || "Initialising"}
+                {datasourceType === "postgres" ? "🐘 PostgreSQL" : "📄 File"} • Session: {sessionId?.slice(0, 8) || "Initialising"}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
              <div className="hidden md:flex flex-col items-end mr-2">
-                <span className="text-[10px] text-muted-foreground font-mono">ENCRYPTION</span>
-                 <span className="text-[10px] text-primary dark:text-[#00e599] font-mono flex items-center gap-1">
-                    <ShieldCheck size={10} /> AES-256
-                 </span>
+                <span className="text-[10px] text-muted-foreground font-mono">
+                  {datasourceType === "postgres" ? "READ-ONLY" : "ENCRYPTION"}
+                </span>
+                <span className="text-[10px] text-[#00e599] font-mono flex items-center gap-1">
+                   <ShieldCheck size={10} /> {datasourceType === "postgres" ? "SQL_GUARD" : "AES-256"}
+                </span>
              </div>
              <ThemeToggle />
              <UserButton appearance={{ elements: { avatarBox: "w-8 h-8 border border-border" } }} />

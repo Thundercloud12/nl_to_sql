@@ -15,11 +15,13 @@ from psycopg2.extras import RealDictCursor
 from pathlib import Path
 from data_ingestion.graph_builder import process_schema_build
 from llm.plan_generator import build_graph, State
+from llm.postgres_workflow import build_postgres_graph, PostgresState
 
 from utils.cloudinary_handler import upload_to_cloudinary, deletefromsupabase
 from utils.prisma_handler import PrismaHandler
 from utils.datasource_loader import download_from_cloudinary, load_datasource_files, load_chat, ensure_datasource_files
 from utils.database_utilities import get_db_connection, db_connection, db_cursor
+from utils.postgres_connector import PostgresConnector
 
 app = FastAPI()
 url=os.getenv("NEXT_JS_API_URL")
@@ -38,6 +40,30 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 MAX_TOTAL_SIZE = 100 * 1024 * 1024  
 
 SESSIONS = {}  
+
+def convert_datetimes_to_strings(obj):
+    """Recursively convert non-JSON-serializable objects for JSON serialization."""
+    from datetime import datetime, date, timedelta
+    from decimal import Decimal
+    
+    if isinstance(obj, timedelta):
+        return str(obj)
+    elif isinstance(obj, Decimal):
+        return float(obj)
+    elif isinstance(obj, datetime):  # Check datetime first since it's a subclass of date
+        return obj.isoformat()
+    elif isinstance(obj, date):  # Then check date for standalone date objects
+        return obj.isoformat()
+    elif isinstance(obj, uuid.UUID):
+        return str(obj)
+    elif isinstance(obj, bytes):
+        return obj.decode('utf-8', errors='replace')
+    elif isinstance(obj, dict):
+        return {k: convert_datetimes_to_strings(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_datetimes_to_strings(item) for item in obj]
+    else:
+        return obj
 
 def load_session_from_db(session_id: str) -> dict | None:
     """Load full session data from database."""
@@ -58,8 +84,11 @@ def save_session_to_db(session_id: str, conversation_history: list, last_result:
     try:
         with db_cursor(commit=True) as cur:
             history_json = json.dumps(conversation_history)
-            last_result_json = json.dumps(last_result) if last_result else None
-            last_plan_json = json.dumps(last_plan) if last_plan else None
+            # Convert datetime objects before JSON serialization
+            last_result_clean = convert_datetimes_to_strings(last_result) if last_result else None
+            last_plan_clean = convert_datetimes_to_strings(last_plan) if last_plan else None
+            last_result_json = json.dumps(last_result_clean) if last_result_clean else None
+            last_plan_json = json.dumps(last_plan_clean) if last_plan_clean else None
             
             cur.execute(
                 """
@@ -189,24 +218,54 @@ def query(req: dict):
     if not data_source:
         raise HTTPException(status_code=404, detail="DataSource not found")
     
-
-    ensure_datasource_files(data_source)
-
-    state = State({
-        "user_question": question,
-        "data_source_id": data_source_id,  
-        "schema_info": None,
-        "planner_output": None,
-        "sql_result": None,
-        "clarification_answer": None,
-        "metadata_requests": [],
-        "insights": None,
-        "final_answer": None,
-        "status": "running",
-        "pending_question": None,
-        "appended_data": "",
-    })
-    graph = build_graph()
+    # Detect datasource type
+    metadata = data_source.get("rawMetadata", {})
+    datasource_type = metadata.get("type", "file")
+    
+    print(f"[QUERY] Datasource type: {datasource_type}")
+    
+    # Route to appropriate workflow
+    if datasource_type == "postgres":
+        print("[QUERY] 🐘 Using PostgreSQL workflow...")
+        
+        # PostgreSQL workflow
+        state = PostgresState({
+            "user_question": question,
+            "data_source_id": data_source_id,
+            "schema_info": None,
+            "planner_output": None,
+            "sql_result": None,
+            "clarification_answer": None,
+            "metadata_requests": [],
+            "insights": None,
+            "final_answer": None,
+            "status": "running",
+            "pending_question": None,
+            "postgres_connector": None,
+            "chart_data": None,
+        })
+        graph = build_postgres_graph()
+    else:
+        print("[QUERY] 📄 Using file-based workflow...")
+        
+        # File-based workflow (existing)
+        ensure_datasource_files(data_source)
+        
+        state = State({
+            "user_question": question,
+            "data_source_id": data_source_id,  
+            "schema_info": None,
+            "planner_output": None,
+            "sql_result": None,
+            "clarification_answer": None,
+            "metadata_requests": [],
+            "insights": None,
+            "final_answer": None,
+            "status": "running",
+            "pending_question": None,
+            "appended_data": "",
+        })
+        graph = build_graph()
 
     final_state = graph.invoke(state)
     print(f"[DEBUG] Final state: {final_state}")
@@ -298,23 +357,53 @@ def continue_conversation(req: dict):
     
     if not data_source:
         return {"error": "DataSource not found"}
-    ensure_datasource_files(data_source)
     
-    state = State({
-        "user_question": contextualized_question,
-        "data_source_id": data_source_id,  
-        "schema_info": None,
-        "planner_output": None,
-        "sql_result": None,
-        "clarification_answer": None,
-        "metadata_requests": [],
-        "insights": None,
-        "final_answer": None,
-        "status": "running",
-        "pending_question": None,
-        "appended_data": "",
-    })
-    graph = build_graph()
+    # Detect datasource type
+    metadata = data_source.get("rawMetadata", {})
+    datasource_type = metadata.get("type", "file")
+    
+    print(f"[CONTINUE] Datasource type: {datasource_type}")
+    
+    # Route to appropriate workflow
+    if datasource_type == "postgres":
+        print("[CONTINUE] 🐘 Using PostgreSQL workflow...")
+        
+        state = PostgresState({
+            "user_question": contextualized_question,
+            "data_source_id": data_source_id,
+            "schema_info": None,
+            "planner_output": None,
+            "sql_result": None,
+            "clarification_answer": None,
+            "metadata_requests": [],
+            "insights": None,
+            "final_answer": None,
+            "status": "running",
+            "pending_question": None,
+            "postgres_connector": None,
+            "chart_data": None,
+        })
+        graph = build_postgres_graph()
+    else:
+        print("[CONTINUE] 📄 Using file-based workflow...")
+        
+        ensure_datasource_files(data_source)
+        
+        state = State({
+            "user_question": contextualized_question,
+            "data_source_id": data_source_id,  
+            "schema_info": None,
+            "planner_output": None,
+            "sql_result": None,
+            "clarification_answer": None,
+            "metadata_requests": [],
+            "insights": None,
+            "final_answer": None,
+            "status": "running",
+            "pending_question": None,
+            "appended_data": "",
+        })
+        graph = build_graph()
 
     final_state = graph.invoke(state)
     print(f"[DEBUG] Final state: {final_state}")
@@ -377,25 +466,64 @@ def clarify(req: dict):
     data_source_id = session.get("dataSourceId")
     if not data_source_id:
         return {"error": "data_source_id not found in session"}
-
-    state = State(state_data)
-    state["data_source_id"] = data_source_id 
-
-    # Inject answer into question
-    pending_q = state.get('pending_question', '')
-    state["user_question"] += f" {pending_q} {answer}"
-    state["clarification_answer"] = answer
-
-    # Reset clarification flags
-    state["pending_question"] = None
-    state["status"] = "running"
     
-    # Reset planner_output clarification flags
-    if state.get("planner_output"):
-        state["planner_output"]["needs_clarification"] = False
-        state["planner_output"]["clarification_questions"] = []
+    # Fetch datasource to determine type
+    with db_cursor() as cur:
+        cur.execute("SELECT * FROM \"DataSource\" WHERE id = %s", (data_source_id,))
+        data_source = cur.fetchone()
     
-    graph = build_graph()
+    if not data_source:
+        return {"error": "DataSource not found"}
+    
+    metadata = data_source.get("rawMetadata", {})
+    datasource_type = metadata.get("type", "file")
+    
+    print(f"[CLARIFY] Datasource type: {datasource_type}")
+    
+    # Route to appropriate workflow
+    if datasource_type == "postgres":
+        print("[CLARIFY] 🐘 Using PostgreSQL workflow...")
+        
+        state = PostgresState(state_data)
+        state["data_source_id"] = data_source_id
+        
+        # Inject answer into question
+        pending_q = state.get('pending_question', '')
+        state["user_question"] += f" {pending_q} {answer}"
+        state["clarification_answer"] = answer
+
+        # Reset clarification flags
+        state["pending_question"] = None
+        state["status"] = "running"
+        
+        # Reset planner_output clarification flags
+        if state.get("planner_output"):
+            state["planner_output"]["needs_clarification"] = False
+            state["planner_output"]["clarification_questions"] = []
+        
+        graph = build_postgres_graph()
+    else:
+        print("[CLARIFY] 📄 Using file-based workflow...")
+        
+        state = State(state_data)
+        state["data_source_id"] = data_source_id 
+
+        # Inject answer into question
+        pending_q = state.get('pending_question', '')
+        state["user_question"] += f" {pending_q} {answer}"
+        state["clarification_answer"] = answer
+
+        # Reset clarification flags
+        state["pending_question"] = None
+        state["status"] = "running"
+        
+        # Reset planner_output clarification flags
+        if state.get("planner_output"):
+            state["planner_output"]["needs_clarification"] = False
+            state["planner_output"]["clarification_questions"] = []
+        
+        graph = build_graph()
+    
     final_state = graph.invoke(state)
 
     # Clarification needed again
@@ -781,8 +909,7 @@ async def initialize_chat(req: dict):
         data_source = result["data_source"]
         existing_session = result["existing_session"]
         existing_conversation = result["existing_conversation"]
-        parquet_path = result["parquet_path"]
-        file_paths = result["file_paths"]
+        datasource_type = result.get("datasource_type", "file")
 
         conversation_history = []
         last_result = None
@@ -812,17 +939,35 @@ async def initialize_chat(req: dict):
         
         print(f"[INIT] Conversation history loaded: {len(conversation_history)} messages")
         
-        return {
+        # Build response based on datasource type
+        response = {
             "status": "success",
             "session_id": final_session_id,
+            "data_source": data_source,
             "conversation_history": conversation_history,
             "last_result": last_result,
             "last_plan": last_plan,
-            "parquet_path": parquet_path,
-            "metadata_loaded": os.path.exists(file_paths["metadata_path"]),
-            "graph_loaded": os.path.exists(file_paths["graph_path"]),
+            "datasource_type": datasource_type,
             "message": "Chat initialized successfully"
         }
+        
+        # Add type-specific fields
+        if datasource_type == "file":
+            response["parquet_path"] = result.get("parquet_path")
+            response["metadata_loaded"] = os.path.exists(result["file_paths"]["metadata_path"])
+            response["graph_loaded"] = os.path.exists(result["file_paths"]["graph_path"])
+        elif datasource_type == "postgres":
+            # Load metadata and schema graph from database for PostgreSQL
+            raw_metadata = data_source.get("rawMetadata", {})
+            schema_graph = data_source.get("schemaGraph", {})
+            
+            response["metadata_loaded"] = bool(raw_metadata.get("tables"))
+            response["graph_loaded"] = bool(schema_graph)
+            response["table_count"] = len(raw_metadata.get("tables", {}))
+            response["foreign_key_count"] = len(raw_metadata.get("foreign_keys", []))
+            response["connection_name"] = raw_metadata.get("connection_name", "PostgreSQL Database")
+        
+        return response
     
     except Exception as e:
         print(f"[INIT] ✗ Error: {str(e)}", flush=True)
@@ -954,9 +1099,12 @@ async def generate_expert_plans(req: dict):
         # Generate expert plans (3 parallel LLM calls + arbiter)
         result = generate_expert_plans(profile, intent, df_sample)
         
-        # Store plans for next step
+        # Store plans for next step (already slimmed in expert_engine)
         session_data["expert_plans"] = result["expert_plans"]
         session_data["intent"] = intent
+        
+        # Clean up sample to free memory
+        del df_sample
         
         print(f"[PREPARE] ✓ Generated 3 expert plans, recommended: {result['recommended_plan']}")
         
@@ -1045,6 +1193,9 @@ async def clean_data(req: dict):
         
         df_cleaned.to_csv(cleaned_file_path, index=False)
         
+        # Free memory after saving
+        del df, df_cleaned
+        
         # Store cleaned file path
         session_data["cleaned_file_path"] = cleaned_file_path
         session_data["cleaned_file_name"] = cleaned_file_name
@@ -1103,6 +1254,210 @@ async def download_cleaned_file(session_id: str):
         raise
     except Exception as e:
         print(f"[PREPARE] ✗ Error downloading file: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============================================================================
+# POSTGRESQL ENDPOINTS
+# ============================================================================
+
+@app.post("/postgres/test-connection")
+async def test_postgres_connection(req: dict):
+    """
+    Test PostgreSQL connection string.
+    
+    Request body:
+        {
+            "connection_string": "postgresql://user:pass@host:port/database"
+        }
+    
+    Response:
+        {
+            "success": true,
+            "message": "Connection successful"
+        }
+    """
+    try:
+        connection_string = req.get("connection_string")
+        if not connection_string:
+            raise HTTPException(status_code=400, detail="connection_string is required")
+        
+        connector = PostgresConnector(connection_string)
+        success, message = connector.test_connection()
+        
+        if not success:
+            raise HTTPException(status_code=400, detail=message)
+        
+        return {
+            "success": success,
+            "message": message
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[POSTGRES] ✗ Error testing connection: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/postgres/introspect")
+async def introspect_postgres(req: dict):
+    """
+    Introspect PostgreSQL database to get schemas, tables, and columns.
+    
+    Request body:
+        {
+            "connection_string": "postgresql://user:pass@host:port/database"
+        }
+    
+    Response:
+        {
+            "schemas": [
+                {
+                    "name": "public",
+                    "tables": [
+                        {
+                            "name": "users",
+                            "full_name": "public.users",
+                            "row_count": 1000,
+                            "columns": [
+                                {"name": "id", "type": "integer", "nullable": false},
+                                ...
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    """
+    try:
+        connection_string = req.get("connection_string")
+        if not connection_string:
+            raise HTTPException(status_code=400, detail="connection_string is required")
+        
+        connector = PostgresConnector(connection_string)
+        schema_info = connector.introspect_schemas()
+        
+        return schema_info
+    
+    except Exception as e:
+        print(f"[POSTGRES] ✗ Error introspecting database: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/postgres/create-datasource")
+async def create_postgres_datasource(req: dict):
+    """
+    Save PostgreSQL connection as a datasource.
+    
+    Request body:
+        {
+            "user_id": "user_xxx",
+            "connection_string": "postgresql://...",
+            "connection_name": "My Production DB",
+            "allowed_tables": ["public.users", "public.orders"]
+        }
+    
+    Response:
+        {
+            "datasource_id": "xxx",
+            "message": "PostgreSQL datasource created"
+        }
+    """
+    try:
+        user_id = req.get("user_id")
+        connection_string = req.get("connection_string")
+        connection_name = req.get("connection_name", "PostgreSQL Connection")
+        allowed_tables = req.get("allowed_tables", [])
+        
+        if not user_id or not connection_string:
+            raise HTTPException(status_code=400, detail="user_id and connection_string required")
+        
+        # Test connection first
+        connector = PostgresConnector(connection_string, allowed_tables)
+        success, message = connector.test_connection()
+        if not success:
+            raise HTTPException(status_code=400, detail=f"Connection test failed: {message}")
+        
+        # Generate schema graph using PostgreSQL graph builder
+        print("[POSTGRES] Generating schema graph for PostgreSQL datasource...")
+        from data_ingestion.postgres_graph_builder import process_postgres_schema_build
+        
+        schema_result = process_postgres_schema_build(
+            connector=connector,
+            allowed_tables=allowed_tables,
+            user_explanation="please infer yourself"
+        )
+        
+        raw_metadata = schema_result.get("raw_metadata", {"tables": {}})
+        schema_graph = schema_result.get("schema_graph", {})
+        
+        # Store in DataSource table
+        # Store in same format as file datasources
+        datasource_id = str(uuid.uuid4())
+        
+        # Build metadata in same format as files
+        from datetime import datetime, timedelta
+        from decimal import Decimal
+        
+        def convert_for_json(obj):
+            """Convert non-JSON-serializable objects"""
+            if isinstance(obj, timedelta):
+                return str(obj)
+            elif isinstance(obj, Decimal):
+                return float(obj)
+            elif isinstance(obj, (datetime,)):
+                return obj.isoformat()
+            elif isinstance(obj, uuid.UUID):
+                return str(obj)
+            elif isinstance(obj, bytes):
+                return obj.decode('utf-8', errors='replace')
+            elif isinstance(obj, dict):
+                return {k: convert_for_json(v) for k, v in obj.items()}
+            elif isinstance(obj, list):
+                return [convert_for_json(item) for item in obj]
+            return obj
+        
+        raw_metadata = convert_for_json(raw_metadata)
+        schema_graph = convert_for_json(schema_graph)
+        
+        metadata_json = json.dumps({
+            "type": "postgres",
+            "connection_name": connection_name,
+            "allowed_tables": allowed_tables,
+            "tables": raw_metadata.get("tables", {})  # Include full metadata like files
+        })
+        
+        schema_graph_json = json.dumps(schema_graph)
+        
+        with db_cursor(commit=True) as cur:
+            cur.execute(
+                """
+                INSERT INTO "DataSource" (id, "userId", "cloudinaryUrl", "createdAt", "rawMetadata", "schemaGraph")
+                VALUES (%s, %s, %s, NOW(), %s, %s)
+                """,
+                (
+                    datasource_id,
+                    user_id,
+                    connection_string,  # Store connection string in cloudinaryUrl field
+                    metadata_json,      # Store metadata with tables in rawMetadata
+                    schema_graph_json   # Store schema graph in schemaGraph
+                )
+            )
+        
+        print(f"[POSTGRES] ✓ Created datasource: {datasource_id} for user: {user_id}")
+        print(f"[POSTGRES] ✓ Generated metadata for {len(raw_metadata.get('tables', {}))} tables")
+        
+        return {
+            "datasource_id": datasource_id,
+            "message": "PostgreSQL datasource created successfully",
+            "tables_count": len(raw_metadata.get("tables", {}))
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[POSTGRES] ✗ Error creating datasource: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 

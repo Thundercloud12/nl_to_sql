@@ -1,7 +1,7 @@
 # datasource_loader.py
 import os
 import json
-from typing import Dict, Any
+from typing import Dict, Any, Optional, Tuple
 import urllib.request
 import requests
 from contextlib import contextmanager
@@ -9,6 +9,7 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 import asyncio
 from utils.database_utilities import get_db_connection, db_connection, db_cursor
+from utils.postgres_connector import PostgresConnector
 
 def get_db_connection():
     return psycopg2.connect(os.getenv("DATABASE_URL"))
@@ -111,8 +112,49 @@ def load_datasource_files(data_source_id: str, raw_metadata: Dict[str, Any], sch
 def ensure_datasource_files(data_source):
     """
     Ensure datasource files exist, rehydrate if missing.
-    Returns the parquet path for use in queries.
+    For PostgreSQL sources: writes JSON files and returns PostgresConnector instance.
+    For file sources: returns the parquet path for use in queries.
     """
+    data_source_id = data_source['id']
+    datasource_dir = f"uploaded_files/datasource_{data_source_id}"
+    
+    # Check if this is a PostgreSQL datasource
+    metadata = data_source.get("rawMetadata", {})
+    
+    # Parse if stored as string
+    if isinstance(metadata, str):
+        metadata = json.loads(metadata) if metadata else {}
+    
+    datasource_type = metadata.get("type", "file")
+    
+    if datasource_type == "postgres":
+        print(f"[DATASOURCE] PostgreSQL source detected: {metadata.get('connection_name', 'Unknown')}")
+        
+        # Ensure JSON files exist for PostgreSQL (same as file uploads)
+        metadata_path = os.path.join(datasource_dir, "raw_metadata.json")
+        graph_path = os.path.join(datasource_dir, "schema_graph.json")
+        
+        if not all(map(os.path.exists, [metadata_path, graph_path])):
+            print("[DATASOURCE] Rehydrating PostgreSQL metadata files...")
+            os.makedirs(datasource_dir, exist_ok=True)
+            
+            raw_metadata = data_source.get("rawMetadata", {})
+            schema_graph = data_source.get("schemaGraph", {})
+            
+            # Parse if stored as JSON strings
+            if isinstance(raw_metadata, str):
+                raw_metadata = json.loads(raw_metadata) if raw_metadata else {}
+            if isinstance(schema_graph, str):
+                schema_graph = json.loads(schema_graph) if schema_graph else {}
+            
+            # Write JSON files
+            load_datasource_files(data_source_id, raw_metadata, schema_graph)
+        
+        connection_string = data_source["cloudinaryUrl"]
+        allowed_tables = metadata.get("allowed_tables", [])
+        return PostgresConnector(connection_string, allowed_tables)
+    
+    # File-based datasource logic (existing)
     datasource_dir = f"uploaded_files/datasource_{data_source['id']}"
     parquet_path = os.path.join(datasource_dir, "data.parquet")
     metadata_path = os.path.join(datasource_dir, "raw_metadata.json")
@@ -153,6 +195,10 @@ async def load_chat(data_source_id: str, user_id: str) -> Dict[str, Any]:
         
         data_source = dict(data_source_row)
         
+        # Check datasource type
+        metadata = data_source.get("rawMetadata", {})
+        datasource_type = metadata.get("type", "file")
+        
         # Step 2: Check for existing session (latest for this user + data source)
         existing_session = None
         with db_cursor() as cur:
@@ -171,29 +217,68 @@ async def load_chat(data_source_id: str, user_id: str) -> Dict[str, Any]:
             )
             existing_conversation = cur.fetchone()
         
-        # Step 4: Download Parquet from Cloudinary to datasource-specific folder
-        datasource_dir = os.path.join("uploaded_files", f"datasource_{data_source_id}")
-        os.makedirs(datasource_dir, exist_ok=True)
-        parquet_path = os.path.join(datasource_dir, "data.parquet")
-        await download_from_cloudinary(
-            data_source["cloudinaryUrl"],
-            parquet_path
-        )
-        
-        # Step 5: Write metadata and schema graph JSON files to datasource-specific folder
-        file_paths = load_datasource_files(
-            data_source_id,
-            data_source["rawMetadata"],
-            data_source["schemaGraph"]
-        )
-        
-        return {
-            "data_source": data_source,
-            "existing_session": existing_session,
-            "existing_conversation": existing_conversation,
-            "parquet_path": parquet_path,
-            "file_paths": file_paths
-        }
+        # Step 4: Handle PostgreSQL vs File sources
+        if datasource_type == "postgres":
+            print(f"[LOAD_CHAT] PostgreSQL datasource: {metadata.get('connection_name', 'Unknown')}")
+            
+            # For PostgreSQL: Write JSON files to local folder (same as file uploads)
+            # This allows the normal planner_node to use load_schema_graph/load_raw_metadata
+            datasource_dir = os.path.join("uploaded_files", f"datasource_{data_source_id}")
+            os.makedirs(datasource_dir, exist_ok=True)
+            
+            # Get rawMetadata and schemaGraph from database
+            raw_metadata = data_source.get("rawMetadata", {})
+            schema_graph = data_source.get("schemaGraph", {})
+            
+            # Parse if they're stored as JSON strings
+            if isinstance(raw_metadata, str):
+                raw_metadata = json.loads(raw_metadata) if raw_metadata else {}
+            if isinstance(schema_graph, str):
+                schema_graph = json.loads(schema_graph) if schema_graph else {}
+            
+            # Write metadata and schema graph JSON files (same as file uploads!)
+            file_paths = load_datasource_files(
+                data_source_id,
+                raw_metadata,
+                schema_graph
+            )
+            
+            print(f"[LOAD_CHAT] ✓ Wrote PostgreSQL metadata to local JSON files")
+            
+            return {
+                "data_source": data_source,
+                "existing_session": existing_session,
+                "existing_conversation": existing_conversation,
+                "datasource_type": "postgres",
+                "file_paths": file_paths,
+                "postgres_connector": None  # Created on-demand in query handler
+            }
+        else:
+            # File-based datasource (existing logic)
+            # Download Parquet from Cloudinary to datasource-specific folder
+            datasource_dir = os.path.join("uploaded_files", f"datasource_{data_source_id}")
+            os.makedirs(datasource_dir, exist_ok=True)
+            parquet_path = os.path.join(datasource_dir, "data.parquet")
+            await download_from_cloudinary(
+                data_source["cloudinaryUrl"],
+                parquet_path
+            )
+            
+            # Write metadata and schema graph JSON files to datasource-specific folder
+            file_paths = load_datasource_files(
+                data_source_id,
+                data_source["rawMetadata"],
+                data_source["schemaGraph"]
+            )
+            
+            return {
+                "data_source": data_source,
+                "existing_session": existing_session,
+                "existing_conversation": existing_conversation,
+                "datasource_type": "file",
+                "parquet_path": parquet_path,
+                "file_paths": file_paths
+            }
     
     except Exception as e:
         print(f"[LOAD_CHAT] ✗ Error: {str(e)}")
