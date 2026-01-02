@@ -7,6 +7,8 @@ Handles registration, heartbeats, connection status, and query routing.
 
 import os
 import json
+import time
+import uuid
 import asyncio
 import logging
 import httpx
@@ -175,8 +177,6 @@ class AgentManager:
         Returns:
             Query response from agent
         """
-        import uuid
-        
         # Get agent data
         agent_data = await self._get_agent_data(agent_id)
         if not agent_data:
@@ -369,8 +369,6 @@ class AgentManager:
         Returns:
             Tuple of (success, message, latency_ms)
         """
-        import time
-        
         agent_data = await self._get_agent_data(agent_id)
         if not agent_data:
             return False, "Agent not found", 0

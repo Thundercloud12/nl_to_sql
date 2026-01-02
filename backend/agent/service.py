@@ -20,6 +20,7 @@ import json
 import time
 import asyncio
 import logging
+import uuid as uuid_module
 from typing import Optional, Dict, Any, List
 from datetime import datetime
 
@@ -164,16 +165,20 @@ class AgentService:
             # Get connection
             conn = self._get_db_connection()
             
-            # Set schema search path
+            # Set schema search path - validate against allowed schemas to prevent injection
             if request.schema_name and request.schema_name in self.allowed_schemas:
+                # Use psycopg2.sql module for safe identifier handling
+                from psycopg2 import sql
                 with conn.cursor() as cur:
-                    cur.execute(f"SET search_path TO {request.schema_name}")
+                    cur.execute(
+                        sql.SQL("SET search_path TO {}").format(sql.Identifier(request.schema_name))
+                    )
             
             # Execute query with timeout
             with conn.cursor() as cur:
-                # Set statement timeout
+                # Set statement timeout - timeout_ms is already validated as integer
                 timeout_ms = min(request.timeout_seconds, self.query_timeout) * 1000
-                cur.execute(f"SET statement_timeout = {timeout_ms}")
+                cur.execute("SET statement_timeout = %s", (timeout_ms,))
                 
                 # Execute main query
                 cur.execute(request.sql, request.parameters)
@@ -269,9 +274,8 @@ class AgentService:
     
     def _serialize_row(self, row: Dict[str, Any]) -> Dict[str, Any]:
         """Convert row values to JSON-serializable types."""
-        from datetime import date, datetime, timedelta
+        from datetime import date, timedelta
         from decimal import Decimal
-        import uuid as uuid_module
         
         result = {}
         for key, value in row.items():
