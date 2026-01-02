@@ -14,6 +14,7 @@ import {
   Cpu,
   ChevronDown,
   ShieldCheck,
+  Download,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,7 +32,15 @@ interface Message {
   role: "user" | "assistant";
   content: string;
   insight?: string;
-  chart?: any;  // ✅ ADD: Chart data (Plotly JSON)
+  chart?: {
+  type: string;
+  data: {
+    labels: string[];
+    datasets: { label: string; data: number[] }[];
+  };
+  layout?: any;
+};
+  // ✅ ADD: Chart data (Plotly JSON)
 }
 
 interface ClarificationState {
@@ -166,6 +175,9 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
     try {
       const endpoint = messages.length === 0 ? "/query" : "/continue";
 
+      console.log("[CHAT] Sending message to", endpoint);
+      console.log("[CHAT] Question:", question);
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}${endpoint}`,
         {
@@ -183,9 +195,20 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
 
       const data = await response.json();
 
+      console.log("[CHAT] Response received:", data);
+      console.log("[CHAT] Response status:", response.status);
+      console.log("[CHAT] Has chart?", !!data.chart);
+      console.log("[CHAT] Chart data:", data.chart);
+
       if (data.status === "need_clarification") {
+        console.log("[CHAT] Need clarification");
         setClarification(data);
       } else {
+        console.log("[CHAT] Adding assistant message");
+        console.log("[CHAT] Message content:", data.answer || "");
+        console.log("[CHAT] Message insights:", data.insights);
+        console.log("[CHAT] Message chart:", data.chart);
+
         setMessages((prev) => [
           ...prev,
           {
@@ -258,6 +281,141 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
       next.has(idx) ? next.delete(idx) : next.add(idx);
       return next;
     });
+  };
+
+  /* ----------------------------- PDF Export ----------------------------- */
+
+  const generatePDF = async () => {
+    try {
+      // Dynamically import required libraries
+      const html2pdf = (await import("html2pdf.js")).default;
+      const html2canvas = (await import("html2canvas")).default;
+
+      const element = document.createElement("div");
+      element.style.padding = "20px";
+      element.style.fontFamily = "Arial, sans-serif";
+      element.style.backgroundColor = "#fff";
+      element.style.color = "#000";
+
+      // Title
+      const title = document.createElement("h1");
+      title.textContent = "AI Data Analysis Report";
+      title.style.marginBottom = "10px";
+      title.style.borderBottom = "2px solid #00e599";
+      title.style.paddingBottom = "10px";
+      element.appendChild(title);
+
+      // Session info
+      const sessionInfo = document.createElement("p");
+      sessionInfo.innerHTML = `<strong>Session ID:</strong> ${sessionId}<br/><strong>Data Source:</strong> ${datasourceName} (${datasourceType === "postgres" ? "PostgreSQL" : "File"})<br/><strong>Date:</strong> ${new Date().toLocaleString()}`;
+      sessionInfo.style.marginBottom = "20px";
+      sessionInfo.style.fontSize = "12px";
+      sessionInfo.style.color = "#666";
+      element.appendChild(sessionInfo);
+
+      // Messages with charts
+      for (let idx = 0; idx < messages.length; idx++) {
+        const msg = messages[idx];
+        const messageDiv = document.createElement("div");
+        messageDiv.style.marginBottom = "30px";
+        messageDiv.style.pageBreakInside = "avoid";
+
+        if (msg.role === "user") {
+          messageDiv.innerHTML = `<div style="background: #f0f0f0; padding: 12px; border-radius: 8px; margin-bottom: 10px;"><strong style="color: #333;">You:</strong> ${msg.content}</div>`;
+        } else {
+          const assistantContent = msg.insight || msg.content;
+          messageDiv.innerHTML = `<div style="background: #f9f9f9; padding: 12px; border-left: 3px solid #00e599; margin-bottom: 10px;"><strong style="color: #00e599;">AI Assistant:</strong><br/>${assistantContent}</div>`;
+
+          // Capture chart if available from the visible chart component
+          if (msg.chart && msg.chart.data && Array.isArray(msg.chart.data)) {
+            try {
+              // Find the chart element in the DOM by looking for message-indexed chart
+              const allMessages = document.querySelectorAll("[class*='flex'][class*='flex-col']");
+              let chartElement: HTMLElement | null = null;
+              let messageCount = 0;
+
+              // Count assistant messages and find the corresponding chart
+              for (let i = 0; i < allMessages.length; i++) {
+                const msgEl = allMessages[i] as HTMLElement;
+                if (msgEl.querySelector("[class*='bg-card']")) {
+                  if (messageCount === idx) {
+                    // Found the right message container, look for chart
+                    chartElement = msgEl.querySelector("[data-testid='plotly-div']") as HTMLElement;
+                    break;
+                  }
+                  messageCount++;
+                }
+              }
+
+              // If we found the chart element, capture it
+              if (chartElement && chartElement.offsetHeight > 0) {
+                try {
+                  const canvas = await html2canvas(chartElement, {
+                    backgroundColor: "#fff",
+                    scale: 1.5,
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: true,
+                  });
+                  const imgData = canvas.toDataURL("image/png");
+
+                  const chartImg = document.createElement("img");
+                  chartImg.src = imgData;
+                  chartImg.style.width = "100%";
+                  chartImg.style.maxWidth = "600px";
+                  chartImg.style.marginTop = "15px";
+                  chartImg.style.border = "1px solid #e0e0e0";
+                  chartImg.style.borderRadius = "4px";
+                  messageDiv.appendChild(chartImg);
+                } catch (canvasErr) {
+                  console.log("Chart capture skipped, using fallback");
+                  const chartNote = document.createElement("p");
+                  chartNote.innerHTML = `<em style="color: #666; font-size: 12px; margin-top: 10px;">[Chart: ${msg.chart.layout?.title || "Data Visualization"}]</em>`;
+                  messageDiv.appendChild(chartNote);
+                }
+              } else {
+                // Fallback: show chart info
+                const chartNote = document.createElement("p");
+                chartNote.innerHTML = `<em style="color: #666; font-size: 12px; margin-top: 10px;">[Chart Generated: ${msg.chart.layout?.title || "Visualization"} - ${msg.chart.data.length} series]</em>`;
+                messageDiv.appendChild(chartNote);
+              }
+            } catch (chartErr) {
+              console.error("Chart processing error:", chartErr);
+              const chartNote = document.createElement("p");
+              chartNote.innerHTML = `<em style="color: #666; font-size: 12px;">[Chart: ${msg.chart.layout?.title || "Visualization"}]</em>`;
+              messageDiv.appendChild(chartNote);
+            }
+          }
+        }
+
+        element.appendChild(messageDiv);
+      }
+
+      // Footer
+      const footer = document.createElement("div");
+      footer.style.marginTop = "40px";
+      footer.style.paddingTop = "20px";
+      footer.style.borderTop = "1px solid #ddd";
+      footer.style.fontSize = "10px";
+      footer.style.color = "#999";
+      footer.innerHTML =
+        "This report was generated by AI Data Agent. Please verify critical data before use.";
+      element.appendChild(footer);
+
+      // Generate PDF
+      const opt = {
+        margin: 10,
+        filename: `ai-analysis-${new Date().toISOString().split("T")[0]}.pdf`,
+        image: { type: "jpeg" as const, quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { orientation: "portrait" as const, unit: "mm" as const, format: "a4" as const },
+      };
+
+      html2pdf().set(opt).from(element).save();
+    } catch (err) {
+      console.error("PDF generation failed:", err);
+      setError("Failed to generate PDF");
+    }
   };
 
    const handleBackToDashboard = async () => {
@@ -361,6 +519,18 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
                    <ShieldCheck size={10} /> {datasourceType === "postgres" ? "SQL_GUARD" : "AES-256"}
                 </span>
              </div>
+             {messages.length > 0 && (
+               <Button
+                 onClick={generatePDF}
+                 variant="outline"
+                 size="sm"
+                 className="text-[10px] h-8 gap-1 border-border hover:border-[#00e599] hover:text-[#00e599]"
+                 title="Download conversation as PDF"
+               >
+                 <Download size={14} />
+                 <span className="hidden sm:inline">PDF</span>
+               </Button>
+             )}
              <ThemeToggle />
              <UserButton appearance={{ elements: { avatarBox: "w-8 h-8 border border-border" } }} />
           </div>
@@ -418,7 +588,15 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
                       </div>
 
                       {/* ✅ ADD: Render chart if available */}
-                      {msg.chart && <Chart data={msg.chart} />}
+                      {(() => {
+                        console.log(`[CHART] Message ${idx}: chart=${!!msg.chart}`);
+                        if (msg.chart) {
+                          console.log(`[CHART] Message ${idx}: chart structure:`, msg.chart);
+                          console.log(`[CHART] Message ${idx}: chart.data=${!!msg.chart.data}`);
+                          console.log(`[CHART] Message ${idx}: chart.data is array=${Array.isArray(msg.chart.data)}`);
+                        }
+                        return msg.chart && <Chart data={msg.chart} />;
+                      })()}
 
                       {msg.insight && (
                         <div className="mt-4 pt-4 border-t border-border">

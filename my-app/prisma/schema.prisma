@@ -2,9 +2,11 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  provider   = "prisma-client-js"
+  engineType = "client"
+  output     = "../generated/prisma"
 }
+
 
 datasource db {
   provider = "postgresql"
@@ -20,6 +22,7 @@ model User {
   dataSources   DataSource[]
   conversations Conversation[]
   sessions      Session[]
+  agents        Agent[]
 
   @@index([email])
 }
@@ -79,5 +82,33 @@ model Session {
   // Constraints
   @@index([userId])
   @@index([dataSourceId])  // ✅ NEW
+  @@index([createdAt])
+}
+
+model Agent {
+  id                  String    @id @default(cuid())
+  userId              String
+  name                String
+  hostUrl             String
+  databaseType        String    @default("postgres")
+  allowedSchemas      Json      @default("[]")
+  agentToken          String
+  agentSecret         String
+  status              String    @default("pending")  // pending, connected, disconnected, error
+  lastHeartbeat       DateTime?
+  connectedDatabases  Json?     @default("[]")
+  activeConnections   Int       @default(0)
+  queriesExecuted     Int       @default(0)
+  avgResponseTime     Float     @default(0)
+  errorRate           Float     @default(0)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  // Relations
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Constraints
+  @@index([userId])
+  @@index([status])
   @@index([createdAt])
 }

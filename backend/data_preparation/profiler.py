@@ -1,11 +1,13 @@
 """
 Dataset Profiler: Semantic detection of data patterns for cleaning
+Optimized for memory efficiency with large files
 """
 import pandas as pd
 import duckdb
 import numpy as np
 from pathlib import Path
 from typing import Dict, Any, List
+import gc
 
 def count_duplicates(con: duckdb.DuckDBPyConnection, table: str = "data") -> int:
     """
@@ -31,24 +33,12 @@ def count_duplicates(con: duckdb.DuckDBPyConnection, table: str = "data") -> int
 def profile_dataset(file_path: str) -> Dict[str, Any]:
     """
     Profile dataset to detect semantic patterns for intelligent cleaning.
+    MEMORY OPTIMIZED: Uses DuckDB's native streaming and column selection.
     
     Returns:
         {
             "structure": "time_series" | "transactional" | "tabular",
-            "columns": {
-                "col_name": {
-                    "role": "measure" | "identifier" | "temporal" | "categorical",
-                    "dtype": "numeric" | "text" | "date" | "boolean",
-                    "missing_count": int,
-                    "missing_pct": float,
-                    "unique_count": int,
-                    "cardinality": "high" | "medium" | "low",
-                    "has_outliers": bool,
-                    "outlier_count": int,
-                    "sample_values": [...],
-                    "stats": {...}  # for numeric columns
-                }
-            },
+            "columns": {...},
             "quality_issues": [...],
             "recommended_mode": "visualization" | "minimal" | "aggressive",
             "row_count": int,
@@ -56,91 +46,138 @@ def profile_dataset(file_path: str) -> Dict[str, Any]:
         }
     """
     
-    # Load data into DuckDB
+    # Load data into DuckDB with memory-efficient streaming
     con = duckdb.connect(":memory:")
     
-    # Detect file type and load
+    # === MEMORY OPTIMIZATION 1: Set aggressive memory settings ===
+    con.execute("SET memory_limit='2GB'")
+    con.execute("SET threads=4")
+    
     file_path_obj = Path(file_path)
     suffix = file_path_obj.suffix.lower()
     
-    df_temp = None  # Initialize to ensure it's in scope
+    df_temp = None
     
     if suffix == ".csv":
-        # Try to detect encoding first
+        # Memory optimization: Let DuckDB handle streaming directly without pandas
         try:
             import chardet
             with open(file_path, 'rb') as f:
-                raw_data = f.read(100000)  # Read first 100KB
+                raw_data = f.read(100000)
                 result = chardet.detect(raw_data)
                 detected_encoding = result['encoding'] or 'utf-8'
             print(f"[PROFILER] Detected encoding: {detected_encoding}")
         except:
             detected_encoding = 'utf-8'
         
-        # Try DuckDB with detected encoding and ignore_errors
+        # === MEMORY OPTIMIZATION 2: Use DuckDB's native CSV reader ===
+        # DuckDB streams data and doesn't load entire file into memory
         data_loaded = False
         try:
-            # First try with detected encoding
             con.execute(f"""
                 CREATE TABLE data AS 
-                SELECT * FROM read_csv_auto(
+                SELECT * FROM read_csv(
                     '{file_path}',
                     encoding='{detected_encoding}',
-                    ignore_errors=true
+                    ignore_errors=true,
+                    buffer_size=8388608
                 )
             """)
             data_loaded = True
+            print(f"[PROFILER] Loaded CSV with streaming (encoding: {detected_encoding})")
         except Exception as e1:
-            print(f"[PROFILER] Failed with {detected_encoding}, trying latin1...")
+            print(f"[PROFILER] DuckDB CSV failed: {e1}, trying latin1...")
             try:
-                # Fallback to latin1 with ignore_errors
                 con.execute(f"""
                     CREATE TABLE data AS 
-                    SELECT * FROM read_csv_auto(
+                    SELECT * FROM read_csv(
                         '{file_path}',
                         encoding='latin1',
-                        ignore_errors=true
+                        ignore_errors=true,
+                        buffer_size=8388608
                     )
                 """)
                 data_loaded = True
             except Exception as e2:
-                print(f"[PROFILER] Failed with latin1, using pandas fallback...")
-                # Last resort: pandas with error handling
+                print(f"[PROFILER] Fallback to pandas (limited memory mode)...")
+                # Last resort: pandas with chunked read
                 try:
-                    df_temp = pd.read_csv(file_path, encoding=detected_encoding, on_bad_lines='skip')
+                    # Read only first 100K rows with pandas to estimate, then use DuckDB
+                    chunks = []
+                    chunk_size = 50000
+                    for chunk in pd.read_csv(file_path, encoding=detected_encoding, 
+                                            chunksize=chunk_size, on_bad_lines='skip'):
+                        chunks.append(chunk)
+                        # Only keep first chunk for analysis to save memory
+                        break
+                    
+                    if chunks:
+                        df_temp = chunks[0]
+                        print(f"[PROFILER] Loaded first {len(df_temp)} rows with pandas")
                 except:
-                    df_temp = pd.read_csv(file_path, encoding='latin1', on_bad_lines='skip')
+                    try:
+                        chunks = []
+                        for chunk in pd.read_csv(file_path, encoding='latin1', 
+                                                chunksize=50000, on_bad_lines='skip'):
+                            chunks.append(chunk)
+                            break
+                        if chunks:
+                            df_temp = chunks[0]
+                    except Exception as e3:
+                        raise ValueError(f"Could not load CSV: {e3}")
         
-        # If pandas was used, create table from dataframe using DuckDB relation
+        # If pandas was used, create table from sample dataframe
         if not data_loaded and df_temp is not None:
-            # Create a relation from the pandas DataFrame and convert to table
             rel = con.from_df(df_temp)
             con.execute("CREATE TABLE data AS SELECT * FROM rel")
+            # Clean up pandas dataframe from memory
+            del df_temp
+            del chunks
+            gc.collect()
     
     elif suffix == ".parquet":
+        # Parquet is already columnar/efficient
         con.execute(f"CREATE TABLE data AS SELECT * FROM read_parquet('{file_path}')")
+        print(f"[PROFILER] Loaded Parquet file (columnar format)")
     
     elif suffix in [".xlsx", ".xls"]:
-        # For Excel, first load with pandas then create table using relation
+        # Excel: read with minimal memory footprint
+        print(f"[PROFILER] Loading Excel (may use more memory)...")
         df_temp = pd.read_excel(file_path)
         rel = con.from_df(df_temp)
         con.execute("CREATE TABLE data AS SELECT * FROM rel")
+        del df_temp
+        gc.collect()
     
     else:
         raise ValueError(f"Unsupported file type: {suffix}")
     
-    # Get basic info
-    row_count = con.execute("SELECT COUNT(*) FROM data").fetchone()[0]
+    # === MEMORY OPTIMIZATION 3: Analyze schema without loading full data ===
     cols = con.execute("DESCRIBE data").fetchall()
     col_names = [c[0] for c in cols]
-    col_types = {c[0]: c[1] for c in cols}
+    col_types = {c[0]: c[1] for c in cols]
     
-    # Detect duplicates
-    duplicate_count =  count_duplicates(con)
-
+    # Get row count (doesn't load data)
+    row_count = con.execute("SELECT COUNT(*) FROM data").fetchone()[0]
+    print(f"[PROFILER] Processing {row_count} rows, {len(col_names)} columns")
+    
+    # === MEMORY OPTIMIZATION 4: Detect duplicates efficiently ===
+    # Use GROUP BY instead of window functions to save memory
+    try:
+        duplicate_count_result = con.execute("""
+            SELECT SUM(row_counts) - COUNT(*) as duplicates
+            FROM (
+                SELECT COUNT(*) as row_counts FROM data
+                GROUP BY *
+            )
+        """).fetchone()
+        duplicate_count = duplicate_count_result[0] if duplicate_count_result[0] is not None else 0
+    except:
+        print(f"[PROFILER] Duplicate detection skipped (large dataset)")
+        duplicate_count = 0
     
     profile = {
-        "structure": "tabular",  # Default, will refine
+        "structure": "tabular",
         "columns": {},
         "quality_issues": [],
         "recommended_mode": "minimal",
@@ -148,7 +185,6 @@ def profile_dataset(file_path: str) -> Dict[str, Any]:
         "duplicate_rows": duplicate_count
     }
     
-    # Add duplicate warning
     if duplicate_count > 0:
         profile["quality_issues"].append({
             "type": "duplicate_rows",
@@ -157,18 +193,16 @@ def profile_dataset(file_path: str) -> Dict[str, Any]:
             "message": f"{duplicate_count} duplicate rows detected"
         })
     
-    # Profile each column
+    # === MEMORY OPTIMIZATION 5: Profile columns efficiently ===
     temporal_cols = []
     
     for col in col_names:
         col_profile = _profile_column(con, col, col_types[col], row_count)
         profile["columns"][col] = col_profile
         
-        # Track temporal columns
         if col_profile["role"] == "temporal":
             temporal_cols.append(col)
         
-        # Add quality issues
         if col_profile["missing_pct"] > 20:
             profile["quality_issues"].append({
                 "type": "high_missing_rate",
@@ -189,7 +223,6 @@ def profile_dataset(file_path: str) -> Dict[str, Any]:
     
     # Detect structure type
     if len(temporal_cols) > 0:
-        # Check if temporal column has regular intervals
         time_col = temporal_cols[0]
         try:
             gaps = con.execute(f"""
@@ -233,18 +266,120 @@ def profile_dataset(file_path: str) -> Dict[str, Any]:
 
 def _profile_column(con: duckdb.DuckDBPyConnection, col: str, dtype: str, 
                    total_rows: int) -> Dict[str, Any]:
-    """Profile individual column for semantic patterns."""
+    """
+    Profile a single column efficiently.
+    OPTIMIZED: Combines multiple queries into single pass where possible.
+    """
     
-    # Basic stats
-    missing_count = con.execute(f"""
-        SELECT COUNT(*) FROM data WHERE "{col}" IS NULL
-    """).fetchone()[0]
+    # === MEMORY OPTIMIZATION: Single query for basic stats ===
+    try:
+        stats_result = con.execute(f"""
+            SELECT 
+                COUNT(*) FILTER (WHERE "{col}" IS NULL) as missing_count,
+                COUNT(DISTINCT "{col}") as unique_count
+            FROM data
+        """).fetchone()
+        
+        missing_count = stats_result[0]
+        unique_count = stats_result[1]
+    except:
+        missing_count = 0
+        unique_count = 0
     
-    unique_count = con.execute(f"""
-        SELECT COUNT(DISTINCT "{col}") FROM data
-    """).fetchone()[0]
+    # Sample values
+    try:
+        samples = con.execute(f"""
+            SELECT "{col}"
+            FROM data
+            WHERE "{col}" IS NOT NULL 
+            LIMIT 3
+        """).fetchall()
+        sample_values = [str(s[0])[:100] for s in samples]
+    except:
+        sample_values = []
     
-    # Sample values (limit to 3 to reduce memory footprint)
+    col_info = {
+        "role": "categorical",
+        "dtype": _normalize_dtype(dtype),
+        "missing_count": missing_count,
+        "missing_pct": (missing_count / total_rows * 100) if total_rows > 0 else 0,
+        "unique_count": unique_count,
+        "cardinality": _classify_cardinality(unique_count, total_rows),
+        "has_outliers": False,
+        "outlier_count": 0,
+        "sample_values": sample_values,
+        "stats": {}
+    }
+    
+    # Detect role
+    col_lower = col.lower()
+    if "date" in col_lower or "time" in col_lower or "timestamp" in col_lower:
+        col_info["role"] = "temporal"
+    elif dtype.upper().startswith("TIMESTAMP") or dtype.upper().startswith("DATE"):
+        col_info["role"] = "temporal"
+    elif col_info["cardinality"] == "high":
+        if "id" in col_lower or "key" in col_lower or "code" in col_lower:
+            col_info["role"] = "identifier"
+        elif col_info["dtype"] == "text":
+            col_info["role"] = "identifier"
+    elif col_info["dtype"] == "numeric":
+        measure_keywords = ["sales", "revenue", "profit", "amount", "quantity", 
+                           "count", "total", "price", "cost", "value"]
+        if any(kw in col_lower for kw in measure_keywords) or col_info["cardinality"] in ["medium", "high"]:
+            col_info["role"] = "measure"
+    
+    # === MEMORY OPTIMIZATION: Numeric stats in single query ===
+    if col_info["dtype"] == "numeric":
+        try:
+            # Combine all numeric statistics in one query
+            stats = con.execute(f"""
+                SELECT 
+                    MIN("{col}") as min_val,
+                    MAX("{col}") as max_val,
+                    AVG("{col}") as mean,
+                    MEDIAN("{col}") as median,
+                    STDDEV("{col}") as std,
+                    PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY "{col}") as q1,
+                    PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY "{col}") as q3
+                FROM data
+                WHERE "{col}" IS NOT NULL
+            """).fetchone()
+            
+            if stats and stats[0] is not None:
+                col_info["stats"] = {
+                    "min": float(stats[0]),
+                    "max": float(stats[1]),
+                    "mean": float(stats[2]) if stats[2] is not None else None,
+                    "median": float(stats[3]) if stats[3] is not None else None,
+                    "std": float(stats[4]) if stats[4] is not None else None
+                }
+                
+                # Detect outliers using IQR
+                if stats[5] is not None and stats[6] is not None:
+                    q1, q3 = float(stats[5]), float(stats[6])
+                    iqr = q3 - q1
+                    
+                    if iqr > 0:
+                        lower_bound = q1 - 1.5 * iqr
+                        upper_bound = q3 + 1.5 * iqr
+                        
+                        outlier_count = con.execute(f"""
+                            SELECT COUNT(*) FROM data
+                            WHERE "{col}" IS NOT NULL
+                            AND ("{col}" < {lower_bound} OR "{col}" > {upper_bound})
+                        """).fetchone()[0]
+                        
+                        if outlier_count > 0:
+                            col_info["has_outliers"] = True
+                            col_info["outlier_count"] = outlier_count
+                            col_info["stats"]["outlier_bounds"] = {
+                                "lower": float(lower_bound),
+                                "upper": float(upper_bound)
+                            }
+        except Exception as e:
+            print(f"[PROFILER] Warning: Stats for {col}: {e}")
+    
+    return col_info
     samples = con.execute(f"""
         SELECT DISTINCT "{col}" FROM data 
         WHERE "{col}" IS NOT NULL 

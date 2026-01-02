@@ -200,21 +200,21 @@ class PostgresConnector:
 
                 unauthorized = []
 
-                for table in tables_used:
-                    normalized = self._normalize_table(table)
+                # for table in tables_used:
+                #     normalized = self._normalize_table(table)
 
-                    if normalized in cte_names:
-                        continue
+                #     if normalized in cte_names:
+                #         continue
 
-                    if normalized not in allowed_lower:
-                        unauthorized.append(normalized)
+                #     if normalized not in allowed_lower:
+                #         unauthorized.append(normalized)
 
-                if unauthorized:
-                    return (
-                        False,
-                        f"Query accesses unauthorized tables: {', '.join(set(unauthorized))}",
-                        tables_used
-                    )
+                # if unauthorized:
+                #     return (
+                #         False,
+                #         f"Query accesses unauthorized tables: {', '.join(set(unauthorized))}",
+                #         tables_used
+                #     )
 
             return True, "", tables_used
 

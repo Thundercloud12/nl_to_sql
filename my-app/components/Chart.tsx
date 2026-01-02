@@ -23,9 +23,22 @@ interface ChartProps {
 export function Chart({ data }: ChartProps) {
   const { theme } = useTheme();
   
-  if (!data || !data.data) {
+  console.log("[CHART COMPONENT] Chart component mounted with data:", data);
+  
+  if (!data) {
+    console.log("[CHART COMPONENT] ❌ No data provided");
     return null;
   }
+  
+  if (!data.data) {
+    console.log("[CHART COMPONENT] ❌ No data.data field found");
+    console.log("[CHART COMPONENT] Available keys:", Object.keys(data));
+    return null;
+  }
+
+  console.log("[CHART COMPONENT] ✓ Rendering chart");
+  console.log("[CHART COMPONENT] data.data length:", data.data?.length);
+  console.log("[CHART COMPONENT] data.layout:", data.layout);
   
   const isDark = theme === "dark";
 
