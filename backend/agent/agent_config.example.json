@@ -1,0 +1,14 @@
+{
+    "agent_id": "YOUR_AGENT_ID",
+    "agent_secret": "YOUR_AGENT_SECRET",
+    "database_url": "postgresql://user:password@localhost:5432/your_database",
+    "relix_server_url": "https://api.relix.com",
+    "allowed_schemas": ["public"],
+    "read_only": true,
+    "max_rows": 10000,
+    "query_timeout": 30,
+    "heartbeat_interval": 30,
+    "port": 8443,
+    "ssl_cert": null,
+    "ssl_key": null
+}
