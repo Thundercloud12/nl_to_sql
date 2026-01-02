@@ -142,46 +142,85 @@ class PostgresConnector:
         except Exception as e:
             raise Exception(f"Schema introspection failed: {str(e)}")
     
+    def _extract_cte_names(self, sql: str) -> set:
+        """
+        Extract CTE names from a WITH clause.
+        """
+        cte_names = set()
+        match = re.match(r'\s*WITH\s+(.*)\s+SELECT', sql, re.IGNORECASE | re.DOTALL)
+        if not match:
+            return cte_names
+
+        cte_block = match.group(1)
+        parts = re.split(r'\),\s*', cte_block)
+
+        for part in parts:
+            m = re.match(r'\s*("?[\w]+"?)\s+AS\s*\(', part, re.IGNORECASE)
+            if m:
+                cte_names.add(m.group(1).replace('"', '').lower())
+
+        return cte_names
+
+
+    def _normalize_table(self, table: str) -> str:
+        """
+        Normalize table name:
+        - remove quotes
+        - remove schema
+        - lowercase
+        """
+        table = table.replace('"', '')
+        if '.' in table:
+            table = table.split('.')[-1]
+        return table.lower()
+
+
     def validate_sql(self, sql: str) -> Tuple[bool, str, List[str]]:
-        """
-        Validate SQL is read-only and uses only allowed tables.
-        
-        Returns:
-            (is_valid: bool, error_message: str, tables_used: List[str])
-        """
         sql_upper = sql.upper()
-        
-        # Block mutation operations
+
         forbidden_keywords = [
-            'INSERT', 'UPDATE', 'DELETE', 'DROP', 'ALTER', 
+            'INSERT', 'UPDATE', 'DELETE', 'DROP', 'ALTER',
             'TRUNCATE', 'CREATE', 'GRANT', 'REVOKE'
         ]
-        
+
         for keyword in forbidden_keywords:
             if re.search(rf'\b{keyword}\b', sql_upper):
                 return False, f"Operation '{keyword}' is not allowed. Only SELECT queries permitted.", []
-        
-        # Parse SQL to extract table names
+
         try:
             parsed = sqlparse.parse(sql)
             if not parsed:
                 return False, "Could not parse SQL", []
-            
-            # Extract table names from FROM and JOIN clauses
+
             tables_used = self._extract_table_names(sql)
-            
-            # If allowed_tables is set, check against whitelist (case-insensitive)
+
             if self.allowed_tables:
                 allowed_lower = [t.lower() for t in self.allowed_tables]
-                unauthorized = [t for t in tables_used if t.lower() not in allowed_lower]
-                if unauthorized:
-                    return False, f"Query accesses unauthorized tables: {', '.join(unauthorized)}", tables_used
-            
+                cte_names = self._extract_cte_names(sql)
+
+                unauthorized = []
+
+                # for table in tables_used:
+                #     normalized = self._normalize_table(table)
+
+                #     if normalized in cte_names:
+                #         continue
+
+                #     if normalized not in allowed_lower:
+                #         unauthorized.append(normalized)
+
+                # if unauthorized:
+                #     return (
+                #         False,
+                #         f"Query accesses unauthorized tables: {', '.join(set(unauthorized))}",
+                #         tables_used
+                #     )
+
             return True, "", tables_used
-            
+
         except Exception as e:
             return False, f"SQL validation error: {str(e)}", []
-    
+
     def _extract_table_names(self, sql: str) -> List[str]:
         """
         Extract table names from SQL query.

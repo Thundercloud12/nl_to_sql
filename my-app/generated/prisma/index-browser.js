@@ -157,6 +157,26 @@ exports.Prisma.SessionScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.AgentScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  hostUrl: 'hostUrl',
+  databaseType: 'databaseType',
+  allowedSchemas: 'allowedSchemas',
+  agentToken: 'agentToken',
+  agentSecret: 'agentSecret',
+  status: 'status',
+  lastHeartbeat: 'lastHeartbeat',
+  connectedDatabases: 'connectedDatabases',
+  activeConnections: 'activeConnections',
+  queriesExecuted: 'queriesExecuted',
+  avgResponseTime: 'avgResponseTime',
+  errorRate: 'errorRate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -192,7 +212,8 @@ exports.Prisma.ModelName = {
   User: 'User',
   DataSource: 'DataSource',
   Conversation: 'Conversation',
-  Session: 'Session'
+  Session: 'Session',
+  Agent: 'Agent'
 };
 
 /**

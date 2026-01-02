@@ -47,4 +47,11 @@ def rate_limited_llm_call(prompt: str, model_name: str = "gemma-3-27b-it"):
     )
     
     response = model.generate_content(prompt)
+    
+    # Check for empty or blocked responses
+    if not response.text or not response.text.strip():
+        print(f"[LLM ERROR] Empty response from {model_name}. Response: {response}")
+        print(f"[LLM ERROR] Response finish_reason: {response.candidates[0].finish_reason if response.candidates else 'No candidates'}")
+        raise ValueError(f"LLM returned empty response: {response}")
+    
     return response.text.strip(), response

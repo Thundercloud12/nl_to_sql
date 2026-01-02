@@ -128,14 +128,18 @@ def build_intelligent_schema(raw_metadata):
         sample_values = table_info.get("sample_values", table_info.get("samples", {}))
         
         schema_text += f"\n{table_short} ({original_name}):\n"
-        schema_text += f"  Columns: {', '.join(columns)}\n"
+        
+        # Show columns with their data types
+        if canonical_types:
+            schema_text += "  Columns & Types:\n"
+            for col in columns:
+                col_type = canonical_types.get(col, "UNKNOWN")
+                schema_text += f"    - {col}: {col_type}\n"
+        else:
+            schema_text += f"  Columns: {', '.join(columns)}\n"
         
         if table_info.get("summary"):
             schema_text += f"  Summary: {table_info['summary']}\n"
-        
-        if canonical_types:
-            types_str = ', '.join([f'{k}:{v}' for k, v in list(canonical_types.items())[:15]])
-            schema_text += f"  Types: {types_str}\n"
         
         # Show sample values
         if sample_values:
@@ -151,127 +155,125 @@ def build_intelligent_schema(raw_metadata):
 
 
 def planner_node(state: PostgresState) -> PostgresState:
-    """
-    PostgreSQL Planner - uses LOCAL JSON FILES (same approach as file workflow).
-    Loads schema_graph.json and raw_metadata.json from uploaded_files/datasource_{id}/
-    """
     print("[POSTGRES PLANNER NODE] Generating query plan...")
-    
-    data_source_id = state.get("data_source_id")
-    if not data_source_id:
-        raise ValueError("data_source_id not found in state")
-    
-    # === LOAD SCHEMA FROM LOCAL JSON FILES (SAME AS FILE WORKFLOW) ===
-    print(f"[POSTGRES PLANNER] Loading schema from local JSON files...")
+
+    data_source_id = state["data_source_id"]
+    user_question = state["user_question"]
+
     schema_graph = load_schema_graph(data_source_id)
     raw_metadata = load_raw_metadata(data_source_id)
-    
-    print(f"[POSTGRES PLANNER] ✓ Loaded schema_graph with {len(schema_graph.get('tables', {}))} tables")
-    print(f"[POSTGRES PLANNER] ✓ Loaded raw_metadata with {len(raw_metadata.get('tables', {}))} tables")
-    
-    # Build schema context (same approach as file workflow)
-    schema_text = json.dumps(schema_graph, indent=2)
-    full_schema_text = "SCHEMA GRAPH:\n" + schema_text + "\n\n"
-    full_schema_text += build_intelligent_schema(raw_metadata)
-    
-    user_question = state["user_question"]
-    
-    # === BUILD PROMPT (PostgreSQL-specific) ===
-    prompt = f"""You are a PostgreSQL query planner. Generate a SQL query to answer the user's question.
 
-{full_schema_text}
+    # Build detailed schema with column names and data types
+    schema_text = build_intelligent_schema(raw_metadata)
 
-User Question: {user_question}
+    prompt = f"""
+You are a PostgreSQL query planner.
 
-**CRITICAL INSTRUCTIONS:**
-1. Use ONLY the table SHORT NAMES (T1, T2, T3, T4, etc.) in your SQL queries - NOT the full schema.table names
-2. When generating SQL: use "FROM T1" or "FROM T4", NOT "FROM public.User" or "FROM public.Conversation"
-3. The schema metadata shows the mapping between short names and real table names
-4. Example: If schema shows T4 → public.User, write "SELECT * FROM T4" in your SQL
-5. Use standard PostgreSQL SQL syntax for the rest (WHERE, JOIN, GROUP BY, etc.)
-6. Queries are read-only - SELECT only
-7. If the question is unclear, set needs_clarification: true
-8. For "what is this data about" questions, examine the schema and summarize what the data represents
+DATABASE SCHEMA:
+{schema_text}
 
-Respond with JSON:
+RELATIONSHIP GRAPH:
+{json.dumps(schema_graph, indent=2)}
+
+User Question:
+{user_question}
+
+CRITICAL INSTRUCTIONS (POSTGRESQL-SPECIFIC):
+
+1. Use ONLY table short names (T1, T2, T3, etc.) in SQL.
+2. SELECT-only queries (read-only).
+3. Use valid PostgreSQL syntax.
+
+🚨 POSTGRESQL WINDOW FUNCTION RULES (MANDATORY):
+- Window functions (OVER, LAG, LEAD, ROW_NUMBER, RANK, AVG(...) OVER, etc.)
+  MUST NOT appear in:
+  - WHERE
+  - JOIN conditions
+  - HAVING
+- Window functions MUST NOT be nested.
+- Aliases created by window functions CANNOT be referenced in the same SELECT.
+- If window functions are required:
+  YOU MUST use a CTE.
+
+✅ REQUIRED PATTERN:
+WITH base AS (
+  SELECT ..., <window functions>
+  FROM ...
+)
+SELECT *
+FROM base
+WHERE <conditions>;
+
+If the question requires analytics (moving averages, EMA, comparisons to prior rows),
+ALWAYS use the CTE pattern above.
+
+Respond ONLY with valid JSON:
+
 {{
-    "execution_mode": "sql" or "model",
-    "tables": ["T1", "T2"],
-    "sql_query": "SELECT ... FROM T4 WHERE ..." (use SHORT table names like T1, T2, T3, T4),
-    "final_output": "table" or "chart" or "description of the answer",
-    "chart_type": "bar|line|pie|scatter" (if chart needed, else null),
-    "needs_clarification": false,
-    "clarification_questions": []
+  "execution_mode": "sql" | "model",
+  "tables": ["T1", "T2"],
+  "sql_query": "SELECT ...",
+  "final_output": "table|chart|description",
+  "chart_type": "line|bar|pie|scatter|null",
+  "needs_clarification": false,
+  "clarification_questions": []
 }}
+"""
 
-For descriptive questions (what is this data about, describe the schema), use execution_mode: "model" and put the answer in final_output.
-
-IMPORTANT: Output ONLY valid JSON, no markdown, no explanations outside JSON."""
-
+    print(f"[POSTGRES PLANNER] Calling LLM with prompt length: {len(prompt)}")
     response_text, _ = rate_limited_llm_call(prompt)
     
-    try:
-        # Clean response if needed
-        response = response_text
-        if response.startswith("```json"):
-            response = response[7:]
-        if response.startswith("```"):
-            response = response[3:]
-        if response.endswith("```"):
-            response = response[:-3]
-        response = response.strip()
-        
-        plan = json.loads(response)
-        
-        # === SANITIZE SQL QUERY ===
-        # Remove markdown code blocks from SQL if present
-        if "sql_query" in plan and plan["sql_query"]:
-            sql = plan["sql_query"].strip()
-            # Remove markdown code blocks
-            if sql.startswith("```"):
-                lines = sql.split('\n')
-                if lines[0].strip().startswith("```"):
-                    lines = lines[1:]
-                if lines and lines[-1].strip() == "```":
-                    lines = lines[:-1]
-                sql = '\n'.join(lines).strip()
-            plan["sql_query"] = sql
-        
-        print(f"[POSTGRES PLANNER] ✓ Plan generated: {plan.get('execution_mode')}")
-        
-        # Merge with existing plan if any
-        existing_plan = state.get("planner_output")
-        if existing_plan:
-            plan = merge_plans(existing_plan, plan)
-        
-        state["planner_output"] = plan
-        
-        # Track LLM call
-        log_llm_call(
-            function_name="planner_node",
-            model_name="gemma-3-27b-it",
-            prompt=prompt,
-            response_text=response,
-            start_time=time.time(),  # We don't have start_time, so use current time
-            end_time=time.time(),
-            input_tokens=None,
-            output_tokens=None,
-            total_tokens=len(response) // 4,
-            metadata={
-                "user_question": user_question[:100]
-            }
-        )
-        
-    except json.JSONDecodeError as e:
-        print(f"[POSTGRES PLANNER] ✗ JSON parse error: {e}")
-        print(f"[POSTGRES PLANNER] Raw response: {response[:500]}")
-        state["planner_output"] = {
-            "execution_mode": "error",
-            "error": f"Failed to parse plan: {str(e)}"
-        }
+    print(f"[POSTGRES PLANNER] LLM Response: {response_text[:500] if response_text else 'EMPTY RESPONSE'}")
+
+    if not response_text or not response_text.strip():
+        print("[POSTGRES PLANNER] ERROR: Empty LLM response!")
+        raise ValueError("LLM returned empty response")
+
+    response = response_text.strip()
     
+    # Strip markdown code blocks with proper handling of language identifier
+    if response.startswith("```"):
+        # Split by ``` to get [before, content_with_lang, content, after]
+        parts = response.split("```")
+        if len(parts) >= 3:
+            # Get the second part (after first ```) and skip language identifier if present
+            content = parts[1].strip()
+            # If it starts with 'json\n', skip the 'json\n' part
+            if content.startswith("json"):
+                content = content[4:].lstrip('\n')
+            response = content.strip()
+            # Also strip closing ``` if present
+            if response.endswith("```"):
+                response = response[:-3].strip()
+
+    print(f"[POSTGRES PLANNER] Parsed response: {response[:200]}")
+    plan = json.loads(response)
+    state["planner_output"] = plan
+
+    log_llm_call(
+        function_name="planner_node",
+        model_name="gemma-3-27b-it",
+        prompt=prompt,
+        response_text=response,
+        start_time=time.time(),
+        end_time=time.time(),
+        total_tokens=len(response) // 4,
+        metadata={"user_question": user_question[:100]},
+    )
+
+    print("[POSTGRES PLANNER] ✓ Plan generated")
     return state
 
+
+# =========================
+# SQL executor (FIXED)
+# =========================
+
+WINDOW_ERROR_HINTS = [
+    "window functions are not allowed",
+    "window function lag requires an over clause",
+    "cannot nest window functions",
+]
 
 def user_clarification_node(state: PostgresState) -> PostgresState:
     """
@@ -356,11 +358,12 @@ def sql_executor_node(state: PostgresState) -> PostgresState:
             fix_prompt = f"""You are a PostgreSQL expert. Fix the following SQL query that failed with an error.
 
 CRITICAL RULES:
-1. Return ONLY the SQL query itself
-2. Do NOT wrap the SQL in markdown code blocks (no ```, no ```sql)
-3. Do NOT include explanations or comments
-4. Ensure all table references are complete (e.g., "public"."table_name")
-5. Do NOT use T1, T2, T3, T4 - use actual table names
+- Return ONLY SQL
+- No markdown
+- SELECT only
+- Use CTEs if window functions are required
+- Window functions MUST NOT be in WHERE / JOIN / HAVING
+
 
 Failed SQL:
 {previous_sqls[-1]}
@@ -462,7 +465,7 @@ Return ONLY the corrected SQL query with no markdown formatting."""
 
 def chart_generator_node(state: PostgresState) -> PostgresState:
     """
-    Generates chart data if requested by planner.
+    Generates chart data in Plotly format if requested by planner.
     """
     print("[POSTGRES CHART GENERATOR NODE] Checking if chart needed...")
     
@@ -484,23 +487,62 @@ def chart_generator_node(state: PostgresState) -> PostgresState:
         print("[POSTGRES CHART GENERATOR] No data for chart")
         return state
     
-    chart_type = planner_output.get("chart_type", "bar")
+    chart_type = planner_output.get("chart_type", "scatter")
     
-    # Build chart data
+    # Convert rows to lists for Plotly
+    x_data = []
+    y_data = []
+    
+    for row in rows[:50]:  # Limit to 50 points for performance
+        x_val = row.get(columns[0])
+        y_val = row.get(columns[1]) if len(columns) > 1 else 0
+        
+        # Convert to float for numeric types
+        if y_val is not None:
+            try:
+                from decimal import Decimal
+                if isinstance(y_val, Decimal):
+                    y_val = float(y_val)
+                elif not isinstance(y_val, (int, float)):
+                    y_val = float(y_val)
+            except:
+                pass
+        
+        x_data.append(str(x_val))
+        y_data.append(y_val)
+    
+    # Build Plotly-format chart data
     chart_data = {
-        "type": chart_type,
-        "data": {
-            "labels": [str(row.get(columns[0])) for row in rows[:50]],  # X-axis
-            "datasets": [
-                {
-                    "label": columns[1] if len(columns) > 1 else "Value",
-                    "data": [float(row.get(columns[1], 0)) if len(columns) > 1 else 0 for row in rows[:50]]
+        "data": [
+            {
+                "x": x_data,
+                "y": y_data,
+                "name": columns[1] if len(columns) > 1 else "Value",
+                "type": "scatter" if chart_type == "line" else chart_type,
+                "mode": "lines+markers" if chart_type == "line" else "markers",
+                "line": {
+                    "color": "#00e599",
+                    "width": 2
+                } if chart_type == "line" else None,
+                "marker": {
+                    "color": "#00e599",
+                    "size": 6
                 }
-            ]
+            }
+        ],
+        "layout": {
+            "title": f"{chart_type.capitalize()} Chart",
+            "xaxis": {
+                "title": columns[0],
+            },
+            "yaxis": {
+                "title": columns[1] if len(columns) > 1 else "Value",
+            },
+            "hovermode": "closest"
         }
     }
     
-    print(f"[POSTGRES CHART GENERATOR] ✓ Generated {chart_type} chart with {len(rows)} points")
+    print(f"[POSTGRES CHART GENERATOR] ✓ Generated {chart_type} chart with {len(rows)} points (Plotly format)")
     state["chart_data"] = chart_data
     
     return state

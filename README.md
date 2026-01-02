@@ -150,7 +150,7 @@ npm run dev  # http://localhost:3000
    - Operations: `[AVG(revenue)]`
    - Group: `[region]`
 
-2. **Router** → `execution_mode = "sql"` → Routes to SQL Executor
+2. **Router** → `execution_mode = "sql"` → Routes to SQL Executo
 
 3. **SQL Executor**
    ```sql
