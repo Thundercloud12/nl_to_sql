@@ -244,13 +244,13 @@ def _profile_column(con: duckdb.DuckDBPyConnection, col: str, dtype: str,
         SELECT COUNT(DISTINCT "{col}") FROM data
     """).fetchone()[0]
     
-    # Sample values
+    # Sample values (limit to 3 to reduce memory footprint)
     samples = con.execute(f"""
         SELECT DISTINCT "{col}" FROM data 
         WHERE "{col}" IS NOT NULL 
-        LIMIT 5
+        LIMIT 3
     """).fetchall()
-    sample_values = [str(s[0]) for s in samples]
+    sample_values = [str(s[0])[:100] for s in samples]  # Truncate long strings at 100 chars
     
     col_info = {
         "role": "categorical",  # Default

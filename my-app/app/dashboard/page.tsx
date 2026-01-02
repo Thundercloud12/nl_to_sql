@@ -25,6 +25,11 @@ interface DataSource {
   userId: string;
   cloudinaryUrl: string;
   createdAt: string;
+  rawMetadata?: {
+    type?: string;
+    connection_name?: string;
+    allowed_tables?: string[];
+  };
 }
 
 export default function DashboardPage() {
@@ -100,6 +105,20 @@ export default function DashboardPage() {
     return filename.length > 25 ? filename.slice(0, 22) + "..." : filename;
   };
 
+  const getDataSourceName = (ds: DataSource) => {
+    if (ds.rawMetadata?.type === "postgres") {
+      return ds.rawMetadata.connection_name || "PostgreSQL Database";
+    }
+    return getFileName(ds.cloudinaryUrl);
+  };
+
+  const getDataSourceIcon = (ds: DataSource) => {
+    if (ds.rawMetadata?.type === "postgres") {
+      return Database;
+    }
+    return FileSpreadsheet;
+  };
+
   if (!user) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -145,13 +164,23 @@ export default function DashboardPage() {
           </motion.div>
 
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-            <Button
-              onClick={() => router.push("/upload-file")}
-              className="bg-[#00e599] text-black hover:bg-[#00e599]/90 font-bold rounded-lg px-8 h-12 shadow-[0_0_20px_-5px_#00e599]"
-            >
-              <Plus className="w-5 h-5 mr-2" />
-              Upload Source
-            </Button>
+            <div className="flex gap-3">
+              <Button
+                onClick={() => router.push("/upload-file")}
+                className="bg-[#00e599] text-black hover:bg-[#00e599]/90 font-bold rounded-lg px-8 h-12 shadow-[0_0_20px_-5px_#00e599]"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Upload File
+              </Button>
+              <Button
+                onClick={() => router.push("/connect-postgres")}
+                variant="outline"
+                className="border-[#00e599]/30 hover:bg-[#00e599]/10 font-bold rounded-lg px-8 h-12"
+              >
+                <Database className="w-5 h-5 mr-2" />
+                Connect PostgreSQL
+              </Button>
+            </div>
           </motion.div>
         </div>
 
@@ -194,7 +223,11 @@ export default function DashboardPage() {
 
         {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {dataSources.map((ds, index) => (
+          {dataSources.map((ds, index) => {
+            const IconComponent = getDataSourceIcon(ds);
+            const isPostgres = ds.rawMetadata?.type === "postgres";
+            
+            return (
             <motion.div
               key={ds.id}
               initial={{ opacity: 0, y: 20 }}
@@ -207,24 +240,31 @@ export default function DashboardPage() {
                 <CardHeader className="pb-4">
                   <div className="flex justify-between items-start mb-4">
                     <div className="p-3 bg-muted rounded-xl text-[#00e599] group-hover:bg-[#00e599] group-hover:text-black transition-colors duration-300">
-                      <FileSpreadsheet size={24} />
+                      <IconComponent size={24} />
                     </div>
                     <div className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest">
-                      Ready
+                      {isPostgres ? "Live" : "Ready"}
                     </div>
                   </div>
                   <CardTitle className="text-lg font-bold text-foreground group-hover:text-foreground transition-colors truncate">
-                    {getFileName(ds.cloudinaryUrl)}
+                    {getDataSourceName(ds)}
                   </CardTitle>
                   <CardDescription className="text-zinc-500 font-mono text-[11px] flex items-center gap-2">
                     <Calendar size={12} />
                     {new Date(ds.createdAt).toLocaleDateString()}
                   </CardDescription>
+                  {isPostgres && ds.rawMetadata?.allowed_tables && (
+                    <div className="mt-2 text-[10px] text-zinc-600 font-mono">
+                      {ds.rawMetadata.allowed_tables.length} tables accessible
+                    </div>
+                  )}
                 </CardHeader>
                 
                 <CardContent>
                     <div className="p-3 bg-black/40 rounded-lg border border-white/5 flex items-center justify-between">
-                        <span className="text-[10px] font-mono text-zinc-500 italic">UID: {ds.id.slice(0, 8)}</span>
+                        <span className="text-[10px] font-mono text-zinc-500 italic">
+                          {isPostgres ? "POSTGRES" : "FILE"} • {ds.id.slice(0, 8)}
+                        </span>
                         <ExternalLink size={12} className="text-zinc-700" />
                     </div>
                 </CardContent>
@@ -260,7 +300,8 @@ export default function DashboardPage() {
                 </CardFooter>
               </Card>
             </motion.div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Stats Section / Footer Info */}
