@@ -304,17 +304,17 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
             animate={{ opacity: 1, scale: 1 }}
             className="text-center"
           >
-            <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mx-auto mb-6 border border-[#00e599]/30 shadow-[0_0_30px_-10px_rgba(0,229,153,0.3)]">
-              <Loader2 className="w-8 h-8 text-[#00e599] animate-spin" />
+            <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mx-auto mb-6 border border-primary/30 dark:border-[#00e599]/30 shadow-[0_0_30px_-10px_rgba(0,113,227,0.3)] dark:shadow-[0_0_30px_-10px_rgba(0,229,153,0.3)]">
+              <Loader2 className="w-8 h-8 text-primary dark:text-[#00e599] animate-spin" />
             </div>
             <h2 className="text-2xl font-bold text-foreground mb-2">Warming up backend...</h2>
             <p className="text-muted-foreground max-w-sm mx-auto mb-6">
               Initializing server connection. This may take a moment.
             </p>
             <div className="flex gap-2 justify-center">
-              <div className="w-2 h-2 bg-[#00e599] rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-              <div className="w-2 h-2 bg-[#00e599] rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-              <div className="w-2 h-2 bg-[#00e599] rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+              <div className="w-2 h-2 bg-primary dark:bg-[#00e599] rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+              <div className="w-2 h-2 bg-primary dark:bg-[#00e599] rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+              <div className="w-2 h-2 bg-primary dark:bg-[#00e599] rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
             </div>
           </motion.div>
         </div>
@@ -374,7 +374,7 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
             {messages.length === 0 && !loading && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-20">
                     <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mx-auto mb-6 border border-border">
-                        <Terminal className="text-[#00e599]" size={32} />
+                        <Terminal className="text-primary dark:text-[#00e599]" size={32} />
                     </div>
                     <h2 className="text-2xl font-bold text-foreground mb-2">Awaiting Instructions</h2>
                     <p className="text-muted-foreground max-w-sm mx-auto">Ask a question about the uploaded dataset. The AI will analyze schema and provide insights.</p>
@@ -397,17 +397,17 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
                 )}>
                   {/* User Message */}
                   {msg.role === "user" ? (
-                    <div className="bg-[#00e599] text-black font-medium px-6 py-3 rounded-2xl rounded-tr-none shadow-[0_10px_30px_-10px_rgba(0,229,153,0.3)]">
+                    <div className="bg-black dark:bg-[#00e599] text-white dark:text-black font-medium px-6 py-3 rounded-2xl rounded-tr-none shadow-sm dark:shadow-[0_10px_30px_-10px_rgba(0,229,153,0.3)]">
                       {msg.content}
                     </div>
                   ) : (
                     /* Assistant Message */
                     <div className={cn(
                         "bg-card border border-border backdrop-blur-md px-6 py-4 rounded-2xl rounded-tl-none",
-                        msg.insight && "border-[#00e599]/30 shadow-[0_0_40px_-10px_rgba(0,229,153,0.1)]"
+                        msg.insight && "border-primary/30 dark:border-[#00e599]/30 shadow-sm dark:shadow-[0_0_40px_-10px_rgba(0,229,153,0.1)]"
                     )}>
                       {msg.insight && (
-                        <div className="flex items-center gap-2 text-[#00e599] text-[10px] font-mono font-bold uppercase tracking-widest mb-3">
+                        <div className="flex items-center gap-2 text-primary dark:text-[#00e599] text-[10px] font-mono font-bold uppercase tracking-widest mb-3">
                           <Zap size={12} fill="currentColor" />
                           AI Synthesized Insight
                         </div>
@@ -457,11 +457,11 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
             {loading && !clarification && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-muted border border-border flex items-center justify-center">
-                  <Loader2 size={14} className="animate-spin text-[#00e599]" />
+                  <Loader2 size={14} className="animate-spin text-primary dark:text-[#00e599]" />
                 </div>
                 <div className="flex gap-1">
                    {[0, 1, 2].map(i => (
-                     <div key={i} className="w-1.5 h-1.5 bg-[#00e599] rounded-full animate-bounce" style={{ animationDelay: `${i*150}ms` }} />
+                     <div key={i} className="w-1.5 h-1.5 bg-primary dark:bg-[#00e599] rounded-full animate-bounce" style={{ animationDelay: `${i*150}ms` }} />
                    ))}
                 </div>
               </motion.div>
@@ -471,7 +471,7 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
       </main>
 
       {/* Footer Input */}
-      <footer className="p-6 bg-gradient-to-t from-[#0D0E12] via-[#0D0E12] to-transparent">
+      <footer className="p-6 bg-gradient-to-t from-background via-background to-transparent">
         <div className="max-w-4xl mx-auto">
           {clarification ? (
             <motion.div initial={{ y: 20 }} animate={{ y: 0 }} className="bg-card border border-amber-500/30 p-6 rounded-2xl mb-4 shadow-[0_0_30px_-10px_rgba(245,158,11,0.2)]">
@@ -500,16 +500,16 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
                   <Button 
                     onClick={handleClarificationSubmit}  // ✅ CHANGE THIS
                     disabled={loading || !clarificationInput.trim()}
-                    className="bg-[#00e599] text-black hover:bg-[#00e599]/80"
+                    className="bg-black dark:bg-[#00e599] text-white dark:text-black hover:bg-black/80 dark:hover:bg-[#00e599]/80"
                   >
                     {loading ? <Loader2 className="animate-spin" /> : "Reply"}
                   </Button>
                </div>
             </motion.div>
           ) : (
-            <form onSubmit={handleSendMessage} className="relative group">
-               <div className="absolute -inset-1 bg-gradient-to-r from-[#00e599] to-cyan-500 rounded-2xl blur opacity-10 group-focus-within:opacity-30 transition-opacity" />
-               <div className="relative flex items-center bg-card border border-border rounded-2xl p-2 pr-3 focus-within:border-[#00e599]/50 transition-all shadow-2xl">
+             <form onSubmit={handleSendMessage} className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary dark:from-[#00e599] to-cyan-500 rounded-2xl blur opacity-10 group-focus-within:opacity-30 transition-opacity" />
+                <div className="relative flex items-center bg-card border border-border rounded-2xl p-2 pr-3 focus-within:border-primary/50 dark:focus-within:border-[#00e599]/50 transition-all shadow-lg dark:shadow-2xl">
                   <div className="pl-4 text-muted-foreground"><Terminal size={18} /></div>
                   <Input 
                     value={userInput}
@@ -521,7 +521,7 @@ export default function ChatPage({ searchParams }: ChatPageProps) {
                   <Button 
                     type="submit" 
                     disabled={loading || !userInput.trim()}
-                    className="bg-[#00e599] text-black font-bold rounded-xl h-10 px-6 hover:bg-[#00e599]/90 disabled:bg-muted disabled:text-muted-foreground"
+                    className="bg-black dark:bg-[#00e599] text-white dark:text-black font-bold rounded-xl h-10 px-6 hover:bg-black/90 dark:hover:bg-[#00e599]/90 disabled:bg-muted disabled:text-muted-foreground"
                   >
                     {loading ? <Loader2 className="animate-spin w-4 h-4" /> : "Analyze"}
                   </Button>

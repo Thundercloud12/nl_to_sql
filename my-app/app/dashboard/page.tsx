@@ -154,7 +154,7 @@ export default function DashboardPage() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
           >
-            <div className="flex items-center gap-2 text-[#00e599] font-mono text-xs mb-3 uppercase tracking-widest">
+            <div className="flex items-center gap-2 text-primary dark:text-[#00e599] font-mono text-xs mb-3 uppercase tracking-widest">
               <Activity size={14} />
               <span>System / Data Manager</span>
             </div>
@@ -206,16 +206,16 @@ export default function DashboardPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="flex flex-col items-center justify-center py-20 border-2 border-dashed border-white/5 rounded-[2rem] bg-white/[0.02]"
+            className="flex flex-col items-center justify-center py-20 border-2 border-dashed border-border dark:border-white/5 rounded-[2rem] bg-secondary/50 dark:bg-white/[0.02]"
           >
-            <div className="w-20 h-20 bg-zinc-900 rounded-3xl flex items-center justify-center mb-6 text-zinc-600">
+            <div className="w-20 h-20 bg-white dark:bg-zinc-900 rounded-3xl flex items-center justify-center mb-6 text-zinc-400 dark:text-zinc-600 shadow-sm dark:shadow-none">
               <Database size={40} />
             </div>
             <h3 className="text-xl font-bold mb-2">No active sources found</h3>
             <p className="text-zinc-500 mb-8 max-w-xs text-center">
               Connect a CSV or Excel file to begin training your AI agent on your data.
             </p>
-            <Button variant="outline" onClick={() => router.push("/upload-file")} className="border-white/10 hover:bg-white/5">
+            <Button variant="outline" onClick={() => router.push("/upload-file")} className="border-border dark:border-white/10 hover:bg-muted dark:hover:bg-white/5">
               Get Started
             </Button>
           </motion.div>
@@ -234,8 +234,9 @@ export default function DashboardPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
             >
-              <Card className="bg-zinc-900/40 border-white/5 hover:border-[#00e599]/30 transition-all duration-300 overflow-hidden group">
-                <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#00e599]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
+              <Card className="bg-card dark:bg-zinc-900/40 border-border dark:border-white/5 hover:border-primary/30 dark:hover:border-[#00e599]/30 transition-all duration-300 overflow-hidden group">
+                <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-primary/20 dark:via-[#00e599]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 
                 <CardHeader className="pb-4">
                   <div className="flex justify-between items-start mb-4">
@@ -276,8 +277,8 @@ export default function DashboardPage() {
                     className={cn(
                         "flex-1 font-bold transition-all",
                         startingChatId === ds.id 
-                            ? "bg-zinc-800 text-zinc-500" 
-                            : "bg-foreground text-background hover:bg-[#00e599]"
+                            ? "bg-muted dark:bg-zinc-800 text-muted-foreground dark:text-zinc-500" 
+                            : "bg-foreground text-background hover:bg-primary dark:hover:bg-[#00e599]"
                     )}
                     size="sm"
                   >
@@ -319,8 +320,8 @@ export default function DashboardPage() {
                 </div>
                 <div className="h-8 w-px bg-white/10" />
                 <div>
-                    <p className="text-xs text-zinc-500 font-mono uppercase mb-1">Storage Status</p>
-                    <p className="text-2xl font-bold text-[#00e599]">Optimized</p>
+                    <p className="text-xs text-muted-foreground dark:text-zinc-500 font-mono uppercase mb-1">Storage Status</p>
+                    <p className="text-2xl font-bold text-primary dark:text-[#00e599]">Optimized</p>
                 </div>
             </div>
             <p className="text-xs text-zinc-600 font-mono">
