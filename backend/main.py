@@ -22,8 +22,14 @@ from utils.prisma_handler import PrismaHandler
 from utils.datasource_loader import download_from_cloudinary, load_datasource_files, load_chat, ensure_datasource_files
 from utils.database_utilities import get_db_connection, db_connection, db_cursor
 from utils.postgres_connector import PostgresConnector
+from agent.manager import init_agent_manager, get_agent_manager
+from agent.models import AgentRegistration, AgentHeartbeat, AgentQueryRequest
 
 app = FastAPI()
+
+# Initialize agent manager
+agent_manager = init_agent_manager(db_cursor)
+
 url=os.getenv("NEXT_JS_API_URL")
 # Configure CORS
 app.add_middleware(
@@ -1458,6 +1464,323 @@ async def create_postgres_datasource(req: dict):
         raise
     except Exception as e:
         print(f"[POSTGRES] ✗ Error creating datasource: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============================================================================
+# CUSTOMER-HOSTED AGENT ENDPOINTS
+# ============================================================================
+
+@app.post("/agent/register")
+async def register_agent(req: dict):
+    """
+    Register a new customer-hosted agent.
+    
+    Request body:
+        {
+            "agent_name": "My Production Agent",
+            "host_url": "https://agent.mycompany.com:8443",
+            "database_type": "postgres",
+            "allowed_schemas": ["public"],
+            "user_id": "user_xxx"
+        }
+    
+    Response:
+        {
+            "agent_id": "agent_xxx",
+            "agent_token": "tok_xxx",
+            "agent_secret": "secret_xxx",
+            "message": "...",
+            "status": "pending"
+        }
+    """
+    try:
+        user_id = req.get("user_id")
+        agent_name = req.get("agent_name")
+        host_url = req.get("host_url")
+        
+        if not all([user_id, agent_name, host_url]):
+            raise HTTPException(
+                status_code=400,
+                detail="user_id, agent_name, and host_url are required"
+            )
+        
+        registration = AgentRegistration(
+            agent_name=agent_name,
+            host_url=host_url,
+            database_type=req.get("database_type", "postgres"),
+            allowed_schemas=req.get("allowed_schemas", ["public"]),
+            user_id=user_id
+        )
+        
+        result = await agent_manager.register_agent(registration)
+        
+        print(f"[AGENT] ✓ Registered agent: {result.agent_id} for user: {user_id}")
+        
+        return result.model_dump()
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[AGENT] ✗ Error registering agent: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/agent/heartbeat")
+async def agent_heartbeat(req: dict):
+    """
+    Process heartbeat from a customer-hosted agent.
+    
+    Request body:
+        {
+            "agent_id": "agent_xxx",
+            "agent_token": "tok_xxx",
+            "status": "healthy",
+            "connected_databases": ["production"],
+            "active_connections": 5
+        }
+    
+    Response:
+        {
+            "success": true,
+            "message": "Heartbeat acknowledged"
+        }
+    """
+    try:
+        agent_id = req.get("agent_id")
+        agent_token = req.get("agent_token")
+        
+        if not agent_id or not agent_token:
+            raise HTTPException(
+                status_code=400,
+                detail="agent_id and agent_token are required"
+            )
+        
+        heartbeat = AgentHeartbeat(
+            agent_id=agent_id,
+            agent_token=agent_token,
+            status=req.get("status", "healthy"),
+            connected_databases=req.get("connected_databases", []),
+            active_connections=req.get("active_connections", 0)
+        )
+        
+        result = await agent_manager.process_heartbeat(heartbeat)
+        
+        return result
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[AGENT] ✗ Error processing heartbeat: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/agent/query")
+async def execute_agent_query(req: dict):
+    """
+    Execute a query through a customer-hosted agent.
+    
+    Request body:
+        {
+            "agent_id": "agent_xxx",
+            "user_id": "user_xxx",
+            "sql": "SELECT * FROM users LIMIT 10",
+            "parameters": {},
+            "schema_name": "public",
+            "timeout": 30
+        }
+    
+    Response:
+        {
+            "query_id": "query_xxx",
+            "success": true,
+            "rows": [...],
+            "row_count": 10,
+            "columns": ["id", "name"],
+            "execution_time_ms": 45.2
+        }
+    """
+    try:
+        agent_id = req.get("agent_id")
+        user_id = req.get("user_id")
+        sql = req.get("sql")
+        
+        if not all([agent_id, user_id, sql]):
+            raise HTTPException(
+                status_code=400,
+                detail="agent_id, user_id, and sql are required"
+            )
+        
+        # Verify user owns the agent
+        agent_status = await agent_manager.get_agent_status(agent_id, user_id)
+        if not agent_status:
+            raise HTTPException(status_code=404, detail="Agent not found or unauthorized")
+        
+        result = await agent_manager.execute_query(
+            agent_id=agent_id,
+            sql=sql,
+            parameters=req.get("parameters"),
+            schema_name=req.get("schema_name", "public"),
+            timeout=req.get("timeout", 30)
+        )
+        
+        return result.model_dump()
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[AGENT] ✗ Error executing query: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/agent/status/{agent_id}")
+async def get_agent_status(agent_id: str, user_id: str):
+    """
+    Get status information for an agent.
+    
+    Query params:
+        - user_id: Owner user ID for authorization
+    
+    Response:
+        {
+            "agent_id": "agent_xxx",
+            "agent_name": "My Agent",
+            "status": "connected",
+            "host_url": "https://...",
+            "last_heartbeat": "2026-01-02T12:00:00Z",
+            "queries_executed": 100,
+            "avg_response_time_ms": 45.2
+        }
+    """
+    try:
+        if not user_id:
+            raise HTTPException(status_code=400, detail="user_id is required")
+        
+        result = await agent_manager.get_agent_status(agent_id, user_id)
+        
+        if not result:
+            raise HTTPException(status_code=404, detail="Agent not found or unauthorized")
+        
+        return result.model_dump()
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[AGENT] ✗ Error getting agent status: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/agent/list")
+async def list_agents(user_id: str):
+    """
+    List all agents for a user.
+    
+    Query params:
+        - user_id: Owner user ID
+    
+    Response:
+        [
+            {
+                "agent_id": "agent_xxx",
+                "agent_name": "My Agent",
+                "status": "connected",
+                ...
+            }
+        ]
+    """
+    try:
+        if not user_id:
+            raise HTTPException(status_code=400, detail="user_id is required")
+        
+        agents = await agent_manager.list_agents(user_id)
+        
+        return [agent.model_dump() for agent in agents]
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[AGENT] ✗ Error listing agents: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.delete("/agent/{agent_id}")
+async def delete_agent(agent_id: str, user_id: str):
+    """
+    Delete an agent.
+    
+    Query params:
+        - user_id: Owner user ID for authorization
+    
+    Response:
+        {
+            "success": true,
+            "message": "Agent deleted successfully"
+        }
+    """
+    try:
+        if not user_id:
+            raise HTTPException(status_code=400, detail="user_id is required")
+        
+        deleted = await agent_manager.delete_agent(agent_id, user_id)
+        
+        if not deleted:
+            raise HTTPException(status_code=404, detail="Agent not found or unauthorized")
+        
+        print(f"[AGENT] ✓ Deleted agent: {agent_id}")
+        
+        return {
+            "success": True,
+            "message": "Agent deleted successfully",
+            "agent_id": agent_id
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[AGENT] ✗ Error deleting agent: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/agent/test-connection")
+async def test_agent_connection(req: dict):
+    """
+    Test connection to a customer-hosted agent.
+    
+    Request body:
+        {
+            "agent_id": "agent_xxx",
+            "user_id": "user_xxx"
+        }
+    
+    Response:
+        {
+            "success": true,
+            "latency_ms": 45.2,
+            "message": "Connection successful"
+        }
+    """
+    try:
+        agent_id = req.get("agent_id")
+        user_id = req.get("user_id")
+        
+        if not agent_id or not user_id:
+            raise HTTPException(
+                status_code=400,
+                detail="agent_id and user_id are required"
+            )
+        
+        success, message, latency = await agent_manager.test_agent_connection(agent_id, user_id)
+        
+        return {
+            "success": success,
+            "latency_ms": latency,
+            "message": message
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[AGENT] ✗ Error testing connection: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
